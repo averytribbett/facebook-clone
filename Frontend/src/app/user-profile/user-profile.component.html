@@ -1,0 +1,16 @@
+<h1>Welcome to your FakeBook(TM) Profile</h1>
+<h2>Name</h2>
+<p> {{ selectedUser.name }} </p>
+<h2>Age</h2>
+<p> {{ selectedUser.age }} </p>
+<h2>Home Town</h2>
+<p> {{ selectedUser.homeTown }} </p>
+<h2>Job</h2>
+<p> {{ selectedUser.job }} </p>
+
+<select [(ngModel)]="selectedUser" (change)="changeSelectedUser($event)">
+    <option *ngFor="let user of availableUsers" [value]="user.name">
+      {{ user.name }}
+    </option>
+  </select>
+<button routerLink="/">Back to Home</button>

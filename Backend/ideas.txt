@@ -1,0 +1,31 @@
+Ideas for project structure:
+
+-Home handler / service:
+    -when user logs in it brings them to home page
+    -endpoints could include:
+        -getUserFeed (returns all posts in chronological order from friend list)
+        -getUserProfilePhoto (returns user photo, if we get to that)
+        -createNewPost (when user creates a new posts it adds it to the feed)
+        -deletePost ?
+        -createNewReply (adds a reply to a post)
+
+Profile handler / service:
+    -getUserPosts
+    -createNewPost
+    -deletePost ?
+    -addFriend (for when user is looking at a profile that is not their own)
+    -deleteFriend (again for a different profile)
+
+Login handler / service:
+    -login / logout functionality, with Auth0? Not sure if this happens primarily on frontend or backend
+
+Commonalities:
+    -create / delete post could probably be same endpoint regardless if user is looking at their own profile or their entire
+    friend feed (it might have to be different but would be nice to share)
+    -login / logout could happen on any page
+
+Questions:
+1. How to ensure users are redirected to login page if they try to type in a URL that requires a login?
+
+
+???????
