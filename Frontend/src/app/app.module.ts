@@ -11,6 +11,8 @@ import { UserFeedComponent } from './user-feed/user-feed.component';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { ToastrModule } from 'ngx-toastr';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { provideAuth0 } from '@auth0/auth0-angular';
+import { environment } from 'src/environment';
 
 @NgModule({
   declarations: [
@@ -29,7 +31,16 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     ToastrModule.forRoot(),
     NgbModule
   ],
-  providers: [],
+  providers: [
+    provideAuth0({
+      domain: environment.auth.domain,
+      clientId: environment.auth.clientId,
+      authorizationParams: {
+        redirect_uri: window.location.origin, 
+        connection: "email"
+      }
+    }),
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

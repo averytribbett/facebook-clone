@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
-import { ToastrService } from 'ngx-toastr';
+import { AuthService } from '@auth0/auth0-angular';
 
 @Component({
   selector: 'app-login-page',
@@ -8,25 +7,5 @@ import { ToastrService } from 'ngx-toastr';
   styleUrls: ['./login-page.component.css']
 })
 export class LoginPageComponent {
-  public loginForm: FormGroup = new FormGroup({});
-
-  constructor (private toaster: ToastrService) {}
-  
-  ngOnInit(): void {
-    this.initForm();
-  }
-
-  public initForm(): void {
-    this.loginForm = new FormGroup({
-      username: new FormControl(''),
-      password: new FormControl('')
-    });
-  }
-
-  public login(): void {
-    const msg = "Current user has attempted to log in with username " + this.loginForm.get('username')?.value + " and password " + this.loginForm.get('password')?.value;
-    this.toaster.success(msg);
-  }
-
-
+  constructor (public auth: AuthService) {}
 }

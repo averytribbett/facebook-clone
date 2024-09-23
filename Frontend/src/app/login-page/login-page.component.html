@@ -1,9 +1,2 @@
 <h1>Login</h1>
-    <form [formGroup]="loginForm">
-        <label for="username">Username</label>
-        <input id="username" type="text" formControlName="username"> 
-        <label for="password">Password</label>
-        <input id="password" type="text" formControlName="password"> 
-    </form>
-<button (click)="login()">Submit</button>
-<button routerLink="/">Back to Home</button>
+<button (click)="auth.loginWithRedirect()">Login</button>
