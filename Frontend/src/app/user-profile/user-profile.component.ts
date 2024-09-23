@@ -24,7 +24,6 @@ export class UserProfileComponent {
 
   ngOnInit(): void {
     this.userService.getAllUsers().subscribe(result => {
-      console.log('result: ', result);
       this.availableUsers = result;
     });
   }

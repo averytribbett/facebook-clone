@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { UserModel } from 'src/models/user-model';
@@ -6,11 +7,10 @@ import { UserModel } from 'src/models/user-model';
   providedIn: 'root'
 })
 export class UserServiceService {
-  httpClient: any;
 
-  constructor() { }
+  constructor(private httpClient: HttpClient) { }
 
   getAllUsers(): Observable<UserModel[]>{
-    return this.httpClient.sendUserProfile("/users");
+    return this.httpClient.get<UserModel[]>("api/users");
   }
 }

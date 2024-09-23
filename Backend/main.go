@@ -32,11 +32,13 @@ func main() {
 	// This will ensure that the angular files are served correctly
 	r.NoRoute(func(c *gin.Context) {
 		dir, file := path.Split(c.Request.RequestURI)
-		fmt.Println("request uri or whatever")
-		fmt.Println(c.Request.RequestURI)
 		ext := filepath.Ext(file)
 		if file == "" || ext == "" {
 			c.File("../Frontend/dist/frontend/index.html")
+		} else if ext == ".woff2?dd67030699838ea613ee6dbda90effa6" {
+			c.File("../Frontend/dist/frontend/bootstrap-icons.bfa90bda92a84a6a.woff2") // not sure why this one is so weird, will troubleshoot eventually
+		} else if ext == ".jpg" {
+			c.File("../Frontend/src/app/" + path.Join(dir, file))
 		} else {
 			c.File("../Frontend/dist/frontend/" + path.Join(dir, file))
 		}
