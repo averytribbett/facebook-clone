@@ -1,6 +1,13 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatButtonModule } from '@angular/material/button';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { HttpClientModule } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -29,7 +36,14 @@ import { environment } from 'src/environment';
     FormsModule,
     BrowserAnimationsModule,
     ToastrModule.forRoot(),
-    NgbModule
+    NgbModule,
+    MatSidenavModule,
+    MatDividerModule,
+    MatIconModule,
+    MatButtonModule,
+    MatMenuModule,
+    MatToolbarModule,
+    HttpClientModule
   ],
   providers: [
     provideAuth0({

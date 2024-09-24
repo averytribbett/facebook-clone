@@ -1,14 +1,44 @@
-<h1>Welcome to FakeBook (TM)</h1>
 
-<h2>Home Page</h2>
-<ul>
-    <li>
-        <button routerLink="/login">Login</button>
-    </li>
-    <li>
-        <button routerLink="/profile">User Profile</button>
-    </li>
-    <li>
-        <button routerLink="/feed">User Feed</button>
-    </li>
-</ul>
+<button routerLink="/feed">user feed</button>
+<button routerLink="/profile">user profile</button>
+
+  <mat-toolbar id="header">
+    <button mat-icon-button class="example-icon" [matMenuTriggerFor]="menu" aria-label="Example icon-button with menu icon">
+      <mat-icon class="iconClass">menu</mat-icon>
+    </button>
+    <span>Welcome to Fakebook (TM)</span>
+    <span class="example-spacer"></span>
+    <mat-menu #menu="matMenu">
+        <button mat-menu-item routerLink="/login">
+          <mat-icon [ngStyle]="{'color':'orangered'}">login</mat-icon>
+          <span>Login</span>
+        </button>
+        <button mat-menu-item>
+          <mat-icon [ngStyle]="{'color':'orangered'}">info</mat-icon>
+          <span>About</span>
+        </button>
+        <button mat-menu-item>
+          <mat-icon [ngStyle]="{'color':'orangered'}">account_circle</mat-icon>
+          <span>Create New Account</span>
+        </button>
+      </mat-menu>
+  </mat-toolbar>
+
+  <div class="homeSections">
+    <div id="homeDescription" class="homeOptions">
+        Short description of our app and how your life will be immeasurably better once you start to use it.
+        Facebook, shmacebook. 
+    </div>
+    <div class="homeOptions">
+        <img src="../images/paper_plane.jpg">
+    </div>
+  </div>
+
+  <!--these two buttons are just for visiblity now, we can redirect users to the appropriate pages in a different manner later on-->
+<button routerLink="/feed">user feed</button>
+<button routerLink="/profile">user profile</button>
+
+  <footer id="footer">Not affiliated with any other corporation involving books of faces (TM) not sure if we need a footer but here is one we could modify</footer>
+
+
+

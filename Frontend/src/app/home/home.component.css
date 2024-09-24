@@ -1,0 +1,60 @@
+.homeSections {
+    display: flex;
+    flex-direction: row;
+    margin-top: 150px;
+    margin-left: 300px;
+}
+
+
+.homeOptions {
+    margin: 20px;
+}
+
+.mat-toolbar-single-row {
+    width: 200%;
+}
+
+#homeDescription {
+    width: 20%;
+    font-style: italic;
+    font-size: 25px;
+    line-height: 30px;
+}
+
+.noBullets {
+    list-style-type: none;
+}
+
+.bi {
+    font-size: 50px;
+}
+
+#header {
+    background: lightgoldenrodyellow;
+    color: black;
+    border-bottom: 3px solid orangered;
+    box-shadow: 1px 2.5px 5px gray;
+    top: 0;
+    left: 0;
+    position: absolute;
+    width: 100%;
+}
+
+.iconClass {
+    color: orangered;
+}
+#footer {
+    background: lightgoldenrodyellow;
+    color: black;
+    background-color: lightgoldenrodyellow;
+    width: 100%;
+    border-top: 3px solid orangered;
+    position: relative;
+    bottom: 0;
+    left: 0;
+    position: fixed;
+}
+
+img {
+    box-shadow: 10px 10px 5px gray;
+}
