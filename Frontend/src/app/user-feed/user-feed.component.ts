@@ -9,10 +9,9 @@ import { UserServiceService } from 'src/services/user-service.service';
 })
 export class UserFeedComponent {
   public selectedUser = {
-    name: "Please choose a name...",
-    age: 0,
-    homeTown: "",
-    job: "",
+    id: 0,
+    firstName: "Please choose a name...",
+    lastName: "",
     username: ""
   } as UserModel;
 

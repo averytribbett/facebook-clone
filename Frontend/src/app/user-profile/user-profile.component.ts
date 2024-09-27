@@ -12,13 +12,13 @@ import { UserServiceService } from 'src/services/user-service.service';
 export class UserProfileComponent {
   public loginForm: FormGroup = new FormGroup({});
   public selectedUser = {
-    name: "Please choose a name...",
-    age: 0,
-    homeTown: "",
-    job: "",
+    id: 0,
+    firstName: "Please choose a name...",
+    lastName: "",
     username: ""
   } as UserModel;
   public availableUsers: UserModel[] = [];
+  public currentSearchUser: number = 0;
 
   constructor (private toaster: ToastrService, private userService: UserServiceService) {}
 
@@ -29,8 +29,17 @@ export class UserProfileComponent {
   }
 
   public changeSelectedUser(user: any): void {
-    const newUser = this.availableUsers.find(x => x.name === user.target.value) as UserModel;
+    const newUser = this.availableUsers.find(x => x.username === user.target.value) as UserModel;
     this.selectedUser = newUser;
   }
+
+  // this is searching by ID, not by e-mail
+  public searchForUser(): void {
+    this.userService.getUser(this.currentSearchUser).subscribe(result => {
+      console.log('results: ', result);
+      this.selectedUser = result;
+    });
+  }
+
 
 }

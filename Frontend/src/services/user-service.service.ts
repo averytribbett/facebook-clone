@@ -13,4 +13,16 @@ export class UserServiceService {
   getAllUsers(): Observable<UserModel[]>{
     return this.httpClient.get<UserModel[]>("api/users");
   }
+
+  getUser(userId: number): Observable<UserModel>{
+    return this.httpClient.get<UserModel>("api/user/" + userId);
+  }
+
+  getUserByUsername(username: String): Observable<UserModel>{
+    return this.httpClient.get<UserModel>("api/username/" + username);
+  }
+
+  addNewUser(user: UserModel): Observable<boolean>{
+    return this.httpClient.put<boolean>("api/user/addNewUser", user);
+  }
 }

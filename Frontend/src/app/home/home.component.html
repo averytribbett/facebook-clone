@@ -1,7 +1,4 @@
-
-<button routerLink="/feed">user feed</button>
-<button routerLink="/profile">user profile</button>
-
+<div *ngIf="!shouldShowCreateProfile">
   <mat-toolbar id="header">
     <div class="header-left">
       <button mat-icon-button class="example-icon" [matMenuTriggerFor]="menu" aria-label="Example icon-button with menu icon">
@@ -31,7 +28,7 @@
       </mat-menu>
     </div>
     <!-- TODO switch to their firstName when we connect backend -->
-    <span *ngIf="auth.user$ | async as user" class="">Hello 👋 {{ user.email }}</span>
+    <span *ngIf="auth.user$ | async as user"  class="">Hello 👋 {{ user.email }}</span>
   </mat-toolbar>
 
   <div class="homeSections">
@@ -47,8 +44,12 @@
   <!--these two buttons are just for visiblity now, we can redirect users to the appropriate pages in a different manner later on-->
 <button routerLink="/feed">user feed</button>
 <button routerLink="/profile">user profile</button>
+<button (click)="showCreateProfilePage()">Create new user (test only)</button>
+</div>
 
-  <footer id="footer">Not affiliated with any other corporation involving books of faces (TM) not sure if we need a footer but here is one we could modify</footer>
+<app-create-profile *ngIf="shouldShowCreateProfile" [currentUser]="currentLoggedInUser" (myEmitter$)="switchToHomeView()"></app-create-profile>
+
+<footer id="footer">Not affiliated with any other corporation involving books of faces (TM) not sure if we need a footer but here is one we could modify</footer>
 
 
 

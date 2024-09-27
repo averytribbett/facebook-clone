@@ -1,0 +1,41 @@
+<mat-toolbar id="createProfileHeader">
+    <button mat-icon-button class="example-icon" [matMenuTriggerFor]="menu" aria-label="Example icon-button with menu icon">
+      <mat-icon [ngStyle]="{'color':'orangered'}">menu</mat-icon>
+    </button>
+    <span>Create Profile</span>
+    <span class="example-spacer"></span>
+    <mat-menu #menu="matMenu">
+        <button mat-menu-item (click)="showHomePage()">
+          <mat-icon [ngStyle]="{'color':'orangered'}">home</mat-icon>
+          <span>Home</span>
+        </button>
+        <button mat-menu-item>
+          <mat-icon [ngStyle]="{'color':'orangered'}">info</mat-icon>
+          <span>About</span>
+        </button>
+      </mat-menu>
+  </mat-toolbar>
+
+  <div id="mainPageContainer">
+  <form [formGroup]="createProfileForm">
+    <div id="createUserFields">
+        <mat-form-field color="warn">
+            <mat-label for="firstName">First Name</mat-label>
+            <input matInput formControlName="firstName">
+        </mat-form-field>
+        <mat-form-field color="warn">
+            <mat-label for="lastName">Last Name</mat-label>
+            <input matInput formControlName="lastName">
+        </mat-form-field>
+        <mat-form-field color="warn">
+            <mat-label for="bio">Bioz</mat-label>
+            <input matInput formControlName="bio">
+        </mat-form-field>
+        <mat-form-field color="warn">
+            <mat-label for="username">E-mail (TEST ONLY)</mat-label>
+            <input matInput formControlName="username">
+        </mat-form-field>
+    </div>
+  </form>
+  <button id="submitButton" mat-raised-button (click)="sendNewUserToBackend()">Submit</button>
+  </div>

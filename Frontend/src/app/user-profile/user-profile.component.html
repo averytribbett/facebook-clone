@@ -1,16 +1,22 @@
 <h1>Welcome to your FakeBook(TM) Profile</h1>
-<h2>Name</h2>
-<p> {{ selectedUser.name }} </p>
-<h2>Age</h2>
-<p> {{ selectedUser.age }} </p>
-<h2>Home Town</h2>
-<p> {{ selectedUser.homeTown }} </p>
-<h2>Job</h2>
-<p> {{ selectedUser.job }} </p>
+<h2>First name</h2>
+<p> {{ selectedUser.firstName }} </p>
+<h2>Last name</h2>
+<p> {{ selectedUser.lastName }} </p>
+<h2>Username</h2>
+<p> {{ selectedUser.username }} </p>
+<h2>Bio</h2>
+<p> {{ selectedUser.bio }} </p>
 
 <select [(ngModel)]="selectedUser" (change)="changeSelectedUser($event)">
-    <option *ngFor="let user of availableUsers" [value]="user.name">
-      {{ user.name }}
+    <option *ngFor="let user of availableUsers" [value]="user.username">
+      {{ user.username }}
     </option>
-  </select>
+</select>
+<div>
+  <!-- for testing puproses, but will likely default to searching by e-mail-->
+  <label>Search User by ID</label>
+  <input type="text" [(ngModel)]="currentSearchUser">
+</div>
+<button (click)="searchForUser()">Search for user</button>
 <button routerLink="/">Back to Home</button>
