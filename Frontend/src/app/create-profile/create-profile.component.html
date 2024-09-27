@@ -1,3 +1,5 @@
+<!--probably add some functionality where, if a user has been redirected to create a profile, if they navigate away 
+ without clicking submit, it should log them out-->
 <mat-toolbar id="createProfileHeader">
     <button mat-icon-button class="example-icon" [matMenuTriggerFor]="menu" aria-label="Example icon-button with menu icon">
       <mat-icon [ngStyle]="{'color':'orangered'}">menu</mat-icon>
@@ -33,7 +35,7 @@
         </mat-form-field>
         <mat-form-field color="warn">
             <mat-label for="username">E-mail (TEST ONLY)</mat-label>
-            <input matInput formControlName="username">
+            <input matInput formControlName="username" [(ngModel)]="currentUser">
         </mat-form-field>
     </div>
   </form>

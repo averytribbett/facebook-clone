@@ -9,7 +9,7 @@ import { AuthService } from '@auth0/auth0-angular';
 @Component({
   selector: 'app-create-profile',
   templateUrl: './create-profile.component.html',
-  styleUrls: ['./create-profile.component.css']
+  styleUrls: ['./create-profile.component.css'],
 })
 export class CreateProfileComponent {
   @Input() currentUser: String = "";
@@ -20,6 +20,7 @@ export class CreateProfileComponent {
   
   ngOnInit(): void {
     this.initForm();
+    this.disableUserNameField();
   }
 
   public initForm(): void {
@@ -51,4 +52,11 @@ export class CreateProfileComponent {
     this.myEmitter$.emit(true);
   }
 
+  public disableUserNameField(): void {
+    console.log('current user: ', this.currentUser);
+    console.log(this.currentUser !== null && this.currentUser !== "");
+    if (this.currentUser !== null && this.currentUser !== "") {
+      this.createProfileForm.get('username')?.disable();
+    }
+  }
 }
