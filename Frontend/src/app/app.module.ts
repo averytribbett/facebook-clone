@@ -8,6 +8,9 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { HttpClientModule } from '@angular/common/http';
+import {MatSelectModule} from '@angular/material/select';
+import {MatInputModule} from '@angular/material/input';
+import {MatFormFieldModule} from '@angular/material/form-field';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -20,6 +23,7 @@ import { ToastrModule } from 'ngx-toastr';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { provideAuth0 } from '@auth0/auth0-angular';
 import { environment } from 'src/environment';
+import { CreateProfileComponent } from './create-profile/create-profile.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +31,8 @@ import { environment } from 'src/environment';
     HomeComponent,
     LoginPageComponent,
     UserProfileComponent,
-    UserFeedComponent
+    UserFeedComponent,
+    CreateProfileComponent,
   ],
   imports: [
     BrowserModule,
@@ -43,7 +48,10 @@ import { environment } from 'src/environment';
     MatButtonModule,
     MatMenuModule,
     MatToolbarModule,
-    HttpClientModule
+    HttpClientModule,
+    MatSelectModule,
+    MatInputModule,
+    MatFormFieldModule,
   ],
   providers: [
     provideAuth0({

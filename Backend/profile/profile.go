@@ -1,6 +1,7 @@
 package profile
 
 import (
+	"fmt"
 	"sync"
 
 	"fakebook.com/project/models"
@@ -21,38 +22,62 @@ func initializeList() {
 	// in the future, we probably would not even need this
 	list = []models.User{
 		{
-			Name:     "Melissa",
-			Age:      29,
-			HomeTown: "Rochester, MN",
-			Job:      "Intern",
-			Username: "brownm26csp",
+			Id:        0,
+			FirstName: "Melissa",
+			LastName:  "Brown",
+			Username:  "melissa.cat.brown02@gmail.com",
 		},
 		{
-			Name:     "Avery",
-			Age:      22,
-			HomeTown: "Place, State",
-			Job:      "Professional",
-			Username: "averytribbett",
+			Id:        1,
+			FirstName: "Avery",
+			LastName:  "Tribbett",
+			Username:  "averytribbett",
 		},
 		{
-			Name:     "Cade",
-			Age:      23,
-			HomeTown: "different place, different state",
-			Job:      "Super professional",
-			Username: "cadegithub",
+			Id:        2,
+			FirstName: "Cade",
+			LastName:  "Becker",
+			Username:  "cadegithub",
 		},
 		{
-			Name:     "Youssef",
-			Age:      28,
-			HomeTown: "Yet another place, yet another state",
-			Job:      "Super ultra professional extraordinaire",
-			Username: "youssefgithub",
+			Id:        3,
+			FirstName: "Youssef",
+			LastName:  "Ibrahim",
+			Username:  "youssefgithub",
 		},
 	}
 }
 
 func Get() []models.User {
 	return list
+}
+
+func GetOneUser(userId int) models.User { // will return one user
+	var returnUser models.User
+	// replace lines 58-62 with call to database, this function might be obsolete eventually
+	for _, user := range list {
+		if user.Id == userId {
+			returnUser = user
+		}
+	}
+	return returnUser
+}
+
+func GetOneUserByUsername(username string) models.User {
+	var returnUser models.User
+	// replace lines 69-73 with calls to database
+	for _, user := range list {
+		if user.Username == username {
+			returnUser = user
+		}
+	}
+	return returnUser
+}
+
+func AddNewUser(newUser models.User) bool {
+	fmt.Println(newUser)
+	// add code to send newUser to database here
+	return true
 }
 
 /*

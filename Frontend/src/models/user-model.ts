@@ -1,8 +1,8 @@
 export interface UserModel {
-    name: string,
-    age: number,
-    homeTown: string,
-    job: string,
+    id?: number,
+    firstName: string,
+    lastName: string,
+    bio: string,
     username: string
 }
 

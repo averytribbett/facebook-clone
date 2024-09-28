@@ -25,9 +25,9 @@ var (
 )
 
 func main() {
-	setAuth0Variables()
+	// setAuth0Variables()
 	r := gin.Default()
-	r.Use(CORSMiddleware())
+	// r.Use(CORSMiddleware())
 
 	// This will ensure that the angular files are served correctly
 	r.NoRoute(func(c *gin.Context) {
@@ -47,9 +47,9 @@ func main() {
 	authorized := r.Group("/")
 	// authorized.Use(authRequired())
 	authorized.GET("/api/users", handlers.GetUsersHandler)
-	// authorized.POST("/todo", demoHandlers.AddTodoHandler)
-	// authorized.DELETE("/todo/:id", demoHandlers.DeleteTodoHandler)
-	// authorized.PUT("/todo", demoHandlers.CompleteTodoHandler)
+	authorized.GET("/api/user/:id", handlers.GetOneUserHandler)
+	authorized.GET("/api/username/:username", handlers.GetOneUserbyUsernameHandler)
+	authorized.PUT("/api/user/addNewUser", handlers.AddNewUserHandler)
 
 	err := r.Run(":3000")
 	if err != nil {
