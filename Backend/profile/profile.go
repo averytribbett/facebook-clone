@@ -44,6 +44,7 @@ func initializeList() {
 			FirstName: "Youssef",
 			LastName:  "Ibrahim",
 			Username:  "youssefgithub",
+
 		},
 	}
 }
@@ -79,6 +80,7 @@ func AddNewUser(newUser models.User) bool {
 	// add code to send newUser to database here
 	return true
 }
+
 
 /*
 endpoint ideas for a user profile:

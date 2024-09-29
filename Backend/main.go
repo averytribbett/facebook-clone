@@ -18,6 +18,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 
 	"fakebook.com/project/handlers"
+	"fakebook.com/project/models"
 	"github.com/auth0-community/go-auth0"
 	"github.com/gin-gonic/gin"
 	jose "gopkg.in/square/go-jose.v2"
@@ -27,9 +28,12 @@ var (
 	audience string
 	domain   string
 )
+type User models.User
+
 
 func main() {
 	// setAuth0Variables()
+
 	r := gin.Default()
 	// r.Use(CORSMiddleware())
 
@@ -59,6 +63,15 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	// testUser := User{
+	// 	FirstName:  "VeryReal",
+	// 	LastName:   "Human",
+	// 	Bio:		"Like doing human stuff",
+	// 	Username:	"xxRealHuman",
+	// }
+
+	// testUser.addUser()
 }
 
 func setAuth0Variables() {
@@ -160,4 +173,30 @@ func getPostData(post_id int) string {
 	}
 	db.Close()
 	return data
+}
+
+
+
+func (u User) addUser() {
+	
+	dsn := "root:mysql@tcp(127.0.0.1:3306)/capstone"
+
+	// Open a connection to the database
+	db, err := sql.Open("mysql", dsn)
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+
+	// Ping the database to verify the connection is alive
+	err = db.Ping()
+	if err != nil {
+		panic(err)
+	}
+	query :="INSERT INTO users (first_name, last_name, bio, username) VALUES (?, ?, ?, ?)"
+
+	res, err := db.Exec(query, u.FirstName, u.LastName, u.Bio, u.Username)
+	log.Println("WE IN HERE")
+	log.Println(res)
+	log.Println(err)
 }

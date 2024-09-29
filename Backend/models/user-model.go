@@ -6,4 +6,5 @@ type User struct {
 	LastName  string `json:"lastName"`
 	Username  string `json:"username"`
 	Bio       string `json:"bio"`
+
 }
