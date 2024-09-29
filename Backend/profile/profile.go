@@ -1,8 +1,12 @@
 package profile
 
 import (
+	"database/sql"
 	"fmt"
+	// "log"
 	"sync"
+
+	_ "github.com/go-sql-driver/mysql"
 
 	"fakebook.com/project/models"
 )
@@ -10,11 +14,35 @@ import (
 var (
 	list []models.User
 	mtx  sync.RWMutex
-	once sync.Once
+	onceList sync.Once
+	onceDB sync.Once
+	db *sql.DB
 )
 
 func init() {
-	once.Do(initializeList)
+	onceDB.Do(initializeDB)
+	onceList.Do(initializeList)
+}
+
+func initializeDB(){
+
+	dsn := "root:mysql@tcp(127.0.0.1:3306)/capstone"
+
+	var err error
+	// Open a connection to the database
+	db, err = sql.Open("mysql", dsn)
+
+	if err != nil {
+		fmt.Print("are we in here?")
+		panic(err)
+	}
+
+
+	// Ping the database to verify the connection is alive
+	err = db.Ping()
+	if err != nil {
+		panic(err)
+	}
 }
 
 func initializeList() {
@@ -75,11 +103,22 @@ func GetOneUserByUsername(username string) models.User {
 	return returnUser
 }
 
-func AddNewUser(newUser models.User) bool {
+func AddNewUser(newUser models.User) error {
+
+	//todo disallow email duplicates
 	fmt.Println(newUser)
-	// add code to send newUser to database here
-	return true
+
+	query :="INSERT INTO users (first_name, last_name, bio, username) VALUES (?, ?, ?, ?)"
+
+	_, err := db.Exec(query, newUser.FirstName, newUser.LastName, newUser.Bio, newUser.Username)
+
+	db.Close()
+
+	return err
+
+
 }
+
 
 
 /*
