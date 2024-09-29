@@ -19,7 +19,7 @@ import (
 
 	"fakebook.com/project/handlers"
 	"fakebook.com/project/models"
-	"fakebook.com/project/profile"
+	// "fakebook.com/project/profile"
 	"github.com/auth0-community/go-auth0"
 	"github.com/gin-gonic/gin"
 	jose "gopkg.in/square/go-jose.v2"
@@ -37,15 +37,7 @@ func main() {
 
 	r := gin.Default()
 	// r.Use(CORSMiddleware())
-	testUser := User{
-		FirstName:  "VeryReal",
-		LastName:   "Human",
-		Bio:		"Like doing human stuff",
-		Username:	"xxRealHuman",
-	}
-	log.Println(testUser)
-	error := profile.AddNewUser(models.User(testUser))
-	log.Println(error)
+
 
 	// This will ensure that the angular files are served correctly
 	r.NoRoute(func(c *gin.Context) {
@@ -73,8 +65,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
-
 
 
 }

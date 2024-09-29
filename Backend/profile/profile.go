@@ -3,6 +3,8 @@ package profile
 import (
 	"database/sql"
 	"fmt"
+	"log"
+
 	// "log"
 	"sync"
 
@@ -77,6 +79,30 @@ func initializeList() {
 	}
 }
 
+// list will instead be populated from DB if the code below in uncommented.
+
+// func initializeList() {
+
+// 	rows, err := db.Query("SELECT id, first_name, last_name, username FROM users")
+// 	if err != nil{
+// 		log.Println(err)
+// 	}
+// 	defer rows.Close()
+
+// 	for rows.Next(){
+// 		var user models.User
+
+// 		err = rows.Scan(&user.Id, &user.FirstName, &user.LastName, &user.Username)
+// 		if err != nil {
+// 			panic(err)
+// 		}
+
+// 		log.Println(user)
+// 		list = append(list,user)
+// 	}
+
+// }
+
 func Get() []models.User {
 	return list
 }
@@ -112,11 +138,7 @@ func AddNewUser(newUser models.User) error {
 
 	_, err := db.Exec(query, newUser.FirstName, newUser.LastName, newUser.Bio, newUser.Username)
 
-	db.Close()
-
 	return err
-
-
 }
 
 
