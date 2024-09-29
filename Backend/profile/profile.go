@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 
-	// "log"
 	"sync"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -47,91 +46,96 @@ func initializeDB(){
 	}
 }
 
-func initializeList() {
-	// this is simply a placeholder, and to show functionality of requests
-	// in the future, we probably would not even need this
-	list = []models.User{
-		{
-			Id:        0,
-			FirstName: "Melissa",
-			LastName:  "Brown",
-			Username:  "melissa.cat.brown02@gmail.com",
-		},
-		{
-			Id:        1,
-			FirstName: "Avery",
-			LastName:  "Tribbett",
-			Username:  "averytribbett",
-		},
-		{
-			Id:        2,
-			FirstName: "Cade",
-			LastName:  "Becker",
-			Username:  "cadegithub",
-		},
-		{
-			Id:        3,
-			FirstName: "Youssef",
-			LastName:  "Ibrahim",
-			Username:  "youssefgithub",
-
-		},
-	}
-}
-
-// list will instead be populated from DB if the code below in uncommented.
-
 // func initializeList() {
+// 	// this is simply a placeholder, and to show functionality of requests
+// 	// in the future, we probably would not even need this
+// 	list = []models.User{
+// 		{
+// 			Id:        0,
+// 			FirstName: "Melissa",
+// 			LastName:  "Brown",
+// 			Username:  "melissa.cat.brown02@gmail.com",
+// 		},
+// 		{
+// 			Id:        1,
+// 			FirstName: "Avery",
+// 			LastName:  "Tribbett",
+// 			Username:  "averytribbett",
+// 		},
+// 		{
+// 			Id:        2,
+// 			FirstName: "Cade",
+// 			LastName:  "Becker",
+// 			Username:  "cadegithub",
+// 		},
+// 		{
+// 			Id:        3,
+// 			FirstName: "Youssef",
+// 			LastName:  "Ibrahim",
+// 			Username:  "youssefgithub",
 
-// 	rows, err := db.Query("SELECT id, first_name, last_name, username FROM users")
-// 	if err != nil{
-// 		log.Println(err)
+// 		},
 // 	}
-// 	defer rows.Close()
-
-// 	for rows.Next(){
-// 		var user models.User
-
-// 		err = rows.Scan(&user.Id, &user.FirstName, &user.LastName, &user.Username)
-// 		if err != nil {
-// 			panic(err)
-// 		}
-
-// 		log.Println(user)
-// 		list = append(list,user)
-// 	}
-
 // }
+
+// list wil instead be populated from DB if the code below in uncommented.
+
+func initializeList() {
+
+	rows, err := db.Query("SELECT id, first_name, last_name, username, bio FROM users")
+	if err != nil{
+		log.Println(err)
+	}
+	defer rows.Close()
+
+	for rows.Next(){
+		var user models.User
+
+		err = rows.Scan(&user.Id, &user.FirstName, &user.LastName, &user.Username, &user.Bio)
+		if err != nil {
+			panic(err)
+		}
+
+		log.Println(user)
+		list = append(list,user)
+	}
+
+}
 
 func Get() []models.User {
 	return list
 }
 
-func GetOneUser(userId int) models.User { // will return one user
+func GetOneUser(userId int) models.User {
+
 	var returnUser models.User
-	// replace lines 58-62 with call to database, this function might be obsolete eventually
-	for _, user := range list {
-		if user.Id == userId {
-			returnUser = user
-		}
+
+	err := db.QueryRow("SELECT id, first_Name, last_name, username, bio FROM users WHERE id = ?", userId).Scan(&returnUser.Id, &returnUser.FirstName, &returnUser.LastName, &returnUser.Username, &returnUser.Bio)
+
+
+	if err != nil{
+		log.Println(err)
 	}
+
 	return returnUser
 }
 
 func GetOneUserByUsername(username string) models.User {
+	
 	var returnUser models.User
-	// replace lines 69-73 with calls to database
-	for _, user := range list {
-		if user.Username == username {
-			returnUser = user
-		}
+
+	err := db.QueryRow("SELECT id, first_Name, last_name, username, bio FROM users WHERE username = ?", username).Scan(&returnUser.Id, &returnUser.FirstName, &returnUser.LastName, &returnUser.Username, &returnUser.Bio)
+
+
+	if err != nil{
+		log.Println(err)
 	}
+
 	return returnUser
 }
 
 func AddNewUser(newUser models.User) error {
 
-	//todo disallow email duplicates
 	fmt.Println(newUser)
 
 	query :="INSERT INTO users (first_name, last_name, bio, username) VALUES (?, ?, ?, ?)"
@@ -145,6 +149,13 @@ func AddNewUser(newUser models.User) error {
 
 /*
 endpoint ideas for a user profile:
+
+Tdo:
+1. emails/usernames need to be uinque
+2. change to prepared statements
+3. do rows need to be closed?
+4. does the DB need to be closed
+5. more descriptive errors
 
 Requirements:
 1. getFriendList
