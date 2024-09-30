@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"os"
 
 	"sync"
 
@@ -26,8 +27,11 @@ func init() {
 }
 
 func initializeDB(){
+	dbName := os.Getenv("DB_NAME")
+	dbPass := os.Getenv("DB_PASS")
+	dbHost := os.Getenv("DB_HOST")
 
-	dsn := "root:mysql@tcp(127.0.0.1:3306)/capstone"
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:3306)/capstone",dbName,dbPass,dbHost)
 
 	var err error
 	// Open a connection to the database
@@ -46,61 +50,61 @@ func initializeDB(){
 	}
 }
 
-func initializeList() {
-	// this is simply a placeholder, and to show functionality of requests
-	// in the future, we probably would not even need this
-	list = []models.User{
-		{
-			Id:        0,
-			FirstName: "Melissa",
-			LastName:  "Brown",
-			Username:  "melissa.cat.brown02@gmail.com",
-		},
-		{
-			Id:        1,
-			FirstName: "Avery",
-			LastName:  "Tribbett",
-			Username:  "averytribbett",
-		},
-		{
-			Id:        2,
-			FirstName: "Cade",
-			LastName:  "Becker",
-			Username:  "cadegithub",
-		},
-		{
-			Id:        3,
-			FirstName: "Youssef",
-			LastName:  "Ibrahim",
-			Username:  "youssefgithub",
+// func initializeList() {
+// 	// this is simply a placeholder, and to show functionality of requests
+// 	// in the future, we probably would not even need this
+// 	list = []models.User{
+// 		{
+// 			Id:        0,
+// 			FirstName: "Melissa",
+// 			LastName:  "Brown",
+// 			Username:  "melissa.cat.brown02@gmail.com",
+// 		},
+// 		{
+// 			Id:        1,
+// 			FirstName: "Avery",
+// 			LastName:  "Tribbett",
+// 			Username:  "averytribbett",
+// 		},
+// 		{
+// 			Id:        2,
+// 			FirstName: "Cade",
+// 			LastName:  "Becker",
+// 			Username:  "cadegithub",
+// 		},
+// 		{
+// 			Id:        3,
+// 			FirstName: "Youssef",
+// 			LastName:  "Ibrahim",
+// 			Username:  "youssefgithub",
 
-		},
-	}
-}
+// 		},
+// 	}
+// }
 
 // list wil instead be populated from DB if the code below in uncommented.
 
-// func initializeList() {
+func initializeList() {
 
-// 	rows, err := db.Query("SELECT id, first_name, last_name, username, bio FROM users")
-// 	if err != nil{
-// 		log.Println(err)
-// 	}
-// 	defer rows.Close()
+	rows, err := db.Query("SELECT id, first_name, last_name, username, bio FROM users")
+	if err != nil{
+		log.Println(err)
+	}
+	defer rows.Close()
 
-// 	for rows.Next(){
-// 		var user models.User
+	for rows.Next(){
+		var user models.User
 
-// 		err = rows.Scan(&user.Id, &user.FirstName, &user.LastName, &user.Username, &user.Bio)
-// 		if err != nil {
-// 			panic(err)
-// 		}
+		err = rows.Scan(&user.Id, &user.FirstName, &user.LastName, &user.Username, &user.Bio)
+		if err != nil {
+			panic(err)
+		}
 
-// 		log.Println(user)
-// 		list = append(list,user)
-// 	}
+		log.Println(user)
+		list = append(list,user)
+	}
 
-// }
+}
 
 func Get() []models.User {
 	return list
