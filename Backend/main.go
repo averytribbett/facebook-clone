@@ -6,20 +6,17 @@ I have the proxy-conf.json file connecting them at the moment
 package main
 
 import (
-	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"path"
 	"path/filepath"
-	"strconv"
 
 	_ "github.com/go-sql-driver/mysql"
 
 	"fakebook.com/project/handlers"
 	"fakebook.com/project/models"
-	// "fakebook.com/project/profile"
 	"github.com/auth0-community/go-auth0"
 	"github.com/gin-gonic/gin"
 	jose "gopkg.in/square/go-jose.v2"
@@ -117,56 +114,5 @@ func CORSMiddleware() gin.HandlerFunc {
 	}
 }
 
-// function to get all data from a given post ID
-// takes input: post_id (int) and outputs: post data (string)
-func getPostData(post_id int) string {
-	dsn := "root:mysql@tcp(127.0.0.1:3306)/capstone"
 
-	// Open a connection to the database
-	db, err := sql.Open("mysql", dsn)
-	if err != nil {
-		panic(err)
-	}
-	defer db.Close()
-
-	// Ping the database to verify the connection is alive
-	err = db.Ping()
-	if err != nil {
-		panic(err)
-	}
-
-	// sql query
-	query := "SELECT posts.post_id, posts.post_text, users.username AS post_author, users.first_name AS post_author_first_name, users.last_name AS post_author_last_name, repliers.first_name AS reply_first_name, repliers.last_name AS reply_last_name, replies.reply_text FROM posts JOIN users ON posts.user_id = users.id LEFT JOIN reactions ON posts.post_id = reactions.post_id LEFT JOIN users AS repliers ON reactions.user_id = repliers.id LEFT JOIN replies ON posts.post_id = replies.post_id LEFT JOIN users AS reply_users ON replies.user_id = reply_users.id WHERE posts.post_id=\"" + strconv.Itoa(post_id) + "\"ORDER BY posts.post_id;"
-
-	// x rows of sql result
-	rows, err := db.Query(query)
-	if err != nil {
-		panic(err)
-	}
-	defer rows.Close()
-
-	// format each row of the result
-	var data string = ""
-	for rows.Next() {
-		var postID string
-		var postText string
-		var postAuthor string
-		var postAuthorFirstName string
-		var postAuthorLastName string
-		var replyFirstName string
-		var replyLastName string
-		var replyText string
-
-		err = rows.Scan(&postID, &postText, &postAuthor, &postAuthorFirstName, &postAuthorLastName, &replyFirstName, &replyLastName, &replyText)
-		if err != nil {
-			panic(err)
-		}
-
-		data = data + "postID: " + postID + "\npostText: " + postText + "\npostAuthor: " + postAuthor + "\npostAuthorFirstName: " + postAuthorFirstName +
-			"\npostAuthorLastName: " + postAuthorLastName + "\nreplyFirstName: " + replyFirstName + "\nreplyLastName: " + replyLastName +
-			"\nreplyText: " + replyText
-	}
-	db.Close()
-	return data
-}
 
