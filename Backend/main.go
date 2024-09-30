@@ -13,7 +13,10 @@ import (
 	"path"
 	"path/filepath"
 
+	_ "github.com/go-sql-driver/mysql"
+
 	"fakebook.com/project/handlers"
+	"fakebook.com/project/models"
 	"github.com/auth0-community/go-auth0"
 	"github.com/gin-gonic/gin"
 	jose "gopkg.in/square/go-jose.v2"
@@ -23,11 +26,15 @@ var (
 	audience string
 	domain   string
 )
+type User models.User
+
 
 func main() {
 	// setAuth0Variables()
+
 	r := gin.Default()
 	// r.Use(CORSMiddleware())
+
 
 	// This will ensure that the angular files are served correctly
 	r.NoRoute(func(c *gin.Context) {
@@ -55,6 +62,8 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+
 }
 
 func setAuth0Variables() {
@@ -104,3 +113,6 @@ func CORSMiddleware() gin.HandlerFunc {
 		c.Next()
 	}
 }
+
+
+
