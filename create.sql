@@ -3,7 +3,7 @@ USE capstone;
 
 -- Table: users
 CREATE TABLE users (
-    id INT PRIMARY KEY,
+    id INT PRIMARY KEY AUTO_INCREMENT,
     username VARCHAR(255) NOT NULL,
     first_name VARCHAR(255) NOT NULL,
     last_name VARCHAR(255) NOT NULL,
@@ -12,7 +12,7 @@ CREATE TABLE users (
 
 -- Table: posts
 CREATE TABLE posts (
-    post_id INT PRIMARY KEY,
+    post_id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT,
     post_text TEXT,
     FOREIGN KEY (user_id) REFERENCES users(id)
