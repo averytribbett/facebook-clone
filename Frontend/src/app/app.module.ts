@@ -15,7 +15,6 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
-import { LoginPageComponent } from './login-page/login-page.component';
 import { UserProfileComponent } from './user-profile/user-profile.component';
 import { UserFeedComponent } from './user-feed/user-feed.component';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
@@ -24,15 +23,16 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { provideAuth0 } from '@auth0/auth0-angular';
 import { environment } from 'src/environment';
 import { CreateProfileComponent } from './create-profile/create-profile.component';
+import { DeveloperPageComponent } from './developer-page/developer-page.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
-    LoginPageComponent,
     UserProfileComponent,
     UserFeedComponent,
     CreateProfileComponent,
+    DeveloperPageComponent,
   ],
   imports: [
     BrowserModule,
