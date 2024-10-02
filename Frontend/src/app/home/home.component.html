@@ -25,6 +25,10 @@
             <span>Create New Account</span>
           </button>
         </ng-template>
+        <button *ngIf="isDevelopmentEnvironment" mat-menu-item routerLink="/developer">
+          <mat-icon [ngStyle]="{'color':'orangered'}">code</mat-icon>
+          <span>Developer Menu</span>
+        </button>
       </mat-menu>
     </div>
     <!-- TODO switch to their firstName when we connect backend -->
@@ -44,7 +48,6 @@
   <!--these two buttons are just for visiblity now, we can redirect users to the appropriate pages in a different manner later on-->
 <button routerLink="/feed">user feed</button>
 <button routerLink="/profile">user profile</button>
-<button (click)="showCreateProfilePage()">Create new user (test only)</button>
 </div>
 
 <app-create-profile *ngIf="shouldShowCreateProfile" [currentUser]="currentLoggedInUser" (myEmitter$)="switchToHomeView()"></app-create-profile>
