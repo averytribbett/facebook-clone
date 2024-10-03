@@ -10,7 +10,13 @@ import (
 func main() {
 	println("get by post num: \n")
 	test := getPostData(1)
-	println(test)
+	println(test + "\n\n\n")
+
+	println("get by post user: \n")
+	var test2 []string
+	test2 = getUserPosts(0)
+	displayPost(test2)
+	print("\n\n\n")
 
 	initialPostCount := 3
 
@@ -21,6 +27,7 @@ func main() {
 	displayPost(testarr)
 	testarr = feedByRandom(testdupe)
 	displayPost(testarr)
+	print("\n\n\n")
 
 	println("\n\n\nStarting time sort: \n")
 
