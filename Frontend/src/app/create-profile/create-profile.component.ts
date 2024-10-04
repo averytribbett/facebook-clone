@@ -2,9 +2,11 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { UserModel } from 'src/models/user-model';
 import { UserServiceService } from 'src/services/user-service.service';
+import { MatDialog} from '@angular/material/dialog';
 import {MatButton} from '@angular/material/button';
 import {MatTooltip} from '@angular/material/tooltip';
 import { AuthService } from '@auth0/auth0-angular';
+import { ProfileIncompleteWarningComponent } from './profile-incomplete-warning/profile-incomplete-warning.component';
 
 @Component({
   selector: 'app-create-profile',
@@ -16,7 +18,11 @@ export class CreateProfileComponent {
   @Output() myEmitter$ = new EventEmitter<boolean>();
   public createProfileForm: FormGroup = new FormGroup({});
 
-  constructor(private userService: UserServiceService, public auth: AuthService){}
+  constructor(
+    private userService: UserServiceService,
+    public auth: AuthService,
+    public dialogRef: MatDialog
+  ){}
   
   ngOnInit(): void {
     this.initForm();
@@ -44,11 +50,23 @@ export class CreateProfileComponent {
 
     this.userService.addNewUser(userToSend).subscribe(result => {
       console.log('the result: ', result);
-      this.showHomePage();
     });
   }
 
-  public showHomePage(): void {
+  public openProfileIncompleteDialog(): void {
+    const myDialog = this.dialogRef.open(ProfileIncompleteWarningComponent, {
+      width: '250px',
+      disableClose: true,
+    });
+    myDialog.afterClosed().subscribe((result) => {
+      this.dialogRef.closeAll();
+      if (result) {
+        this.confirmReturnHome();
+      }
+    });
+  }
+
+  public confirmReturnHome(): void {
     this.myEmitter$.emit(true);
   }
 

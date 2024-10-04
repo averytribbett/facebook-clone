@@ -67,6 +67,7 @@ export class HomeComponent {
   switchToHomeView(): void {
     this.shouldShowHomePage = true;
     this.shouldShowCreateProfile = false;
+    this.logout();
   }
 
   showCreateProfilePage(): void {

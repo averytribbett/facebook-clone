@@ -11,6 +11,7 @@ import { HttpClientModule } from '@angular/common/http';
 import {MatSelectModule} from '@angular/material/select';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatDialogModule} from '@angular/material/dialog';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -24,6 +25,7 @@ import { provideAuth0 } from '@auth0/auth0-angular';
 import { environment } from 'src/environment';
 import { CreateProfileComponent } from './create-profile/create-profile.component';
 import { DeveloperPageComponent } from './developer-page/developer-page.component';
+import { ProfileIncompleteWarningComponent } from './create-profile/profile-incomplete-warning/profile-incomplete-warning.component';
 
 @NgModule({
   declarations: [
@@ -33,6 +35,7 @@ import { DeveloperPageComponent } from './developer-page/developer-page.componen
     UserFeedComponent,
     CreateProfileComponent,
     DeveloperPageComponent,
+    ProfileIncompleteWarningComponent
   ],
   imports: [
     BrowserModule,
@@ -52,6 +55,7 @@ import { DeveloperPageComponent } from './developer-page/developer-page.componen
     MatSelectModule,
     MatInputModule,
     MatFormFieldModule,
+    MatDialogModule
   ],
   providers: [
     provideAuth0({
