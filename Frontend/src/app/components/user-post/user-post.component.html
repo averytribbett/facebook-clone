@@ -1,0 +1,35 @@
+<mat-card class="user-post">
+  <div class="post-header">
+    <img
+      class="user-avatar"
+      alt="User Avatar"
+      [src]="userAvatar"
+    />
+    <p class="user-name">{{ userFirstName }} {{ userLastName }}</p>
+  </div>
+  <div class="post-body">
+    <p class="post-text">
+      {{ postText }}
+    </p>
+    <div class="divider"></div>
+    <div class="post-details">
+      <div class="post-details-row">
+        <span>{{ likes }} Likes</span>
+      </div>
+      <div class="post-details-row">
+        <a (click)="openComments()">{{ comments }} Comments</a>
+      </div>
+    </div>
+    <div class="divider"></div>
+  </div>
+  <div class="post-footer">
+    <button (click)="reactToPost('like')" class="interaction-row">
+      <mat-icon class="icon">thumb_up_off_alt</mat-icon>
+      <p>Like</p>
+    </button>
+    <button (click)="openCommentInput()" class="interaction-row">
+      <mat-icon class="icon">chat_bubble_outline</mat-icon>
+      <p>Comment</p>
+    </button>
+  </div>
+</mat-card>
