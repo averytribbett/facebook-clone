@@ -10,35 +10,36 @@ import (
 func main() {
 	println("get by post num: \n")
 	test := getPostData(1)
-	println(test + "\n\n\n")
+	displayPost(test)
+	println("\n\n\n")
 
 	println("get by post user: \n")
-	var test2 []string
-	test2 = getUserPosts(0)
-	displayPost(test2)
+	var test2 [][]string
+	test2 = getUserPosts(1)
+	displayPostArr(test2)
 	print("\n\n\n")
 
 	initialPostCount := 3
 
 	println("\n\n\nStarting random sort: \n")
-	var testarr []string
+	var testarr [][]string
 	var testdupe []int
 	testarr, testdupe = initialFeedByRandom(initialPostCount)
-	displayPost(testarr)
+	displayPostArr(testarr)
 	testarr = feedByRandom(testdupe)
-	displayPost(testarr)
+	displayPostArr(testarr)
 	print("\n\n\n")
 
 	println("\n\n\nStarting time sort: \n")
 
-	testarr = initialFeedByTime(initialPostCount)
-	displayPost(testarr)
+	arrarr := initialFeedByTime(initialPostCount)
+	displayPostArr(arrarr)
 	testarr = feedByTime(initialPostCount)
-	displayPost(testarr)
+	displayPostArr(testarr)
 }
 
 // func to get individual post
-func getPostData(post_id int) string {
+func getPostData(post_id int) []string {
 	dsn := "capstone:csc450@tcp(71.89.73.28:3306)/capstone"
 
 	// Open a connection to the database
@@ -65,7 +66,7 @@ func getPostData(post_id int) string {
 	defer rows.Close()
 
 	// format each row of the result
-	data := ""
+	var data []string
 	for rows.Next() {
 		var postID string
 		var postText string
@@ -79,18 +80,21 @@ func getPostData(post_id int) string {
 			panic(err)
 		}
 
-		data = "postID: " + postID + "\npostText: " + postText + "\npostAuthor: " + postAuthor + "\npostAuthorFirstName: " + postAuthorFirstName +
-			"\npostAuthorLastName: " + postAuthorLastName
+		data = append(data, postID)
+		data = append(data, postText)
+		data = append(data, postAuthor)
+		data = append(data, postAuthorFirstName)
+		data = append(data, postAuthorLastName)
 	}
 	db.Close()
 	return data
 }
 
 // func to get all the posts from a user
-func getUserPosts(user_id int) []string {
+func getUserPosts(user_id int) [][]string {
 	dsn := "capstone:csc450@tcp(71.89.73.28:3306)/capstone"
 	// arr of posts
-	var data []string
+	var data [][]string
 
 	// Open a connection to the database
 	db, err := sql.Open("mysql", dsn)
@@ -129,19 +133,75 @@ func getUserPosts(user_id int) []string {
 			panic(err)
 		}
 
-		// format and append to post array
-		str := "postID: " + postID + "\npostText: " + postText + "\npostAuthor: " + postAuthor + "\npostAuthorFirstName: " + postAuthorFirstName +
-			"\npostAuthorLastName: " + postAuthorLastName
-		data = append(data, str)
+		var tempArr []string
+		tempArr = append(tempArr, postID)
+		tempArr = append(tempArr, postText)
+		tempArr = append(tempArr, postAuthor)
+		tempArr = append(tempArr, postAuthorFirstName)
+		tempArr = append(tempArr, postAuthorLastName)
+		data = append(data, tempArr)
 	}
 	db.Close()
 	return data
 }
 
 // func to initialize feed by time sort
-func initialFeedByTime(numOfPosts int) []string {
+func initialFeedByTime(numOfPosts int) [][]string {
 	dsn := "capstone:csc450@tcp(71.89.73.28:3306)/capstone"
-	var data []string
+	var data [][]string
+
+	// Open a connection to the database
+	db, err := sql.Open("mysql", dsn)
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+
+	// Ping the database to verify the connection is alive
+	err = db.Ping()
+	if err != nil {
+		panic(err)
+	}
+
+	// sql query
+	query := "SELECT posts.post_id, posts.post_text, users.username AS post_author, users.first_name AS post_author_first_name, users.last_name AS post_author_last_name FROM posts JOIN users ON posts.user_id = users.id LEFT JOIN reactions ON posts.post_id = reactions.post_id ORDER BY posts.post_id DESC;"
+
+	// x rows of sql result
+	rows, err := db.Query(query)
+	if err != nil {
+		panic(err)
+	}
+	defer rows.Close()
+
+	// format each row of the result
+	for rows.Next() {
+		var postID string
+		var postText string
+		var postAuthor string
+		var postAuthorFirstName string
+		var postAuthorLastName string
+
+		// scan result and set the values to each variable
+		err = rows.Scan(&postID, &postText, &postAuthor, &postAuthorFirstName, &postAuthorLastName)
+		if err != nil {
+			panic(err)
+		}
+		var tempArr []string
+		tempArr = append(tempArr, postID)
+		tempArr = append(tempArr, postText)
+		tempArr = append(tempArr, postAuthor)
+		tempArr = append(tempArr, postAuthorFirstName)
+		tempArr = append(tempArr, postAuthorLastName)
+		data = append(data, tempArr)
+	}
+	db.Close()
+	return data
+}
+
+// func to sort feed by post time
+func feedByTime(numOfPosts int) [][]string {
+	dsn := "capstone:csc450@tcp(71.89.73.28:3306)/capstone"
+	var data [][]string
 
 	// Open a connection to the database
 	db, err := sql.Open("mysql", dsn)
@@ -166,57 +226,6 @@ func initialFeedByTime(numOfPosts int) []string {
 	}
 	defer rows.Close()
 
-	// format each row of the result
-	for rows.Next() {
-		var postID string
-		var postText string
-		var postAuthor string
-		var postAuthorFirstName string
-		var postAuthorLastName string
-
-		// scan result and set the values to each variable
-		err = rows.Scan(&postID, &postText, &postAuthor, &postAuthorFirstName, &postAuthorLastName)
-		if err != nil {
-			panic(err)
-		}
-
-		// format and append to post array
-		str := "postID: " + postID + "\npostText: " + postText + "\npostAuthor: " + postAuthor + "\npostAuthorFirstName: " + postAuthorFirstName +
-			"\npostAuthorLastName: " + postAuthorLastName
-		data = append(data, str)
-	}
-	db.Close()
-	return data
-}
-
-// func to sort feed by post time
-func feedByTime(numOfPosts int) []string {
-	dsn := "capstone:csc450@tcp(71.89.73.28:3306)/capstone"
-	var data []string
-
-	// Open a connection to the database
-	db, err := sql.Open("mysql", dsn)
-	if err != nil {
-		panic(err)
-	}
-	defer db.Close()
-
-	// Ping the database to verify the connection is alive
-	err = db.Ping()
-	if err != nil {
-		panic(err)
-	}
-
-	// sql query
-	query := "SELECT posts.post_id, posts.post_text, users.username AS post_author, users.first_name AS post_author_first_name, users.last_name AS post_author_last_name FROM posts JOIN users ON posts.user_id = users.id LEFT JOIN reactions ON posts.post_id = reactions.post_id ORDER BY posts.post_id DESC LIMIT 10;"
-
-	// x rows of sql result
-	rows, err := db.Query(query)
-	if err != nil {
-		panic(err)
-	}
-	defer rows.Close()
-
 	// skip first x posts (+1 because post starts from 1)
 	for i := 1; i < numOfPosts+1; i++ {
 		rows.Next()
@@ -229,26 +238,25 @@ func feedByTime(numOfPosts int) []string {
 		var postAuthor string
 		var postAuthorFirstName string
 		var postAuthorLastName string
+		println(postID, postText, postAuthor, postAuthorFirstName, postAuthorLastName, "qwdqwd")
 
-		// scan result and set the values to each variable
-		err = rows.Scan(&postID, &postText, &postAuthor, &postAuthorFirstName, &postAuthorLastName)
-		if err != nil {
-			panic(err)
-		}
-
-		// format and append to post array
-		str := "postID: " + postID + "\npostText: " + postText + "\npostAuthor: " + postAuthor + "\npostAuthorFirstName: " + postAuthorFirstName +
-			"\npostAuthorLastName: " + postAuthorLastName
-		data = append(data, str)
+		var tempArr []string
+		tempArr = append(tempArr, postID)
+		tempArr = append(tempArr, postText)
+		tempArr = append(tempArr, postAuthor)
+		tempArr = append(tempArr, postAuthorFirstName)
+		tempArr = append(tempArr, postAuthorLastName)
+		data = append(data, tempArr)
+		print(data)
 	}
 	db.Close()
 	return data
 }
 
 // func to initialize feed for random sorting
-func initialFeedByRandom(numOfPosts int) ([]string, []int) {
+func initialFeedByRandom(numOfPosts int) ([][]string, []int) {
 	dsn := "capstone:csc450@tcp(71.89.73.28:3306)/capstone"
-	var data []string
+	var data [][]string
 	var usedPosts []int
 
 	// Open a connection to the database
@@ -296,10 +304,13 @@ func initialFeedByRandom(numOfPosts int) ([]string, []int) {
 		}
 		usedPosts = append(usedPosts, add)
 
-		// format and append to post array
-		str := "postID: " + postID + "\npostText: " + postText + "\npostAuthor: " + postAuthor + "\npostAuthorFirstName: " + postAuthorFirstName +
-			"\npostAuthorLastName: " + postAuthorLastName
-		data = append(data, str)
+		var tempArr []string
+		tempArr = append(tempArr, postID)
+		tempArr = append(tempArr, postText)
+		tempArr = append(tempArr, postAuthor)
+		tempArr = append(tempArr, postAuthorFirstName)
+		tempArr = append(tempArr, postAuthorLastName)
+		data = append(data, tempArr)
 	}
 	db.Close()
 	// return the x posts used and also the array of used posts so they arent printed again
@@ -307,9 +318,9 @@ func initialFeedByRandom(numOfPosts int) ([]string, []int) {
 }
 
 // func to sort feed by random
-func feedByRandom(exclude []int) []string {
+func feedByRandom(exclude []int) [][]string {
 	dsn := "capstone:csc450@tcp(71.89.73.28:3306)/capstone"
-	var data []string
+	var data [][]string
 
 	// map of used posts (used to skip posts that have already been printed)
 	used := make(map[int]int)
@@ -359,21 +370,21 @@ func feedByRandom(exclude []int) []string {
 		if err != nil {
 			panic(err)
 		}
-		// we need to take the value to get to the existence check, the value is not needed
-		value, exists := used[currID]
+		// get to the existence check
+		_, exists := used[currID]
 
 		// if key exists in map, skip
 		if exists {
 			continue
 		}
 
-		// this line is needed to not have an error when checking if key exists in map
-		value += 0
-
-		// format and append to post array
-		str := "postID: " + postID + "\npostText: " + postText + "\npostAuthor: " + postAuthor + "\npostAuthorFirstName: " + postAuthorFirstName +
-			"\npostAuthorLastName: " + postAuthorLastName
-		data = append(data, str)
+		var tempArr []string
+		tempArr = append(tempArr, postID)
+		tempArr = append(tempArr, postText)
+		tempArr = append(tempArr, postAuthor)
+		tempArr = append(tempArr, postAuthorFirstName)
+		tempArr = append(tempArr, postAuthorLastName)
+		data = append(data, tempArr)
 	}
 	db.Close()
 	return data
@@ -383,5 +394,14 @@ func feedByRandom(exclude []int) []string {
 func displayPost(posts []string) {
 	for i := 0; i < len(posts); i++ {
 		println(posts[i] + "\n")
+	}
+}
+
+// func to display posts
+func displayPostArr(posts [][]string) {
+	for i := 0; i < len(posts); i++ {
+		for j := 0; j < len(posts[i]); j++ {
+			println(posts[i][j])
+		}
 	}
 }
