@@ -26,6 +26,7 @@ import { environment } from 'src/environment';
 import { CreateProfileComponent } from './create-profile/create-profile.component';
 import { DeveloperPageComponent } from './developer-page/developer-page.component';
 import { ProfileIncompleteWarningComponent } from './create-profile/profile-incomplete-warning/profile-incomplete-warning.component';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 @NgModule({
   declarations: [
@@ -55,7 +56,8 @@ import { ProfileIncompleteWarningComponent } from './create-profile/profile-inco
     MatSelectModule,
     MatInputModule,
     MatFormFieldModule,
-    MatDialogModule
+    MatDialogModule,
+    MatAutocompleteModule
   ],
   providers: [
     provideAuth0({

@@ -5,6 +5,23 @@
         <mat-icon class="iconClass">menu</mat-icon>
       </button>
       <span>Welcome to Fakebook (TM)</span>
+      <form id="searchFriend">
+        <mat-form-field>
+          <input type="text"
+               placeholder="Search for a friend..."
+               matInput
+               [formControl]="myControl"
+               [matAutocomplete]="auto">
+        <mat-autocomplete #auto="matAutocomplete">
+          <mat-option *ngFor="let option of (filteredOptions | async)" [value]="option">
+            {{ option }}
+          </mat-option>
+          <!-- <mat-option *ngFor="let option of friendList" [value]="option">
+            {{ option }}
+          </mat-option> -->
+        </mat-autocomplete>
+      </mat-form-field>
+      </form>
       <span class="example-spacer"></span>
       <mat-menu #menu="matMenu">
         <button mat-menu-item>
@@ -53,6 +70,3 @@
 <app-create-profile *ngIf="shouldShowCreateProfile" [currentUser]="currentLoggedInUser" (myEmitter$)="switchToHomeView()"></app-create-profile>
 
 <footer id="footer">Not affiliated with any other corporation involving books of faces (TM) not sure if we need a footer but here is one we could modify</footer>
-
-
-
