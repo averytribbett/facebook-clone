@@ -1,12 +1,42 @@
-<h1>Welcome to your FakeBook(TM) Profile</h1>
-<h2>First name</h2>
-<p> {{ selectedUser.firstName }} </p>
-<h2>Last name</h2>
-<p> {{ selectedUser.lastName }} </p>
-<h2>Username</h2>
-<p> {{ selectedUser.username }} </p>
-<h2>Bio</h2>
-<p> {{ selectedUser.bio }} </p>
+<mat-card appearance="raised" id="mainCard">
+  <mat-toolbar>
+    <button mat-icon-button class="example-icon" [matMenuTriggerFor]="menu" aria-label="Example icon-button with menu icon">
+      <mat-icon [ngStyle]="{'color':'orangered'}">menu</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu">
+      <button mat-menu-item>
+        <mat-icon [ngStyle]="{'color':'orangered'}" (click)="logout()">logout</mat-icon>
+        <span>Logout</span>
+      </button>
+      <button mat-menu-item (click)="backToHome()">
+        <mat-icon [ngStyle]="{'color':'orangered'}">home</mat-icon>
+        <span>Home</span>
+      </button>
+    </mat-menu>
+  </mat-toolbar>
+  <mat-card-title>{{ selectedUser.firstName}} {{ selectedUser.lastName}}</mat-card-title>
+  <mat-card-subtitle> {{ selectedUser.username }}</mat-card-subtitle>
+  <mat-card-content> {{selectedUser.bio}}</mat-card-content>
+  <mat-card-actions>
+    <button mat-stroked-button (click)="showFeedCard()">Feed</button>
+    <button mat-stroked-button (click)="showFriendCard()">Friends</button>
+  </mat-card-actions>
+</mat-card>
+
+<div *ngIf="shouldShowProfileFeed">
+  <h1>Feed</h1>
+  <div *ngFor="let post of fakePosts">
+    <mat-card  appearance="raised">
+      <mat-card-content>{{ post }}</mat-card-content>
+      <label>reply!</label>
+      <input type="text">
+      <button>reply</button>
+    </mat-card>
+  </div>
+</div>
+<mat-card *ngIf="shouldShowFriendList" appearance="raised">
+  <mat-card-title>Friend list</mat-card-title>
+</mat-card>
 
 <select [(ngModel)]="selectedUser" (change)="changeSelectedUser($event)">
     <option *ngFor="let user of availableUsers" [value]="user.username">
@@ -19,4 +49,4 @@
   <input type="text" [(ngModel)]="currentSearchUser">
 </div>
 <button (click)="searchForUser()">Search for user</button>
-<button routerLink="/">Back to Home</button>
+<button (click)="backToHome()">Back to Home</button>

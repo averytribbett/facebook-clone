@@ -20,6 +20,7 @@ export class HomeComponent {
   public currentLoggedInUser: string = "";
   public isDevelopmentEnvironment = !environment.production;
   public searchTerm: string = "";
+  public isLoggedIn: boolean = false;
   public friendList: string[] = [
     "Melissa Brown",
     "Avery Tribbett",
@@ -28,6 +29,7 @@ export class HomeComponent {
   ];
   filteredOptions: Observable<string[]> = new Observable<string[]>();
   myControl = new FormControl('');
+  public shouldShowProfilePage = false;
 
   constructor (public auth: AuthService, @Inject(DOCUMENT) public document: Document, public userService: UserServiceService) {}
 
@@ -37,6 +39,7 @@ export class HomeComponent {
       // check if someone is signing up / logging in via auth0
       if (result) {
         this.currentLoggedInUser = result.name as string;
+        this.isLoggedIn = true;
 
         // check for user in database
         this.userService.getUserByUsername(this.currentLoggedInUser).subscribe(result => {
@@ -91,9 +94,10 @@ export class HomeComponent {
     });
   }
 
-  switchToHomeView(): void {
+  switchToHomeViewAndLogout(): void {
     this.shouldShowHomePage = true;
     this.shouldShowCreateProfile = false;
+    this.shouldShowProfilePage = false;
     this.logout();
   }
 
@@ -102,7 +106,18 @@ export class HomeComponent {
   }
 
   findFriend(searchString: any): void {
-    console.log('dumb shit');
-    console.log('the string: ', searchString.target.value);
+    // to add more functionality
+  }
+
+  showProfilePage(): void {
+    this.shouldShowHomePage = false;
+    this.shouldShowCreateProfile = false;
+    this.shouldShowProfilePage = true;
+  }
+
+  switchToHomeView(): void {
+    this.shouldShowHomePage = true;
+    this.shouldShowCreateProfile = false;
+    this.shouldShowProfilePage = false;
   }
 }

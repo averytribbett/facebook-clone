@@ -14,7 +14,6 @@ import (
 )
 
 var (
-	list     []models.User
 	mtx      sync.RWMutex
 	onceList sync.Once
 	onceDB   sync.Once
@@ -36,6 +35,9 @@ func initializeDB() {
 	var err error
 	// Open a connection to the database
 	db, err = sql.Open("mysql", dsn)
+
+	db.SetMaxIdleConns(0)
+	db.SetMaxOpenConns(0)
 
 	if err != nil {
 		fmt.Print("are we in here?")
@@ -84,7 +86,7 @@ func initializeDB() {
 // list wil instead be populated from DB if the code below in uncommented.
 
 func Get() []models.User {
-
+	var list []models.User
 	rows, err := db.Query("SELECT id, first_name, last_name, username, bio FROM users")
 	if err != nil {
 		log.Println(err)
@@ -101,14 +103,9 @@ func Get() []models.User {
 
 		log.Println(user)
 		list = append(list, user)
-
 	}
 	return list
 }
-
-// func Get() []models.User {
-// 	return list
-// }
 
 func GetOneUser(userId int) models.User {
 
@@ -137,17 +134,20 @@ func GetOneUserByUsername(username string) models.User {
 }
 
 func AddNewUser(newUser models.User) error {
-
-	fmt.Println(newUser)
 	var oldUser = GetOneUserByUsername(newUser.Username)
-	fmt.Println("oldUser")
-	fmt.Println(oldUser)
 
-	query := "INSERT INTO users (first_name, last_name, bio, username) VALUES (?, ?, ?, ?)"
+	if oldUser.Id == 0 {
+		query := "INSERT INTO users (first_name, last_name, bio, username) VALUES (?, ?, ?, ?)"
 
-	_, err := db.Exec(query, newUser.FirstName, newUser.LastName, newUser.Bio, newUser.Username)
+		_, err := db.Exec(query, newUser.FirstName, newUser.LastName, newUser.Bio, newUser.Username)
 
-	return err
+		fmt.Println(err)
+
+		return err
+	} else {
+		// not sure if good but, for now it gets the function to run
+		return nil
+	}
 }
 
 /*

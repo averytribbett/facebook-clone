@@ -60,8 +60,8 @@ import { UserPostComponent } from './components/user-post/user-post.component';
     MatInputModule,
     MatFormFieldModule,
     MatDialogModule,
-    MatAutocompleteModule,
-    MatCardModule
+    MatCardModule,
+    MatAutocompleteModule
   ],
   providers: [
     provideAuth0({
