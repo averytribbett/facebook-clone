@@ -65,6 +65,15 @@
   <!--these two buttons are just for visiblity now, we can redirect users to the appropriate pages in a different manner later on-->
 <button routerLink="/feed">user feed</button>
 <button routerLink="/profile">user profile</button>
+<user-post
+  [likes]="23"
+  [comments]="3"
+  [postText]="'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Voluptatem non animi alias nobis, ipsam ducimus modi neque, ad iusto hic provident temporibus! Soluta itaque provident similique asperiores, facere velit distinctio!'"
+  [userAvatar]="'https://i.redd.it/i-got-bored-so-i-decided-to-draw-a-random-image-on-the-v0-4ig97vv85vjb1.png?width=1280&format=png&auto=webp&s=7177756d1f393b6e093596d06e1ba539f723264b'"
+  [userFirstName]="'Avery'"
+  [userLastName]="'Tribbett'"
+>
+</user-post>
 </div>
 
 <app-create-profile *ngIf="shouldShowCreateProfile" [currentUser]="currentLoggedInUser" (myEmitter$)="switchToHomeView()"></app-create-profile>
