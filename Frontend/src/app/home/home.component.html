@@ -5,6 +5,20 @@
         <mat-icon class="iconClass">menu</mat-icon>
       </button>
       <span>Welcome to Fakebook (TM)</span>
+      <form id="searchFriend" *ngIf="isLoggedIn">
+        <mat-form-field>
+          <input type="text"
+               placeholder="Search for a friend..."
+               matInput
+               [formControl]="myControl"
+               [matAutocomplete]="auto">
+        <mat-autocomplete #auto="matAutocomplete">
+          <mat-option *ngFor="let option of (filteredOptions | async)" [value]="option">
+            {{ option }}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+      </form>
       <span class="example-spacer"></span>
       <mat-menu #menu="matMenu">
         <button mat-menu-item>
@@ -14,6 +28,10 @@
         <button *ngIf="auth.user$ | async as user; else loggedOutUser" mat-menu-item (click)="logout()">
           <mat-icon [ngStyle]="{'color':'orangered'}">logout</mat-icon>
           <span>Logout</span>
+        </button>
+        <button *ngIf="auth.user$ | async as user" mat-menu-item (click)="showProfilePage()">
+          <mat-icon [ngStyle]="{'color':'orangered'}">person</mat-icon>
+          <span>Profile</span>
         </button>
         <ng-template #loggedOutUser>
           <button mat-menu-item (click)="login(false)">
@@ -25,7 +43,7 @@
             <span>Create New Account</span>
           </button>
         </ng-template>
-        <button *ngIf="isDevelopmentEnvironment" mat-menu-item routerLink="/developer">
+        <button *ngIf="isDevelopmentEnvironment" mat-menu-item [routerLink]="['/developer', true]">
           <mat-icon [ngStyle]="{'color':'orangered'}">code</mat-icon>
           <span>Developer Menu</span>
         </button>
@@ -47,7 +65,7 @@
 
   <!--these two buttons are just for visiblity now, we can redirect users to the appropriate pages in a different manner later on-->
 <button routerLink="/feed">user feed</button>
-<button routerLink="/profile">user profile</button>
+<button (click)="showProfilePage()">user profile</button>
 <user-post
   [likes]="23"
   [comments]="3"
@@ -59,9 +77,12 @@
 </user-post>
 </div>
 
-<app-create-profile *ngIf="shouldShowCreateProfile" [currentUser]="currentLoggedInUser" (myEmitter$)="switchToHomeView()"></app-create-profile>
+<app-create-profile *ngIf="shouldShowCreateProfile" [currentUser]="currentLoggedInUser"
+                    (myEmitter$)="switchToHomeViewAndLogout()"
+                    (returnHome$)="switchToHomeView()"></app-create-profile>
+<app-user-profile *ngIf="shouldShowProfilePage"
+                  (backToHomeEmitter$)="switchToHomeView()"
+                  (logoutEmitter$)="switchToHomeViewAndLogout()"></app-user-profile>
 
-<footer id="footer">Not affiliated with any other corporation involving books of faces (TM) not sure if we need a footer but here is one we could modify</footer>
-
-
-
+                  <!--getting rid of footer for now because it was in the way and we can add it back later if necessary-->
+<!-- <footer id="footer">Not affiliated with any other corporation involving books of faces (TM) not sure if we need a footer but here is one we could modify</footer> -->

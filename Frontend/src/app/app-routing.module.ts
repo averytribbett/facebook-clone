@@ -11,8 +11,8 @@ const routes: Routes = [
   { path: 'home', component: HomeComponent },
   { path: 'profile', component: UserProfileComponent},
   { path: 'feed', component: UserFeedComponent},
-  { path: 'create-profile', component: CreateProfileComponent},
-  { path: 'developer', component: DeveloperPageComponent }
+  { path: 'create-profile/:currentUser/:isDeveloperMode', component: CreateProfileComponent},
+  { path: 'developer/:isDevelopmentEnvironment', component: DeveloperPageComponent }
 ];
 
 @NgModule({

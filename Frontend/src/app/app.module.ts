@@ -27,6 +27,7 @@ import { environment } from 'src/environment';
 import { CreateProfileComponent } from './create-profile/create-profile.component';
 import { DeveloperPageComponent } from './developer-page/developer-page.component';
 import { ProfileIncompleteWarningComponent } from './create-profile/profile-incomplete-warning/profile-incomplete-warning.component';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { UserPostComponent } from './components/user-post/user-post.component';
 
 @NgModule({
@@ -59,7 +60,8 @@ import { UserPostComponent } from './components/user-post/user-post.component';
     MatInputModule,
     MatFormFieldModule,
     MatDialogModule,
-    MatCardModule
+    MatCardModule,
+    MatAutocompleteModule
   ],
   providers: [
     provideAuth0({

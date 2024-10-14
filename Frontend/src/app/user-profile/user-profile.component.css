@@ -1,0 +1,21 @@
+/* button {
+    background-color: orangered;
+    margin: 10px;
+    color: white;
+} */
+
+mat-card {
+    align-items: center;
+    background-color: lightgoldenrodyellow;
+    margin: 50px;
+}
+
+mat-card-title {
+    padding: 10px;
+}
+
+#mainCard {
+    margin: 0;
+    border-bottom: 3px solid orangered;
+    box-shadow: 1px 2.5px 5px gray;
+}

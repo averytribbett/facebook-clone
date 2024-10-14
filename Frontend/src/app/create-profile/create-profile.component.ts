@@ -7,6 +7,7 @@ import {MatButton} from '@angular/material/button';
 import {MatTooltip} from '@angular/material/tooltip';
 import { AuthService } from '@auth0/auth0-angular';
 import { ProfileIncompleteWarningComponent } from './profile-incomplete-warning/profile-incomplete-warning.component';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-create-profile',
@@ -16,17 +17,24 @@ import { ProfileIncompleteWarningComponent } from './profile-incomplete-warning/
 export class CreateProfileComponent {
   @Input() currentUser: String = "";
   @Output() myEmitter$ = new EventEmitter<boolean>();
+  @Output() returnHome$ = new EventEmitter<boolean>();
   public createProfileForm: FormGroup = new FormGroup({});
+  public isDeveloperMode: boolean = false;
 
   constructor(
     private userService: UserServiceService,
     public auth: AuthService,
-    public dialogRef: MatDialog
+    public dialogRef: MatDialog,
+    private route: ActivatedRoute
+
   ){}
   
   ngOnInit(): void {
     this.initForm();
     this.disableUserNameField();
+    this.route?.params.subscribe(params => {
+      this.isDeveloperMode = params['isDeveloperMode'];
+    });
   }
 
   public initForm(): void {
@@ -46,10 +54,8 @@ export class CreateProfileComponent {
       username: this.currentUser ?? this.createProfileForm.get('username')?.value,
     } as UserModel;
 
-    console.log('auth user: ', this.auth.user$);
-
     this.userService.addNewUser(userToSend).subscribe(result => {
-      console.log('the result: ', result);
+      this.returnHome$.emit(true);
     });
   }
 
@@ -71,8 +77,6 @@ export class CreateProfileComponent {
   }
 
   public disableUserNameField(): void {
-    console.log('current user: ', this.currentUser);
-    console.log(this.currentUser !== null && this.currentUser !== "");
     if (this.currentUser !== null && this.currentUser !== "") {
       this.createProfileForm.get('username')?.disable();
     }
