@@ -1,46 +1,21 @@
-package main
+package feed
 
 import (
 	"database/sql"
+	"fmt"
+	"os"
 	"strconv"
 
 	_ "github.com/go-sql-driver/mysql"
 )
 
-func main() {
-	println("get by post num: \n")
-	test := getPostData(1)
-	displayPost(test)
-	println("\n\n\n")
-
-	println("get by post user: \n")
-	var test2 [][]string
-	test2 = getUserPosts(1)
-	displayPostArr(test2)
-	print("\n\n\n")
-
-	initialPostCount := 3
-
-	println("\n\n\nStarting random sort: \n")
-	var testarr [][]string
-	var testdupe []int
-	testarr, testdupe = initialFeedByRandom(initialPostCount)
-	displayPostArr(testarr)
-	testarr = feedByRandom(testdupe)
-	displayPostArr(testarr)
-	print("\n\n\n")
-
-	println("\n\n\nStarting time sort: \n")
-
-	arrarr := initialFeedByTime(initialPostCount)
-	displayPostArr(arrarr)
-	testarr = feedByTime(initialPostCount)
-	displayPostArr(testarr)
-}
-
 // func to get individual post
-func getPostData(post_id int) []string {
-	dsn := "capstone:csc450@tcp(71.89.73.28:3306)/capstone"
+func GetPostData(post_id int) []string {
+	dbName := os.Getenv("DB_NAME")
+	dbPass := os.Getenv("DB_PASS")
+	dbHost := os.Getenv("DB_HOST")
+
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:3306)/capstone", dbName, dbPass, dbHost)
 
 	// Open a connection to the database
 	db, err := sql.Open("mysql", dsn)
@@ -91,8 +66,12 @@ func getPostData(post_id int) []string {
 }
 
 // func to get all the posts from a user
-func getUserPosts(user_id int) [][]string {
-	dsn := "capstone:csc450@tcp(71.89.73.28:3306)/capstone"
+func GetUserPosts(user_id int) [][]string {
+	dbName := os.Getenv("DB_NAME")
+	dbPass := os.Getenv("DB_PASS")
+	dbHost := os.Getenv("DB_HOST")
+
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:3306)/capstone", dbName, dbPass, dbHost)
 	// arr of posts
 	var data [][]string
 
@@ -133,21 +112,25 @@ func getUserPosts(user_id int) [][]string {
 			panic(err)
 		}
 
-		var tempArr []string
-		tempArr = append(tempArr, postID)
-		tempArr = append(tempArr, postText)
-		tempArr = append(tempArr, postAuthor)
-		tempArr = append(tempArr, postAuthorFirstName)
-		tempArr = append(tempArr, postAuthorLastName)
-		data = append(data, tempArr)
+		var post []string
+		post = append(post, postID)
+		post = append(post, postText)
+		post = append(post, postAuthor)
+		post = append(post, postAuthorFirstName)
+		post = append(post, postAuthorLastName)
+		data = append(data, post)
 	}
 	db.Close()
 	return data
 }
 
 // func to initialize feed by time sort
-func initialFeedByTime(numOfPosts int) [][]string {
-	dsn := "capstone:csc450@tcp(71.89.73.28:3306)/capstone"
+func InitialFeedByTime(numOfPosts int) [][]string {
+	dbName := os.Getenv("DB_NAME")
+	dbPass := os.Getenv("DB_PASS")
+	dbHost := os.Getenv("DB_HOST")
+
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:3306)/capstone", dbName, dbPass, dbHost)
 	var data [][]string
 
 	// Open a connection to the database
@@ -186,21 +169,25 @@ func initialFeedByTime(numOfPosts int) [][]string {
 		if err != nil {
 			panic(err)
 		}
-		var tempArr []string
-		tempArr = append(tempArr, postID)
-		tempArr = append(tempArr, postText)
-		tempArr = append(tempArr, postAuthor)
-		tempArr = append(tempArr, postAuthorFirstName)
-		tempArr = append(tempArr, postAuthorLastName)
-		data = append(data, tempArr)
+		var post []string
+		post = append(post, postID)
+		post = append(post, postText)
+		post = append(post, postAuthor)
+		post = append(post, postAuthorFirstName)
+		post = append(post, postAuthorLastName)
+		data = append(data, post)
 	}
 	db.Close()
 	return data
 }
 
 // func to sort feed by post time
-func feedByTime(numOfPosts int) [][]string {
-	dsn := "capstone:csc450@tcp(71.89.73.28:3306)/capstone"
+func FeedByTime(numOfPosts int) [][]string {
+	dbName := os.Getenv("DB_NAME")
+	dbPass := os.Getenv("DB_PASS")
+	dbHost := os.Getenv("DB_HOST")
+
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:3306)/capstone", dbName, dbPass, dbHost)
 	var data [][]string
 
 	// Open a connection to the database
@@ -240,13 +227,13 @@ func feedByTime(numOfPosts int) [][]string {
 		var postAuthorLastName string
 		println(postID, postText, postAuthor, postAuthorFirstName, postAuthorLastName, "qwdqwd")
 
-		var tempArr []string
-		tempArr = append(tempArr, postID)
-		tempArr = append(tempArr, postText)
-		tempArr = append(tempArr, postAuthor)
-		tempArr = append(tempArr, postAuthorFirstName)
-		tempArr = append(tempArr, postAuthorLastName)
-		data = append(data, tempArr)
+		var post []string
+		post = append(post, postID)
+		post = append(post, postText)
+		post = append(post, postAuthor)
+		post = append(post, postAuthorFirstName)
+		post = append(post, postAuthorLastName)
+		data = append(data, post)
 		print(data)
 	}
 	db.Close()
@@ -254,8 +241,12 @@ func feedByTime(numOfPosts int) [][]string {
 }
 
 // func to initialize feed for random sorting
-func initialFeedByRandom(numOfPosts int) ([][]string, []int) {
-	dsn := "capstone:csc450@tcp(71.89.73.28:3306)/capstone"
+func InitialFeedByRandom(numOfPosts int) ([][]string, []int) {
+	dbName := os.Getenv("DB_NAME")
+	dbPass := os.Getenv("DB_PASS")
+	dbHost := os.Getenv("DB_HOST")
+
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:3306)/capstone", dbName, dbPass, dbHost)
 	var data [][]string
 	var usedPosts []int
 
@@ -304,13 +295,13 @@ func initialFeedByRandom(numOfPosts int) ([][]string, []int) {
 		}
 		usedPosts = append(usedPosts, add)
 
-		var tempArr []string
-		tempArr = append(tempArr, postID)
-		tempArr = append(tempArr, postText)
-		tempArr = append(tempArr, postAuthor)
-		tempArr = append(tempArr, postAuthorFirstName)
-		tempArr = append(tempArr, postAuthorLastName)
-		data = append(data, tempArr)
+		var post []string
+		post = append(post, postID)
+		post = append(post, postText)
+		post = append(post, postAuthor)
+		post = append(post, postAuthorFirstName)
+		post = append(post, postAuthorLastName)
+		data = append(data, post)
 	}
 	db.Close()
 	// return the x posts used and also the array of used posts so they arent printed again
@@ -318,8 +309,12 @@ func initialFeedByRandom(numOfPosts int) ([][]string, []int) {
 }
 
 // func to sort feed by random
-func feedByRandom(exclude []int) [][]string {
-	dsn := "capstone:csc450@tcp(71.89.73.28:3306)/capstone"
+func FeedByRandom(exclude []int) [][]string {
+	dbName := os.Getenv("DB_NAME")
+	dbPass := os.Getenv("DB_PASS")
+	dbHost := os.Getenv("DB_HOST")
+
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:3306)/capstone", dbName, dbPass, dbHost)
 	var data [][]string
 
 	// map of used posts (used to skip posts that have already been printed)
@@ -378,30 +373,142 @@ func feedByRandom(exclude []int) [][]string {
 			continue
 		}
 
-		var tempArr []string
-		tempArr = append(tempArr, postID)
-		tempArr = append(tempArr, postText)
-		tempArr = append(tempArr, postAuthor)
-		tempArr = append(tempArr, postAuthorFirstName)
-		tempArr = append(tempArr, postAuthorLastName)
-		data = append(data, tempArr)
+		var post []string
+		post = append(post, postID)
+		post = append(post, postText)
+		post = append(post, postAuthor)
+		post = append(post, postAuthorFirstName)
+		post = append(post, postAuthorLastName)
+		data = append(data, post)
 	}
 	db.Close()
 	return data
 }
 
 // func to display posts
-func displayPost(posts []string) {
+func DisplayPost(posts []string) {
 	for i := 0; i < len(posts); i++ {
 		println(posts[i] + "\n")
 	}
 }
 
 // func to display posts
-func displayPostArr(posts [][]string) {
+func DisplayPostArr(posts [][]string) {
 	for i := 0; i < len(posts); i++ {
 		for j := 0; j < len(posts[i]); j++ {
 			println(posts[i][j])
 		}
 	}
+}
+
+// func to get replies on a post
+func GetReplies(post_id int) [][]string {
+	dbName := os.Getenv("DB_NAME")
+	dbPass := os.Getenv("DB_PASS")
+	dbHost := os.Getenv("DB_HOST")
+
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:3306)/capstone", dbName, dbPass, dbHost)
+	var data [][]string
+
+	// Open a connection to the database
+	db, err := sql.Open("mysql", dsn)
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+
+	// Ping the database to verify the connection is alive
+	err = db.Ping()
+	if err != nil {
+		panic(err)
+	}
+
+	// sql query to grab reply info
+	query := "SELECT replier.username AS replier_username, replier.first_name AS replier_first_name, replier.last_name AS replier_last_name, replies.reply_text AS reply_text FROM posts JOIN users ON posts.user_id = users.id LEFT JOIN replies ON posts.post_id = replies.post_id LEFT JOIN users AS replier ON replies.user_id = replier.id WHERE posts.post_id = " + strconv.Itoa(post_id) + ";"
+	// x rows of sql result
+	rows, err := db.Query(query)
+	if err != nil {
+		panic(err)
+	}
+	defer rows.Close()
+
+	// format each row of the result
+	for rows.Next() {
+		var replierUsername string
+		var replierFirstName string
+		var replierLastName string
+		var replyText string
+
+		// scan result and set the values to each variable
+		err = rows.Scan(&replierUsername, &replierFirstName, &replierLastName, &replyText)
+		if err != nil {
+			panic(err)
+		}
+
+		var reply []string
+		reply = append(reply, replierUsername)
+		reply = append(reply, replierFirstName)
+		reply = append(reply, replierLastName)
+		reply = append(reply, replyText)
+		data = append(data, reply)
+	}
+	db.Close()
+	// return the reply data
+	return data
+}
+
+// func to get reactions to each post
+func GetReactions(post_id int) [][]string {
+	dbName := os.Getenv("DB_NAME")
+	dbPass := os.Getenv("DB_PASS")
+	dbHost := os.Getenv("DB_HOST")
+
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:3306)/capstone", dbName, dbPass, dbHost)
+	var data [][]string
+
+	// Open a connection to the database
+	db, err := sql.Open("mysql", dsn)
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+
+	// Ping the database to verify the connection is alive
+	err = db.Ping()
+	if err != nil {
+		panic(err)
+	}
+
+	// sql query to get reaction info
+	query := "SELECT reacter.username AS reacter_username, reacter.first_name AS reacter_first_name, reacter.last_name AS reacter_last_name, reactions.reaction AS reaction FROM posts JOIN users ON posts.user_id = users.id LEFT JOIN reactions ON posts.post_id = reactions.post_id LEFT JOIN users AS reacter ON reactions.user_id = reacter.id WHERE posts.post_id = " + strconv.Itoa(post_id) + ";"
+	// x rows of sql result
+	rows, err := db.Query(query)
+	if err != nil {
+		panic(err)
+	}
+	defer rows.Close()
+
+	// format each row of the result
+	for rows.Next() {
+		var reacterUsername string
+		var reacterFirstName string
+		var reacterLastName string
+		var reaction string
+
+		// scan result and set the values to each variable
+		err = rows.Scan(&reacterUsername, &reacterFirstName, &reacterLastName, &reaction)
+		if err != nil {
+			panic(err)
+		}
+
+		var reply []string
+		reply = append(reply, reacterUsername)
+		reply = append(reply, reacterFirstName)
+		reply = append(reply, reacterLastName)
+		reply = append(reply, reaction)
+		data = append(data, reply)
+	}
+	db.Close()
+	// return the reply data
+	return data
 }

@@ -15,6 +15,7 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 
+	"fakebook.com/project/feed"
 	"fakebook.com/project/handlers"
 	"fakebook.com/project/models"
 	"github.com/auth0-community/go-auth0"
@@ -26,15 +27,53 @@ var (
 	audience string
 	domain   string
 )
+
 type User models.User
 
-
 func main() {
+	println("get by post num: \n")
+	test := feed.GetPostData(3)
+	feed.DisplayPost(test)
+	println("\n\n\n")
+
+	println("get by post user: \n")
+	var test2 [][]string
+	test2 = feed.GetUserPosts(1)
+	feed.DisplayPostArr(test2)
+	print("\n\n\n")
+
+	initialPostCount := 3
+
+	println("\n\n\nStarting random sort: \n")
+	var testarr [][]string
+	var testdupe []int
+	testarr, testdupe = feed.InitialFeedByRandom(initialPostCount)
+	feed.DisplayPostArr(testarr)
+	testarr = feed.FeedByRandom(testdupe)
+	feed.DisplayPostArr(testarr)
+	print("\n\n\n")
+
+	println("\n\n\nStarting time sort: \n")
+
+	testarr = feed.InitialFeedByTime(initialPostCount)
+	feed.DisplayPostArr(testarr)
+	testarr = feed.FeedByTime(initialPostCount)
+	feed.DisplayPostArr(testarr)
+
+	println("\n\n\nReplies to post #3 \n")
+
+	testarr = feed.GetReplies(3)
+	feed.DisplayPostArr(testarr)
+
+	println("\n\n\nReactions to post #5 \n")
+
+	testarr = feed.GetReactions(5)
+	feed.DisplayPostArr(testarr)
+
 	// setAuth0Variables()
 
 	r := gin.Default()
 	// r.Use(CORSMiddleware())
-
 
 	// This will ensure that the angular files are served correctly
 	r.NoRoute(func(c *gin.Context) {
@@ -63,6 +102,7 @@ func main() {
 		panic(err)
 	}
 
+	feed.GetPostData(2)
 
 }
 
@@ -113,6 +153,3 @@ func CORSMiddleware() gin.HandlerFunc {
 		c.Next()
 	}
 }
-
-
-
