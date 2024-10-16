@@ -8,6 +8,8 @@ import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import { map, Observable, startWith } from 'rxjs';
 import { FormControl } from '@angular/forms';
+import { PostService } from 'src/services/posts-service.service';
+import { PostModel } from 'src/models/post-model';
 
 @Component({
   selector: 'app-home',
@@ -30,8 +32,9 @@ export class HomeComponent {
   filteredOptions: Observable<string[]> = new Observable<string[]>();
   myControl = new FormControl('');
   public shouldShowProfilePage = false;
+  public feed: PostModel[] = []
 
-  constructor (public auth: AuthService, @Inject(DOCUMENT) public document: Document, public userService: UserServiceService) {}
+  constructor (public auth: AuthService, @Inject(DOCUMENT) public document: Document, public userService: UserServiceService, public postService: PostService) {}
 
   // a double subscribe like this is probably not best practice, but  for now it works
   ngOnInit(): void {
@@ -52,6 +55,12 @@ export class HomeComponent {
             this.shouldShowHomePage = true;
           }
         });
+
+        this.postService.getInitialFeedByTime(5).subscribe(result => {
+          if (result.length) {
+            this.feed = result
+          }
+        })
       }
 
       // if no one logged in via auth0 default to home page view

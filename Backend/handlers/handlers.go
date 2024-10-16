@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"fakebook.com/project/feed"
 	"fakebook.com/project/models"
 	"fakebook.com/project/profile"
 	"github.com/gin-gonic/gin"
@@ -36,5 +37,12 @@ func AddNewUserHandler(c *gin.Context) {
 		fmt.Println("we will deal with you later")
 	}
 	c.JSON(http.StatusOK, profile.AddNewUser(newUser))
+}
 
+func GetInitialFeedByTime(c *gin.Context) {
+	var numOfPosts, err = strconv.Atoi(c.Param("numOfPosts"))
+	if err != nil {
+		fmt.Println(err)
+	}
+	c.JSON(http.StatusOK, feed.InitialFeedByTime(numOfPosts))
 }
