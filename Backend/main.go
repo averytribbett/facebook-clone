@@ -96,6 +96,7 @@ func main() {
 	authorized.GET("/api/user/:id", handlers.GetOneUserHandler)
 	authorized.GET("/api/username/:username", handlers.GetOneUserbyUsernameHandler)
 	authorized.PUT("/api/user/addNewUser", handlers.AddNewUserHandler)
+	authorized.PUT("/api/user/createNewPost", handlers.CreatePostHandler)
 
 	err := r.Run(":3000")
 	if err != nil {

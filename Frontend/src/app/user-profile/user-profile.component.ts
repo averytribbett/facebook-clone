@@ -26,6 +26,7 @@ export class UserProfileComponent {
   public currentSearchUser: number = 0;
   public shouldShowProfileFeed: boolean = true;
   public shouldShowFriendList: boolean = false;
+  public postContent: String = "";
   public fakePosts: string[] = [
     "post one",
     "post two",
@@ -69,5 +70,12 @@ export class UserProfileComponent {
 
   public logout(): void {
     this.logoutEmitter$.emit(true);
+  }
+
+  public createPost(): void{
+    this.userService.createNewPost(this.postContent).subscribe(result => {
+      console.log("SUCCESS?!?!?!?!?");
+      
+    });
   }
 }

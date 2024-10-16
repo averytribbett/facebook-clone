@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -12,6 +13,11 @@ import (
 
 // main calls handlers, handlers calls... the other things?
 // GetUsersHandler returns all users
+
+type PostContent struct {
+	Content string `json:"content"`
+}
+
 func GetUsersHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, profile.Get())
 }
@@ -36,5 +42,20 @@ func AddNewUserHandler(c *gin.Context) {
 		fmt.Println("we will deal with you later")
 	}
 	c.JSON(http.StatusOK, profile.AddNewUser(newUser))
+
+}
+
+func CreatePostHandler(c *gin.Context){
+	var post PostContent
+
+	log.Println("DOE WE MAKE IT INSIDE THE HANDLER?")
+	err:= c.ShouldBindJSON(&post)
+
+
+	if err != nil {
+		fmt.Println("we will deal with you later")
+	}
+	
+	c.JSON(http.StatusOK, profile.CreatePost(post.Content))
 
 }

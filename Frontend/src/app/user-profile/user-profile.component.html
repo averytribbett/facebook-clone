@@ -48,5 +48,14 @@
   <label>Search User by ID</label>
   <input type="text" [(ngModel)]="currentSearchUser">
 </div>
+
+
+<div>
+  <label>Post Content</label>
+  <input type="text" [(ngModel)]="postContent">
+</div>
+
+<button (click)="createPost()">Create post</button>
 <button (click)="searchForUser()">Search for user</button>
 <button (click)="backToHome()">Back to Home</button>
+

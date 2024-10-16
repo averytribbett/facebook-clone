@@ -14,6 +14,7 @@ import (
 )
 
 var (
+
 	mtx      sync.RWMutex
 	onceList sync.Once
 	onceDB   sync.Once
@@ -22,10 +23,10 @@ var (
 
 func init() {
 	onceDB.Do(initializeDB)
-	// onceList.Do(initializeList)
 }
 
 func initializeDB() {
+	// Environmental variables set to connect to Cade's database
 	dbName := os.Getenv("DB_NAME")
 	dbPass := os.Getenv("DB_PASS")
 	dbHost := os.Getenv("DB_HOST")
@@ -51,48 +52,20 @@ func initializeDB() {
 	}
 }
 
-// func initializeList() {
-// 	// this is simply a placeholder, and to show functionality of requests
-// 	// in the future, we probably would not even need this
-// 	list = []models.User{
-// 		{
-// 			Id:        0,
-// 			FirstName: "Melissa",
-// 			LastName:  "Brown",
-// 			Username:  "melissa.cat.brown02@gmail.com",
-// 		},
-// 		{
-// 			Id:        1,
-// 			FirstName: "Avery",
-// 			LastName:  "Tribbett",
-// 			Username:  "averytribbett",
-// 		},
-// 		{
-// 			Id:        2,
-// 			FirstName: "Cade",
-// 			LastName:  "Becker",
-// 			Username:  "cadegithub",
-// 		},
-// 		{
-// 			Id:        3,
-// 			FirstName: "Youssef",
-// 			LastName:  "Ibrahim",
-// 			Username:  "youssefgithub",
 
-// 		},
-// 	}
-// }
-
-// list wil instead be populated from DB if the code below in uncommented.
-
+// Function returns a list of user models, with all the users from the database
 func Get() []models.User {
+
 	var list []models.User
 	rows, err := db.Query("SELECT id, first_name, last_name, username, bio FROM users")
+
+	// Printing error if the query does not run properly
 	if err != nil {
 		log.Println(err)
 	}
 	defer rows.Close()
 
+	//Looping through the result rows from the query, then appending each user ot the list	
 	for rows.Next() {
 		var user models.User
 
@@ -107,6 +80,7 @@ func Get() []models.User {
 	return list
 }
 
+// Returns one user from the databas using the user id
 func GetOneUser(userId int) models.User {
 
 	var returnUser models.User
@@ -120,6 +94,7 @@ func GetOneUser(userId int) models.User {
 	return returnUser
 }
 
+// Returns one user from the databas using the username
 func GetOneUserByUsername(username string) models.User {
 
 	var returnUser models.User
@@ -133,6 +108,7 @@ func GetOneUserByUsername(username string) models.User {
 	return returnUser
 }
 
+// Adds one user to the database
 func AddNewUser(newUser models.User) error {
 	var oldUser = GetOneUserByUsername(newUser.Username)
 
@@ -150,15 +126,18 @@ func AddNewUser(newUser models.User) error {
 	}
 }
 
+func CreatePost(body string) error{
+
+	query:= "INSER INTO posts (user_id, post_text) values (?,?)"
+	print(body)
+	_, err := db.Exec(query,7,body)
+
+	return err
+}
+
 /*
 endpoint ideas for a user profile:
 
-Tdo:
-1. emails/usernames need to be uinque
-2. change to prepared statements
-3. do rows need to be closed?
-4. does the DB need to be closed
-5. more descriptive errors
 
 Requirements:
 1. getFriendList

@@ -25,4 +25,11 @@ export class UserServiceService {
   addNewUser(user: UserModel): Observable<boolean>{
     return this.httpClient.put<boolean>("api/user/addNewUser", user);
   }
+
+  createNewPost(content:String): Observable<boolean>{
+    console.log("ARE WE BREAKING HERE?");
+    console.log("THIS IS THE CONTENT IN THE FRONTEND" + content);
+    var postData = {content}
+    return this.httpClient.put<boolean>("api/user/createNewPost", postData);
+  }
 }
