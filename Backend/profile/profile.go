@@ -128,8 +128,8 @@ func AddNewUser(newUser models.User) error {
 
 func CreatePost(body string) error{
 
-	query:= "INSER INTO posts (user_id, post_text) values (?,?)"
-	print(body)
+	query:= "INSERT INTO posts (user_id, post_text) values (?,?)"
+	log.Println("THIS IS THE BODY: " + body)
 	_, err := db.Exec(query,7,body)
 
 	return err
