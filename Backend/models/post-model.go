@@ -6,4 +6,6 @@ type Post struct {
 	AuthorId        int    `json:"authorId"`
 	AuthorFirstName string `json:"authorFirstName"`
 	AuthorLastName  string `json:"authorLastName"`
+	ReplyCount      int    `json:"replyCount"`
+	ReactionCount   int    `json:"reactCount"`
 }
