@@ -472,6 +472,7 @@ func GetReactions(post_id int) [][]string {
 	return data
 }
 
+// func to display user info
 func DisplayModel(posts []models.Post) {
 	for i := 0; i < len(posts); i++ {
 		println("post_id: ", posts[i].Id)
