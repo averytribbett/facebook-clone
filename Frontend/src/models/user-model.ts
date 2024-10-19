@@ -6,7 +6,16 @@ export interface UserModel {
     username: string
 }
 
+export interface DisplayNameUserModel {
+    firstName: string,
+    lastName: string
+}
+
 export interface PostModel {
-    content: string,
-    author: string
+    likes: number,
+    comments: number,
+    postText: string,
+    userAvatar: string,
+    userFirstName: string,
+    userLastName: string
 }

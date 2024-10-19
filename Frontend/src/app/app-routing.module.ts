@@ -9,7 +9,7 @@ import { DeveloperPageComponent } from './developer-page/developer-page.componen
 const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: 'home', component: HomeComponent },
-  { path: 'profile', component: UserProfileComponent},
+  { path: 'profile/:profileUser/:isDeveloperMode', component: UserProfileComponent},
   { path: 'feed', component: UserFeedComponent},
   { path: 'create-profile/:currentUser/:isDeveloperMode', component: CreateProfileComponent},
   { path: 'developer/:isDevelopmentEnvironment', component: DeveloperPageComponent }

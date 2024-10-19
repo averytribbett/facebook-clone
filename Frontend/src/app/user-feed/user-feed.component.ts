@@ -19,38 +19,38 @@ export class UserFeedComponent {
 
   // this should be turned into an endpoint, and posts would be retrieved from a database
   public allPosts: PostModel[] = [
-    {
-      content: "Can't believe it took me this long to get on FakeBook (TM)!",
-      author: "brownm26csp"
-    },
-    {
-      content: "I would give anything for a good night's sleep",
-      author: "brownm26csp"
-    },
-    {
-      content: "Just won a million dollars. See you never!!!",
-      author: "averytribbett"
-    },
-    {
-      content: "My neighbor gave me a cybertruck, but it has a really dumb bumper sticker. Best way to remove without damaging my new car?",
-      author: "averytribbett"
-    },
-    {
-      content: "Send cat memes",
-      author: "cadegithub"
-    },
-    {
-      content: "Where should I go on my next vacation?",
-      author: "cadegithub"
-    },
-    {
-      content: "Just finished running a marathon!",
-      author: "youssefgithub"
-    },
-    {
-      content: "Got a huge promotion so now I'm going to buy FakeBook (TM)",
-      author: "youssefgithub"
-    },
+    // {
+    //   content: "Can't believe it took me this long to get on FakeBook (TM)!",
+    //   author: "brownm26csp"
+    // },
+    // {
+    //   content: "I would give anything for a good night's sleep",
+    //   author: "brownm26csp"
+    // },
+    // {
+    //   content: "Just won a million dollars. See you never!!!",
+    //   author: "averytribbett"
+    // },
+    // {
+    //   content: "My neighbor gave me a cybertruck, but it has a really dumb bumper sticker. Best way to remove without damaging my new car?",
+    //   author: "averytribbett"
+    // },
+    // {
+    //   content: "Send cat memes",
+    //   author: "cadegithub"
+    // },
+    // {
+    //   content: "Where should I go on my next vacation?",
+    //   author: "cadegithub"
+    // },
+    // {
+    //   content: "Just finished running a marathon!",
+    //   author: "youssefgithub"
+    // },
+    // {
+    //   content: "Got a huge promotion so now I'm going to buy FakeBook (TM)",
+    //   author: "youssefgithub"
+    // },
   ];
 
   public relevantPosts: PostModel[] = [];
@@ -65,9 +65,9 @@ export class UserFeedComponent {
   }
 
   public changeSelectedUser(user: any): void {
-    const allPosts = this.allPosts.filter(x => x.author === user.target.value) as PostModel[];
-    console.log(allPosts);
-    this.relevantPosts = allPosts;
+    // const allPosts = this.allPosts.filter(x => x.author === user.target.value) as PostModel[];
+    // console.log(allPosts);
+    // this.relevantPosts = allPosts;
   }
 
 }

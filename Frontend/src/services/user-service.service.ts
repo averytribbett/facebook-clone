@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { AuthService } from '@auth0/auth0-angular';
 import { Observable } from 'rxjs';
 import { UserModel } from 'src/models/user-model';
 
@@ -7,8 +8,10 @@ import { UserModel } from 'src/models/user-model';
   providedIn: 'root'
 })
 export class UserServiceService {
+  public loggedInUsername: string = "";
 
-  constructor(private httpClient: HttpClient) { }
+  constructor(private httpClient: HttpClient,
+              public userAuth: AuthService) { }
 
   getAllUsers(): Observable<UserModel[]>{
     return this.httpClient.get<UserModel[]>("api/users");
@@ -24,5 +27,9 @@ export class UserServiceService {
 
   addNewUser(user: UserModel): Observable<boolean>{
     return this.httpClient.put<boolean>("api/user/addNewUser", user);
+  }
+
+  searchUser(name: string): Observable<UserModel[]> {
+    return this.httpClient.get<UserModel[]>("api/user/findUserByName/" + name);
   }
 }

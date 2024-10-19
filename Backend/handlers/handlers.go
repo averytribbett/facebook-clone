@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"fakebook.com/project/feed"
 	"fakebook.com/project/models"
@@ -45,4 +46,24 @@ func GetInitialFeedByTime(c *gin.Context) {
 		fmt.Println(err)
 	}
 	c.JSON(http.StatusOK, feed.InitialFeedByTime(numOfPosts))
+}
+
+func FindUserByNameHandler(c *gin.Context) {
+	var firstName string
+	var lastName string
+
+	fullName := c.Param("fullName")
+	spaceIndex := strings.Index(fullName, " ")
+	if fullName == "" {
+		fmt.Println("not sure what to put here")
+	} else if spaceIndex == -1 {
+		firstName = fullName
+		lastName = ""
+	} else {
+		firstName = fullName[0:spaceIndex]
+		lastName = fullName[spaceIndex+1:]
+	}
+
+	c.JSON(http.StatusOK, profile.FindUserByName(firstName, lastName))
+
 }

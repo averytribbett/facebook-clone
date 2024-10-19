@@ -22,7 +22,6 @@ var (
 
 func init() {
 	onceDB.Do(initializeDB)
-	// onceList.Do(initializeList)
 }
 
 func initializeDB() {
@@ -50,40 +49,6 @@ func initializeDB() {
 		panic(err)
 	}
 }
-
-// func initializeList() {
-// 	// this is simply a placeholder, and to show functionality of requests
-// 	// in the future, we probably would not even need this
-// 	list = []models.User{
-// 		{
-// 			Id:        0,
-// 			FirstName: "Melissa",
-// 			LastName:  "Brown",
-// 			Username:  "melissa.cat.brown02@gmail.com",
-// 		},
-// 		{
-// 			Id:        1,
-// 			FirstName: "Avery",
-// 			LastName:  "Tribbett",
-// 			Username:  "averytribbett",
-// 		},
-// 		{
-// 			Id:        2,
-// 			FirstName: "Cade",
-// 			LastName:  "Becker",
-// 			Username:  "cadegithub",
-// 		},
-// 		{
-// 			Id:        3,
-// 			FirstName: "Youssef",
-// 			LastName:  "Ibrahim",
-// 			Username:  "youssefgithub",
-
-// 		},
-// 	}
-// }
-
-// list wil instead be populated from DB if the code below in uncommented.
 
 func Get() []models.User {
 	var list []models.User
@@ -148,6 +113,35 @@ func AddNewUser(newUser models.User) error {
 		// not sure if good but, for now it gets the function to run
 		return nil
 	}
+}
+
+func FindUserByName(firstName string, lastName string) []models.User {
+	var rows *sql.Rows
+	var returnList []models.User
+	var err error
+	if len(lastName) > 0 {
+		rows, err = db.Query("SELECT id, first_name, last_name, username, bio FROM users WHERE first_name LIKE '%" + firstName + "%' AND last_name LIKE '%" + lastName + "%'")
+	} else {
+		rows, err = db.Query("SELECT id, first_name, last_name, username, bio FROM users WHERE first_name LIKE '%" + firstName + "%'")
+	}
+
+	if err != nil {
+		log.Println(err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var user models.User
+
+		err = rows.Scan(&user.Id, &user.FirstName, &user.LastName, &user.Username, &user.Bio)
+		if err != nil {
+			panic(err)
+		}
+
+		log.Println(user)
+		returnList = append(returnList, user)
+	}
+	return returnList
 }
 
 /*
