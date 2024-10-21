@@ -6,8 +6,11 @@ import { UserServiceService } from 'src/services/user-service.service';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
-import { map, Observable, startWith } from 'rxjs';
+import { map, Observable, of, startWith } from 'rxjs';
 import { FormControl } from '@angular/forms';
+import { DisplayNameUserModel, UserModel } from 'src/models/user-model';
+import { ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 import { PostService } from 'src/services/posts-service.service';
 import { PostModel } from 'src/models/post-model';
 
@@ -17,74 +20,81 @@ import { PostModel } from 'src/models/post-model';
   styleUrls: ['./home.component.css','../../styles.css'],
 })
 export class HomeComponent {
-  public shouldShowCreateProfile = false;
-  public shouldShowHomePage = false;
-  public currentLoggedInUser: string = "";
+  public currentLoggedInUsername: string = "";
+  public currentSearchOptions: DisplayNameUserModel[] = [];
+  public currentUser = {
+    id: 0,
+    firstName: "Please choose a name...",
+    lastName: "",
+    username: ""
+  } as UserModel;
   public isDevelopmentEnvironment = !environment.production;
   public searchTerm: string = "";
   public isLoggedIn: boolean = false;
-  public friendList: string[] = [
-    "Melissa Brown",
-    "Avery Tribbett",
-    "Cade Beckers",
-    "Youssef Ibrahim"
-  ];
-  filteredOptions: Observable<string[]> = new Observable<string[]>();
+  public friendSearchList: DisplayNameUserModel[] = [];
+  public friendList: DisplayNameUserModel[] = [];
+  filteredOptions: Observable<DisplayNameUserModel[]> = new Observable<DisplayNameUserModel[]>();
   myControl = new FormControl('');
   public shouldShowProfilePage = false;
   public feed: PostModel[] = []
 
-  constructor (public auth: AuthService, @Inject(DOCUMENT) public document: Document, public userService: UserServiceService, public postService: PostService) {}
+  constructor (public auth: AuthService,
+              @Inject(DOCUMENT) public document: Document,
+              public userService: UserServiceService,
+              public router: Router,
+              public postService: PostService) {}
 
   // a double subscribe like this is probably not best practice, but  for now it works
   ngOnInit(): void {
-    this.auth.user$.subscribe(result => {
+    this.userService.userAuth.user$.subscribe(result => {
       // check if someone is signing up / logging in via auth0
       if (result) {
-        this.currentLoggedInUser = result.name as string;
+        this.currentLoggedInUsername = result.name as string;
+        this.userService.loggedInUsername = result.name as string;
         this.isLoggedIn = true;
 
         // check for user in database
-        this.userService.getUserByUsername(this.currentLoggedInUser).subscribe(result => {
+        this.userService.getUserByUsername(this.currentLoggedInUsername).subscribe(result => {
 
           // if user does not exist in DB redirect to profile creation page else show home page
           if (!result || !result.username) {
-            this.shouldShowCreateProfile = true;
+            this.router.navigate(['/create-profile', result.username, false]);
           }
           else {
-            this.shouldShowHomePage = true;
+            this.router.navigate(['/home']);
+            this.currentUser = result;
           }
         });
-
         this.postService.getInitialFeedByTime(5).subscribe(result => {
           if (result.length) {
-            this.feed = result
+            this.feed = result;
           }
         })
       }
+    });
 
-      // if no one logged in via auth0 default to home page view
-      else {
-        this.shouldShowHomePage = true;
+    this.myControl.valueChanges.subscribe(searchValue => {
+      var newVal = searchValue as string;
+      if (newVal){
+        this.userService.searchUser(newVal).subscribe(result => {
+          let userList: DisplayNameUserModel[] = [];
+          if(result){
+            for (let user of result) {
+              userList.push({
+                firstName: user.firstName,
+                lastName: user.lastName
+              });
+            }
+            this.friendList = userList;
+          }
+        });
       }
     });
 
-    this.filteredOptions = this.myControl.valueChanges.pipe(
-      startWith(''),
-      map(value => this._filter(value || '')),
-    );
-  }
-
-  private _filter(value: string): string[] {
-    const filterValue = value.toLowerCase();
-
-    // add something in here to async find what they have typed in on keydown, and return the list...?
-
-    return this.friendList.filter(option => option.toLowerCase().includes(filterValue));
   }
 
   login(isSignUp: boolean) {
-    this.auth.loginWithRedirect({
+    this.userService.userAuth.loginWithRedirect({
       appState: { 
         target: this.document.location.pathname
       },
@@ -96,37 +106,15 @@ export class HomeComponent {
   }
 
   logout() {
-    this.auth.logout({ 
+    this.userService.userAuth.logout({ 
       logoutParams: {
         returnTo: this.document.location.origin 
       }
     });
   }
 
-  switchToHomeViewAndLogout(): void {
-    this.shouldShowHomePage = true;
-    this.shouldShowCreateProfile = false;
-    this.shouldShowProfilePage = false;
-    this.logout();
-  }
-
-  showCreateProfilePage(): void {
-    this.shouldShowCreateProfile = true;
-  }
-
   findFriend(searchString: any): void {
     // to add more functionality
   }
 
-  showProfilePage(): void {
-    this.shouldShowHomePage = false;
-    this.shouldShowCreateProfile = false;
-    this.shouldShowProfilePage = true;
-  }
-
-  switchToHomeView(): void {
-    this.shouldShowHomePage = true;
-    this.shouldShowCreateProfile = false;
-    this.shouldShowProfilePage = false;
-  }
 }

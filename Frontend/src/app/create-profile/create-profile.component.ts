@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Inject, Input, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { UserModel } from 'src/models/user-model';
 import { UserServiceService } from 'src/services/user-service.service';
@@ -7,7 +7,8 @@ import {MatButton} from '@angular/material/button';
 import {MatTooltip} from '@angular/material/tooltip';
 import { AuthService } from '@auth0/auth0-angular';
 import { ProfileIncompleteWarningComponent } from './profile-incomplete-warning/profile-incomplete-warning.component';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'app-create-profile',
@@ -25,15 +26,22 @@ export class CreateProfileComponent {
     private userService: UserServiceService,
     public auth: AuthService,
     public dialogRef: MatDialog,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router,
+    @Inject(DOCUMENT) public document: Document,
 
   ){}
   
   ngOnInit(): void {
     this.initForm();
-    this.disableUserNameField();
     this.route?.params.subscribe(params => {
       this.isDeveloperMode = params['isDeveloperMode'];
+    });
+    this.userService.userAuth.user$.subscribe(result => {
+      if (result) {
+        this.currentUser = result.name as string;
+        this.disableUserNameField();
+      }
     });
   }
 
@@ -55,7 +63,7 @@ export class CreateProfileComponent {
     } as UserModel;
 
     this.userService.addNewUser(userToSend).subscribe(result => {
-      this.returnHome$.emit(true);
+      this.router.navigate(['/home']);
     });
   }
 
@@ -67,13 +75,13 @@ export class CreateProfileComponent {
     myDialog.afterClosed().subscribe((result) => {
       this.dialogRef.closeAll();
       if (result) {
-        this.confirmReturnHome();
+        this.auth.logout({ 
+          logoutParams: {
+            returnTo: this.document.location.origin 
+          }
+        });
       }
     });
-  }
-
-  public confirmReturnHome(): void {
-    this.myEmitter$.emit(true);
   }
 
   public disableUserNameField(): void {

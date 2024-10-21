@@ -1,37 +1,45 @@
 <mat-card appearance="raised" id="mainCard">
-  <mat-toolbar>
-    <button mat-icon-button class="example-icon" [matMenuTriggerFor]="menu" aria-label="Example icon-button with menu icon">
-      <mat-icon [ngStyle]="{'color':'orangered'}">menu</mat-icon>
-    </button>
-    <mat-menu #menu="matMenu">
-      <button mat-menu-item>
-        <mat-icon [ngStyle]="{'color':'orangered'}" (click)="logout()">logout</mat-icon>
-        <span>Logout</span>
+  <div>
+    <mat-toolbar>
+      <button mat-icon-button class="example-icon" [matMenuTriggerFor]="menu" aria-label="Example icon-button with menu icon">
+        <mat-icon [ngStyle]="{'color':'orangered'}">menu</mat-icon>
       </button>
-      <button mat-menu-item (click)="backToHome()">
-        <mat-icon [ngStyle]="{'color':'orangered'}">home</mat-icon>
-        <span>Home</span>
-      </button>
-    </mat-menu>
-  </mat-toolbar>
-  <mat-card-title>{{ selectedUser.firstName}} {{ selectedUser.lastName}}</mat-card-title>
-  <mat-card-subtitle> {{ selectedUser.username }}</mat-card-subtitle>
-  <mat-card-content> {{selectedUser.bio}}</mat-card-content>
-  <mat-card-actions>
-    <button mat-stroked-button (click)="showFeedCard()">Feed</button>
-    <button mat-stroked-button (click)="showFriendCard()">Friends</button>
-  </mat-card-actions>
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item  (click)="logout()">
+          <mat-icon [ngStyle]="{'color':'orangered'}">logout</mat-icon>
+          <span>Logouts</span>
+        </button>
+        <button mat-menu-item [routerLink]="['/home']">
+          <mat-icon [ngStyle]="{'color':'orangered'}">home</mat-icon>
+          <span>Home</span>
+        </button>
+      </mat-menu>
+    </mat-toolbar>
+  </div>
+  <div id="profileInfo">
+    <mat-card-title>{{ selectedUser.firstName}} {{ selectedUser.lastName}}
+      <mat-card-subtitle> {{ selectedUser.username }}</mat-card-subtitle>
+    </mat-card-title>
+    <mat-card-content> {{selectedUser.bio}}</mat-card-content>
+    <mat-card-actions>
+      <button mat-stroked-button (click)="showFeedCard()">Feed</button>
+      <button mat-stroked-button (click)="showFriendCard()">Friends</button>
+    </mat-card-actions>
+  </div>
 </mat-card>
+<button [disabled]="!shouldHaveWriteAccess" (click)="editProfile()">Edit Profile</button>
 
-<div *ngIf="shouldShowProfileFeed">
-  <h1>Feed</h1>
+<div *ngIf="shouldShowProfileFeed" id="posts">
   <div *ngFor="let post of fakePosts">
-    <mat-card  appearance="raised">
-      <mat-card-content>{{ post }}</mat-card-content>
-      <label>reply!</label>
-      <input type="text">
-      <button>reply</button>
-    </mat-card>
+    <user-post
+      [likes]="post.likes"
+      [comments]="post.comments"
+      [postText]="post.postText"
+      [userAvatar]="post.userAvatar"
+      [userFirstName]="post.userFirstName"
+      [userLastName]="post.userLastName"
+      >
+    </user-post>
   </div>
 </div>
 <mat-card *ngIf="shouldShowFriendList" appearance="raised">
@@ -49,4 +57,4 @@
   <input type="text" [(ngModel)]="currentSearchUser">
 </div>
 <button (click)="searchForUser()">Search for user</button>
-<button (click)="backToHome()">Back to Home</button>
+<button [routerLink]="['/home']">Back to Home</button>

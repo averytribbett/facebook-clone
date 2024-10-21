@@ -39,6 +39,5 @@
         </mat-form-field>
     </div>
   </form>
-  <button *ngIf="!isDeveloperMode" id="submitButton" mat-raised-button (click)="sendNewUserToBackend()">Submit</button>
-  <button *ngIf="isDeveloperMode" id="submitButton" mat-raised-button (click)="sendNewUserToBackend()" [routerLink]="['/home']">Submit</button>
+  <button id="submitButton" mat-raised-button (click)="sendNewUserToBackend()">Submit</button>
   </div>

@@ -74,7 +74,6 @@ func main() {
 
 	r := gin.Default()
 	// r.Use(CORSMiddleware())
-
 	// This will ensure that the angular files are served correctly
 	r.NoRoute(func(c *gin.Context) {
 		dir, file := path.Split(c.Request.RequestURI)
@@ -98,6 +97,7 @@ func main() {
 	authorized.PUT("/api/user/addNewUser", handlers.AddNewUserHandler)
 
 	authorized.GET("/api/posts/initial/:numOfPosts", handlers.GetInitialFeedByTime)
+	authorized.GET("/api/user/findUserByName/:fullName", handlers.FindUserByNameHandler)
 
 	err := r.Run(":3000")
 	if err != nil {
