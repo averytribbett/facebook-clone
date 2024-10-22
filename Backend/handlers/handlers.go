@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"fakebook.com/project/feed"
+	"fakebook.com/project/friends"
 	"fakebook.com/project/models"
 	"fakebook.com/project/profile"
 	"github.com/gin-gonic/gin"
@@ -65,5 +66,40 @@ func FindUserByNameHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, profile.FindUserByName(firstName, lastName))
+}
 
+func FindUserByFullNameHandler(c *gin.Context) {
+	firstName := c.Param("firstName")
+	lastName := c.Param("lastName")
+	c.JSON(http.StatusOK, profile.FindUserByFullName(firstName, lastName))
+}
+
+func GetFriendsListHandler(c *gin.Context) {
+	username := c.Param("username")
+	fmt.Println("username: " + username)
+	c.JSON(http.StatusOK, friends.GetFriendsList(username))
+}
+
+func AddOneFriendHandler(c *gin.Context) {
+	requestor := c.Param("requestor")
+	requestee := c.Param("requestee")
+	c.JSON(http.StatusOK, friends.AddPendingFriend(requestor, requestee))
+}
+
+func AcceptFriendshipHandler(c *gin.Context) {
+	originalRequestor := c.Param("originalRequestor")
+	acceptee := c.Param("acceptee")
+	c.JSON(http.StatusOK, friends.AcceptFriend(originalRequestor, acceptee))
+}
+
+func DeleteFriendshipRequestHandler(c *gin.Context) {
+	originalRequestor := c.Param("originalRequestor")
+	deleter := c.Param("deleter")
+	c.JSON(http.StatusOK, friends.DeleteFriendRequest(originalRequestor, deleter))
+}
+
+func DeleteFriendshipHandler(c *gin.Context) {
+	friendToDelete := c.Param("friendToDelete")
+	deleter := c.Param("deleter")
+	c.JSON(http.StatusOK, friends.DeleteFriend(friendToDelete, deleter))
 }

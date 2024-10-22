@@ -98,6 +98,12 @@ func main() {
 
 	authorized.GET("/api/posts/initial/:numOfPosts", handlers.GetInitialFeedByTime)
 	authorized.GET("/api/user/findUserByName/:fullName", handlers.FindUserByNameHandler)
+	authorized.GET("/api/user/findUserByFirstAndLastName/:firstName/:lastName", handlers.FindUserByFullNameHandler)
+	authorized.GET("/api/friends/findFriendList/:username", handlers.GetFriendsListHandler)
+	authorized.PUT("/api/friends/addPendingFriendship/:requestor/:requestee", handlers.AddOneFriendHandler)
+	authorized.GET("/api/friends/acceptFriendship/:originalRequestor/:acceptee", handlers.AcceptFriendshipHandler)
+	authorized.DELETE("/api/friends/deleteFriendshipRequest/:originalRequestor/:deleter", handlers.DeleteFriendshipRequestHandler)
+	authorized.DELETE("/api/friends/deleteFriendship/:friendToDelete/:deleter", handlers.DeleteFriendshipHandler)
 
 	err := r.Run(":3000")
 	if err != nil {
