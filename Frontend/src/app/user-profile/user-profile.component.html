@@ -22,12 +22,15 @@
     </mat-card-title>
     <mat-card-content> {{selectedUser.bio}}</mat-card-content>
     <mat-card-actions>
-      <button mat-stroked-button (click)="showFeedCard()">Feed</button>
-      <button mat-stroked-button (click)="showFriendCard()">Friends</button>
+      <button mat-stroked-button class="profileSectionButton" (click)="showFeedCard()">Feed</button>
+      <button mat-stroked-button class="profileSectionButton" (click)="showFriendCard()">Friends</button>
+      <button *ngIf="shouldHaveWriteAccess" mat-stroked-button class="profileSectionButton" (click)="showFriendRequestCard()">Friend Requests</button>
     </mat-card-actions>
   </div>
 </mat-card>
 <button [disabled]="!shouldHaveWriteAccess" (click)="editProfile()">Edit Profile</button>
+<button *ngIf="shouldShowAddFriendButton" (click)="addFriend()">Add Friend</button>
+<button *ngIf="shouldShowDeleteFriendButton" (click)="deleteFriend(profileBeingViewedUsername)">Delete Friend</button>
 
 <div *ngIf="shouldShowProfileFeed" id="posts">
   <div *ngFor="let post of fakePosts">
@@ -44,6 +47,33 @@
 </div>
 <mat-card *ngIf="shouldShowFriendList" appearance="raised">
   <mat-card-title>Friend list</mat-card-title>
+  <mat-card-subtitle *ngIf="!this.userFriends || this.userFriends.length === 0">Not even your mom is your friend...?</mat-card-subtitle>
+  <mat-list *ngIf="this.userFriends && this.userFriends.length > 0">
+    <div class="friendSectionList" *ngFor="let friend of userFriends">
+      <mat-list-item>{{ friend.friendId }}</mat-list-item>
+      <button *ngIf="shouldHaveWriteAccess" mat-icon-button (click)="deleteFriend(friend.friendId)">
+        <mat-icon [ngStyle]="{'color':'orangered'}">delete</mat-icon>
+      </button>
+    </div>
+  </mat-list>
+</mat-card>
+
+<mat-card *ngIf="shouldShowFriendRequests" appearance="raised">
+  <mat-card-title>Friend Requests</mat-card-title>
+  <mat-list *ngIf="this.userFriendRequests && this.userFriendRequests.length > 0">
+    <div class="friendSectionList" *ngFor="let friend of userFriendRequests">
+      <mat-list-item class="requestListItem">
+        <span matListItemTitle>{{ friend.userId }}</span>
+      </mat-list-item>
+      <button mat-icon-button  (click)="acceptFriend(friend.userId)">
+        <mat-icon [ngStyle]="{'color':'orangered'}">add_box</mat-icon>
+      </button>
+      <button mat-icon-button (click)="deleteFriendRequest(friend.userId)">
+        <mat-icon [ngStyle]="{'color':'orangered'}">delete</mat-icon>
+      </button>
+      <mat-divider></mat-divider>
+    </div>
+  </mat-list>
 </mat-card>
 
 <select [(ngModel)]="selectedUser" (change)="changeSelectedUser($event)">

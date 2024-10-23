@@ -50,7 +50,7 @@ export class HomeComponent {
       // check if someone is signing up / logging in via auth0
       if (result) {
         this.currentLoggedInUsername = result.name as string;
-        this.userService.loggedInUsername = result.name as string;
+        this.userService.setValue(result.name as string);
         this.isLoggedIn = true;
 
         // check for user in database
@@ -113,8 +113,10 @@ export class HomeComponent {
     });
   }
 
-  findFriend(searchString: any): void {
-    // to add more functionality
+  findFriend(searchFirstName: string, searchLastName: string): void {
+    this.userService.searchUserByFirstAndLastName(searchFirstName, searchLastName).subscribe(result => {
+      this.router.navigate(['/profile', result.username, false]);
+    });
   }
 
 }

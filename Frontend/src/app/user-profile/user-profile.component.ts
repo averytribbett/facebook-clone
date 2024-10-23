@@ -1,11 +1,12 @@
 import { DOCUMENT } from '@angular/common';
 import { Component, EventEmitter, Inject, Input, Output } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormGroup } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { PostModel, UserModel } from 'src/models/user-model';
 import { UserServiceService } from 'src/services/user-service.service';
-import {MatCardModule} from '@angular/material/card';
 import { ActivatedRoute } from '@angular/router';
+import { FriendServiceService } from 'src/services/friend-service.service';
+import { FriendModel, FRIENDS, BLOCKED, PENDING } from 'src/models/friend-model';
 
 @Component({
   selector: 'app-user-profile',
@@ -28,15 +29,22 @@ export class UserProfileComponent {
   public currentSearchUser: number = 0;
   public shouldShowProfileFeed: boolean = true;
   public shouldShowFriendList: boolean = false;
+  public shouldShowFriendRequests: boolean = false;
   public fakePosts: PostModel[] = [];
   public loggedInUsername: string = "";
   public profileBeingViewedUsername: string = "";
   public isDeveloper = false;
   public shouldHaveWriteAccess = false;
+  public userFriends: FriendModel[] = [];
+  public shouldShowAddFriendButton: boolean = false;
+  public shouldShowDeleteFriendButton: boolean = false;
+  public userFriendRequests: FriendModel[] = [];
 
   constructor (private userService: UserServiceService,
                private route: ActivatedRoute,
-               @Inject(DOCUMENT) public document: Document) {}
+               @Inject(DOCUMENT) public document: Document,
+              private friendService: FriendServiceService,
+              private toaster: ToastrService) {}
 
   ngOnInit(): void {
     this.userService.userAuth.isAuthenticated$.subscribe(result => {
@@ -98,9 +106,25 @@ export class UserProfileComponent {
             }
           ];
         });
+        this.getFriendLists();
       }
     });
+  }
 
+  public getFriendLists(): void {
+    this.friendService.getFriendList(this.profileBeingViewedUsername).subscribe(result => {
+      this.userFriends = result ? result.filter(x => x.friendStatus === FRIENDS && x.friendId !== this.profileBeingViewedUsername) : [];
+      this.userFriendRequests = result ? result.filter(x => x.friendId === this.profileBeingViewedUsername && x.friendStatus === PENDING) : [];
+      if (!this.shouldHaveWriteAccess && result) {
+        const loggedInUserIsActiveFriend = this.userFriends.find(x => x.userId === this.profileBeingViewedUsername && x.friendId === this.userService.loggedInUsername) !== undefined;
+        const loggedInUserHasRequested = this.userFriendRequests.find(x => x.userId === this.userService.loggedInUsername && x.friendStatus === PENDING); 
+        this.shouldShowAddFriendButton = !loggedInUserHasRequested && !loggedInUserIsActiveFriend;
+        this.shouldShowDeleteFriendButton = this.userFriends.find(x => x.userId === this.profileBeingViewedUsername && x.friendId === this.userService.loggedInUsername && x.friendStatus === FRIENDS) !== undefined;
+      }
+      if (!result && !this.shouldHaveWriteAccess) {
+        this.shouldShowAddFriendButton = true;
+      }
+    });
   }
 
   public changeSelectedUser(user: any): void {
@@ -118,11 +142,19 @@ export class UserProfileComponent {
   public showFriendCard(): void {
     this.shouldShowFriendList = true;
     this.shouldShowProfileFeed = false;
+    this.shouldShowFriendRequests = false;
   }
 
   public showFeedCard(): void {
     this.shouldShowFriendList = false;
+    this.shouldShowFriendRequests = false;
     this.shouldShowProfileFeed = true;
+  }
+
+  public showFriendRequestCard(): void {
+    this.shouldShowFriendList = false;
+    this.shouldShowFriendRequests = true;
+    this.shouldShowProfileFeed = false;
   }
 
   public logout(): void {
@@ -135,5 +167,30 @@ export class UserProfileComponent {
 
   public editProfile(): void {
     console.log('LET ME IN!!! LET ME EDIT!!!!!!!!!!!!!!!!!!!!!!');
+  }
+
+  public addFriend(): void {
+    this.friendService.addFriendRequest(this.userService.loggedInUsername, this.profileBeingViewedUsername).subscribe(result => {
+      this.shouldShowAddFriendButton = false;
+      this.toaster.show("Friend request sent successfully");
+    });
+  }
+
+  public acceptFriend(friendToAccept: string): void {
+    this.friendService.acceptFriendRequest(friendToAccept, this.userService.loggedInUsername).subscribe(result => {
+      this.getFriendLists();
+    });
+  }
+
+  public deleteFriendRequest(friendToDelete: string): void {
+    this.friendService.deleteFriendRequest(friendToDelete, this.userService.loggedInUsername).subscribe(result => {
+      this.getFriendLists();
+    });
+  }
+
+  public deleteFriend(friendToDelete: string): void {
+    this.friendService.deleteFriend(friendToDelete, this.userService.loggedInUsername).subscribe(result => {
+      this.getFriendLists();
+    })
   }
 }

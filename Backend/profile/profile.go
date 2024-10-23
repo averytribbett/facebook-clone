@@ -66,7 +66,6 @@ func Get() []models.User {
 			panic(err)
 		}
 
-		log.Println(user)
 		list = append(list, user)
 	}
 	return list
@@ -90,6 +89,18 @@ func GetOneUserByUsername(username string) models.User {
 	var returnUser models.User
 
 	err := db.QueryRow("SELECT id, first_Name, last_name, username, bio FROM users WHERE username = ?", username).Scan(&returnUser.Id, &returnUser.FirstName, &returnUser.LastName, &returnUser.Username, &returnUser.Bio)
+
+	if err != nil {
+		log.Println(err)
+	}
+
+	return returnUser
+}
+
+func FindUserByFullName(firstName string, lastName string) models.User {
+	var returnUser models.User
+
+	err := db.QueryRow("SELECT id, first_name, last_name, username, bio FROM users WHERE first_name = ? AND last_name = ?", firstName, lastName).Scan(&returnUser.Id, &returnUser.FirstName, &returnUser.LastName, &returnUser.Username, &returnUser.Bio)
 
 	if err != nil {
 		log.Println(err)
@@ -138,7 +149,6 @@ func FindUserByName(firstName string, lastName string) []models.User {
 			panic(err)
 		}
 
-		log.Println(user)
 		returnList = append(returnList, user)
 	}
 	return returnList
