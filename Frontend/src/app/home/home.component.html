@@ -57,7 +57,7 @@
     <div *ngIf="auth.user$ | async as user; else showLogo" class="posts-container">
       <div *ngFor="let post of feed">
         <user-post
-          [likes]="post.id"
+          [likes]="post.reactCount"
           [comments]="post.replyCount"
           [postText]="post.text"
           [userAvatar]="'https://i.redd.it/i-got-bored-so-i-decided-to-draw-a-random-image-on-the-v0-4ig97vv85vjb1.png?width=1280&format=png&auto=webp&s=7177756d1f393b6e093596d06e1ba539f723264b'"
