@@ -10,7 +10,15 @@ export class PostService {
 
   constructor(private httpClient: HttpClient) { }
 
+  getUserPosts(userID: number): Observable<PostModel[]>{
+    return this.httpClient.get<PostModel[]>("api/posts/user/" + String(userID));
+  }
+
   getInitialFeedByTime(numOfPosts: number): Observable<PostModel[]>{
     return this.httpClient.get<PostModel[]>("api/posts/initial/" + String(numOfPosts));
+  }
+
+  getFeedByTime(numOfPosts: number): Observable<PostModel[]>{
+    return this.httpClient.get<PostModel[]>("api/posts/" + String(numOfPosts));
   }
 }

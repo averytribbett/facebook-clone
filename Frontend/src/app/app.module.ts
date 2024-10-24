@@ -30,6 +30,8 @@ import { DeveloperPageComponent } from './developer-page/developer-page.componen
 import { ProfileIncompleteWarningComponent } from './create-profile/profile-incomplete-warning/profile-incomplete-warning.component';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { UserPostComponent } from './components/user-post/user-post.component';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+
 
 @NgModule({
   declarations: [
@@ -63,7 +65,8 @@ import { UserPostComponent } from './components/user-post/user-post.component';
     MatDialogModule,
     MatCardModule,
     MatAutocompleteModule,
-    MatListModule
+    MatListModule,
+    MatProgressSpinnerModule
   ],
   providers: [
     provideAuth0({
