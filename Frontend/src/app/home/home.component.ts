@@ -37,12 +37,17 @@ export class HomeComponent {
   myControl = new FormControl('');
   public shouldShowProfilePage = false;
   public feed: PostModel[] = []
+  public numOfPosts: number = 0;
+  public isLoading: boolean = false;
+  public endOfFeed: boolean = false;
 
   constructor (public auth: AuthService,
               @Inject(DOCUMENT) public document: Document,
               public userService: UserServiceService,
               public router: Router,
-              public postService: PostService) {}
+              public postService: PostService) {
+                this.document.addEventListener('scroll', this.onScroll.bind(this));
+              }
 
   // a double subscribe like this is probably not best practice, but  for now it works
   ngOnInit(): void {
@@ -65,7 +70,7 @@ export class HomeComponent {
             this.currentUser = result;
           }
         });
-        this.postService.getInitialFeedByTime(5).subscribe(result => {
+        this.postService.getInitialFeedByTime(20).subscribe(result => {
           if (result.length) {
             this.feed = result;
           }
@@ -118,5 +123,46 @@ export class HomeComponent {
       this.router.navigate(['/profile', result.username, false]);
     });
   }
+
+// Method to handle scroll event
+onScroll(): void {
+  // Calculate the distance from the bottom of the page
+  const scrollPosition = window.scrollY;
+  const threshold = document.body.scrollHeight - 1000; // Adjust threshold as needed
+
+  // Check if the user has scrolled near the bottom and if not currently loading
+  if (scrollPosition >= threshold && !this.isLoading && !this.endOfFeed) {
+      this.loadMorePosts();
+  }
+}
+
+// Method to load more posts
+async loadMorePosts(): Promise<void> {
+  this.isLoading = true
+  this.numOfPosts += 20
+
+  // Fetch 20 more posts from backend
+  this.postService.getFeedByTime(this.numOfPosts).subscribe(
+    async (result: PostModel[]) => {
+        // Check for success
+        if (result && result.length) {
+          // Pause for 1 seconds to simulate loading (api takes like 1 milisecond)
+          await new Promise(r => setTimeout(r, 1000));
+          // Append new posts to existing feed
+          this.feed = [...this.feed, ...result]; 
+        } else {
+          // Once we get an empty array we know we are at the end of the feed
+          this.endOfFeed = true;
+        }
+        // Loading is complete
+        this.isLoading = false
+    },
+    (error) => {
+        // Will just be the end of the feed
+        this.isLoading = false
+        console.error("Error loading posts:", error);
+    }
+);
+}
 
 }

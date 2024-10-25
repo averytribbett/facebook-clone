@@ -11,6 +11,7 @@ export interface DisplayNameUserModel {
     lastName: string
 }
 
+/** @TODO remove this and replace with new PostModel in ./models/post-model.ts */
 export interface PostModel {
     likes: number,
     comments: number,

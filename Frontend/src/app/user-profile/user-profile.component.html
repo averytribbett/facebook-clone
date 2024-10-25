@@ -33,14 +33,14 @@
 <button *ngIf="shouldShowDeleteFriendButton" (click)="deleteFriend(profileBeingViewedUsername)">Delete Friend</button>
 
 <div *ngIf="shouldShowProfileFeed" id="posts">
-  <div *ngFor="let post of fakePosts">
+  <div *ngFor="let post of userPosts">
     <user-post
-      [likes]="post.likes"
-      [comments]="post.comments"
-      [postText]="post.postText"
-      [userAvatar]="post.userAvatar"
-      [userFirstName]="post.userFirstName"
-      [userLastName]="post.userLastName"
+      [likes]="post.reactCount"
+      [comments]="post.replyCount"
+      [postText]="post.text"
+      [userAvatar]="'https://i.redd.it/i-got-bored-so-i-decided-to-draw-a-random-image-on-the-v0-4ig97vv85vjb1.png?width=1280&format=png&auto=webp&s=7177756d1f393b6e093596d06e1ba539f723264b'"
+      [userFirstName]="post.authorFirstName"
+      [userLastName]="post.authorLastName"
       >
     </user-post>
   </div>

@@ -2,12 +2,13 @@ import { DOCUMENT } from '@angular/common';
 import { Component, EventEmitter, Inject, Input, Output } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
-import { PostModel, UserModel } from 'src/models/user-model';
+import { UserModel } from 'src/models/user-model';
+import { PostModel } from 'src/models/post-model';
 import { UserServiceService } from 'src/services/user-service.service';
 import { ActivatedRoute } from '@angular/router';
 import { FriendServiceService } from 'src/services/friend-service.service';
 import { FriendModel, FRIENDS, BLOCKED, PENDING } from 'src/models/friend-model';
-
+import { PostService } from 'src/services/posts-service.service';
 @Component({
   selector: 'app-user-profile',
   templateUrl: './user-profile.component.html',
@@ -30,7 +31,7 @@ export class UserProfileComponent {
   public shouldShowProfileFeed: boolean = true;
   public shouldShowFriendList: boolean = false;
   public shouldShowFriendRequests: boolean = false;
-  public fakePosts: PostModel[] = [];
+  public userPosts: PostModel[] = [];
   public loggedInUsername: string = "";
   public profileBeingViewedUsername: string = "";
   public isDeveloper = false;
@@ -44,8 +45,9 @@ export class UserProfileComponent {
                private route: ActivatedRoute,
                @Inject(DOCUMENT) public document: Document,
               private friendService: FriendServiceService,
-              private toaster: ToastrService) {}
-
+              private toaster: ToastrService,
+              private postService: PostService) {}
+      
   ngOnInit(): void {
     this.userService.userAuth.isAuthenticated$.subscribe(result => {
       if (!result){
@@ -71,40 +73,15 @@ export class UserProfileComponent {
         });
         this.userService.getUserByUsername(this.profileBeingViewedUsername).subscribe(result => {
           this.selectedUser = result;
-          this.fakePosts = [
-            {
-              likes: 3,
-              comments: 5,
-              postText: "post one",
-              userAvatar: "https://i.redd.it/i-got-bored-so-i-decided-to-draw-a-random-image-on-the-v0-4ig97vv85vjb1.png?width=1280&format=png&auto=webp&s=7177756d1f393b6e093596d06e1ba539f723264b",
-              userFirstName: this.selectedUser.firstName,
-              userLastName: this.selectedUser.lastName
-            },
-            {
-              likes: 10,
-              comments: 25,
-              postText: "post two",
-              userAvatar: "https://i.redd.it/i-got-bored-so-i-decided-to-draw-a-random-image-on-the-v0-4ig97vv85vjb1.png?width=1280&format=png&auto=webp&s=7177756d1f393b6e093596d06e1ba539f723264b",
-              userFirstName: this.selectedUser.firstName,
-              userLastName: this.selectedUser.lastName
-            },
-            {
-              likes: 30,
-              comments: 75,
-              postText: " post three",
-              userAvatar: "https://i.redd.it/i-got-bored-so-i-decided-to-draw-a-random-image-on-the-v0-4ig97vv85vjb1.png?width=1280&format=png&auto=webp&s=7177756d1f393b6e093596d06e1ba539f723264b",
-              userFirstName: this.selectedUser.firstName,
-              userLastName: this.selectedUser.lastName
-            },
-            {
-              likes: 3,
-              comments: 5,
-              postText: "I am really looking forward to seeing Paddington in Peru in January of 2025!",
-              userAvatar: "https://i.redd.it/i-got-bored-so-i-decided-to-draw-a-random-image-on-the-v0-4ig97vv85vjb1.png?width=1280&format=png&auto=webp&s=7177756d1f393b6e093596d06e1ba539f723264b",
-              userFirstName: this.selectedUser.firstName,
-              userLastName: this.selectedUser.lastName
-            }
-          ];
+          if (this.selectedUser.id) {
+            this.postService.getUserPosts(this.selectedUser.id).subscribe(result => {
+              if (result && result.length) {
+                this.userPosts = result;
+              } else {
+                this.userPosts = [];
+              }
+            });
+          }
         });
         this.getFriendLists();
       }

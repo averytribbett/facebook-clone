@@ -41,12 +41,28 @@ func AddNewUserHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, profile.AddNewUser(newUser))
 }
 
-func GetInitialFeedByTime(c *gin.Context) {
+func GetUserPostsHandler(c *gin.Context) {
+	userID, err := strconv.Atoi(c.Param("userID"))
+	if err != nil {
+		fmt.Println(err)
+	}
+	c.JSON(http.StatusOK, feed.GetUserPosts(userID))
+}
+
+func GetInitialFeedByTimeHandler(c *gin.Context) {
 	var numOfPosts, err = strconv.Atoi(c.Param("numOfPosts"))
 	if err != nil {
 		fmt.Println(err)
 	}
 	c.JSON(http.StatusOK, feed.InitialFeedByTime(numOfPosts))
+}
+
+func GetFeedByTimeHandler(c *gin.Context) {
+	var numOfPosts, err = strconv.Atoi(c.Param("numOfPosts"))
+	if err != nil {
+		fmt.Println(err)
+	}
+	c.JSON(http.StatusOK, feed.FeedByTime(numOfPosts))
 }
 
 func FindUserByNameHandler(c *gin.Context) {

@@ -7,7 +7,7 @@
 .homeSections {
   display: flex;
   flex-direction: row;
-  margin-top: 150px;
+  margin: 150px 0 20px 0;
 }
 
 .posts-container {
@@ -85,3 +85,8 @@ img {
     margin-left: 50px;
     padding-top: 20px;
 }
+
+.spinner {
+  margin-bottom: 20px;
+}
+
