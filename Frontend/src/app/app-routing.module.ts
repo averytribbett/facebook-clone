@@ -9,14 +9,23 @@ import { DeveloperPageComponent } from './developer-page/developer-page.componen
 const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: 'home', component: HomeComponent },
-  { path: 'profile/:profileUser/:isDeveloperMode', component: UserProfileComponent},
-  { path: 'feed', component: UserFeedComponent},
-  { path: 'create-profile/:currentUser/:isDeveloperMode', component: CreateProfileComponent},
-  { path: 'developer/:isDevelopmentEnvironment', component: DeveloperPageComponent }
+  {
+    path: 'profile/:profileUser/:isDeveloperMode',
+    component: UserProfileComponent,
+  },
+  { path: 'feed', component: UserFeedComponent },
+  {
+    path: 'create-profile/:currentUser/:isDeveloperMode',
+    component: CreateProfileComponent,
+  },
+  {
+    path: 'developer/:isDevelopmentEnvironment',
+    component: DeveloperPageComponent,
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

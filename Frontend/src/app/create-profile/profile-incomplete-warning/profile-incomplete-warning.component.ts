@@ -10,7 +10,7 @@ export class ProfileIncompleteWarningComponent {
   @Output() returnHomeEmitter$ = new EventEmitter<boolean>();
   readonly dialogRef = inject(MatDialogRef<ProfileIncompleteWarningComponent>);
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: any){}
+  constructor(@Inject(MAT_DIALOG_DATA) public data: any) {}
 
   onNoClick(): void {
     this.dialogRef.close(false);
@@ -19,6 +19,4 @@ export class ProfileIncompleteWarningComponent {
   cancelProfileCreation(): void {
     this.dialogRef.close(true);
   }
-
 }
-

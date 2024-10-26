@@ -5,38 +5,45 @@ import { Observable } from 'rxjs';
 import { UserModel } from 'src/models/user-model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UserServiceService {
-  public loggedInUsername: string = "";
+  public loggedInUsername = '';
 
-  constructor(private httpClient: HttpClient,
-              public userAuth: AuthService) {
-                  this.loggedInUsername = localStorage.getItem('myValue') || 'default value';
-               }
-
-  getAllUsers(): Observable<UserModel[]>{
-    return this.httpClient.get<UserModel[]>("api/users");
+  constructor(
+    private httpClient: HttpClient,
+    public userAuth: AuthService,
+  ) {
+    this.loggedInUsername = localStorage.getItem('myValue') || 'default value';
   }
 
-  getUser(userId: number): Observable<UserModel>{
-    return this.httpClient.get<UserModel>("api/user/" + userId);
+  getAllUsers(): Observable<UserModel[]> {
+    return this.httpClient.get<UserModel[]>('api/users');
   }
 
-  getUserByUsername(username: String): Observable<UserModel>{
-    return this.httpClient.get<UserModel>("api/username/" + username);
+  getUser(userId: number): Observable<UserModel> {
+    return this.httpClient.get<UserModel>('api/user/' + userId);
   }
 
-  addNewUser(user: UserModel): Observable<boolean>{
-    return this.httpClient.put<boolean>("api/user/addNewUser", user);
+  getUserByUsername(username: string): Observable<UserModel> {
+    return this.httpClient.get<UserModel>('api/username/' + username);
+  }
+
+  addNewUser(user: UserModel): Observable<boolean> {
+    return this.httpClient.put<boolean>('api/user/addNewUser', user);
   }
 
   searchUser(name: string): Observable<UserModel[]> {
-    return this.httpClient.get<UserModel[]>("api/user/findUserByName/" + name);
+    return this.httpClient.get<UserModel[]>('api/user/findUserByName/' + name);
   }
 
-  searchUserByFirstAndLastName(firstName: string, lastName: string): Observable<UserModel> {
-    return this.httpClient.get<UserModel>("api/user/findUserByFirstAndLastName/" + firstName + "/" + lastName)
+  searchUserByFirstAndLastName(
+    firstName: string,
+    lastName: string,
+  ): Observable<UserModel> {
+    return this.httpClient.get<UserModel>(
+      'api/user/findUserByFirstAndLastName/' + firstName + '/' + lastName,
+    );
   }
 
   setValue(value: string) {

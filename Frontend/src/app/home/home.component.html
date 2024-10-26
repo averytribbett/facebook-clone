@@ -1,70 +1,101 @@
 <div class="main-container">
   <mat-toolbar id="header">
     <div class="header-left">
-      <button mat-icon-button class="example-icon" [matMenuTriggerFor]="menu" aria-label="Example icon-button with menu icon">
+      <button
+        mat-icon-button
+        class="example-icon"
+        [matMenuTriggerFor]="menu"
+        aria-label="Example icon-button with menu icon"
+      >
         <mat-icon class="iconClass">menu</mat-icon>
       </button>
       <span>Welcome to Fakebook (TM)</span>
       <form id="searchFriend" *ngIf="isLoggedIn">
         <mat-form-field>
-          <input type="text"
-               placeholder="Search for a friend..."
-               matInput
-               [formControl]="myControl"
-               [matAutocomplete]="auto">
-        <mat-autocomplete #auto="matAutocomplete">
-          <mat-option *ngFor="let option of friendList" [value]="option" (click)="findFriend(option.firstName, option.lastName)">
-            {{ option.firstName }} {{ option.lastName }}
-          </mat-option>
-        </mat-autocomplete>
-      </mat-form-field>
+          <input
+            type="text"
+            placeholder="Search for a friend..."
+            matInput
+            [formControl]="myControl"
+            [matAutocomplete]="auto"
+          />
+          <mat-autocomplete #auto="matAutocomplete">
+            <mat-option
+              *ngFor="let option of friendList"
+              [value]="option"
+              (click)="findFriend(option.firstName, option.lastName)"
+            >
+              {{ option.firstName }} {{ option.lastName }}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
       </form>
       <span class="example-spacer"></span>
       <mat-menu #menu="matMenu">
         <button mat-menu-item>
-          <mat-icon [ngStyle]="{'color':'orangered'}">info</mat-icon>
+          <mat-icon [ngStyle]="{ color: 'orangered' }">info</mat-icon>
           <span>About</span>
         </button>
-        <button *ngIf="auth.user$ | async as user; else loggedOutUser" mat-menu-item (click)="logout()">
-          <mat-icon [ngStyle]="{'color':'orangered'}">logout</mat-icon>
+        <button
+          *ngIf="auth.user$ | async as user; else loggedOutUser"
+          mat-menu-item
+          (click)="logout()"
+        >
+          <mat-icon [ngStyle]="{ color: 'orangered' }">logout</mat-icon>
           <span>Logout</span>
         </button>
-        <button *ngIf="auth.user$ | async as user" mat-menu-item [routerLink]="['/profile', this.currentLoggedInUsername, false]">
-          <mat-icon [ngStyle]="{'color':'orangered'}">person</mat-icon>
+        <button
+          *ngIf="auth.user$ | async as user"
+          mat-menu-item
+          [routerLink]="['/profile', this.currentLoggedInUsername, false]"
+        >
+          <mat-icon [ngStyle]="{ color: 'orangered' }">person</mat-icon>
           <span>Profile</span>
         </button>
         <ng-template #loggedOutUser>
           <button mat-menu-item (click)="login(false)">
-            <mat-icon [ngStyle]="{'color':'orangered'}">login</mat-icon>
+            <mat-icon [ngStyle]="{ color: 'orangered' }">login</mat-icon>
             <span>Login</span>
           </button>
           <button mat-menu-item (click)="login(true)">
-            <mat-icon [ngStyle]="{'color':'orangered'}">account_circle</mat-icon>
+            <mat-icon [ngStyle]="{ color: 'orangered' }">
+              account_circle
+            </mat-icon>
             <span>Create New Account</span>
           </button>
         </ng-template>
-        <button *ngIf="isDevelopmentEnvironment" mat-menu-item [routerLink]="['/developer', true]">
-          <mat-icon [ngStyle]="{'color':'orangered'}">code</mat-icon>
+        <button
+          *ngIf="isDevelopmentEnvironment"
+          mat-menu-item
+          [routerLink]="['/developer', true]"
+        >
+          <mat-icon [ngStyle]="{ color: 'orangered' }">code</mat-icon>
           <span>Developer Menu</span>
         </button>
       </mat-menu>
     </div>
     <!-- TODO switch to their firstName when we connect backend -->
-    <span *ngIf="auth.user$ | async as user"  class="">Hello 👋 {{ user.email }}</span>
+    <span *ngIf="auth.user$ | async as user" class="">
+      Hello 👋 {{ user.email }}
+    </span>
   </mat-toolbar>
 
   <div class="homeSections">
-    <div *ngIf="auth.user$ | async as user; else showLogo" class="posts-container">
+    <div
+      *ngIf="auth.user$ | async as user; else showLogo"
+      class="posts-container"
+    >
       <div *ngFor="let post of feed">
         <user-post
           [likes]="post.reactCount"
           [comments]="post.replyCount"
           [postText]="post.text"
-          [userAvatar]="'https://i.redd.it/i-got-bored-so-i-decided-to-draw-a-random-image-on-the-v0-4ig97vv85vjb1.png?width=1280&format=png&auto=webp&s=7177756d1f393b6e093596d06e1ba539f723264b'"
+          [userAvatar]="
+            'https://i.redd.it/i-got-bored-so-i-decided-to-draw-a-random-image-on-the-v0-4ig97vv85vjb1.png?width=1280&format=png&auto=webp&s=7177756d1f393b6e093596d06e1ba539f723264b'
+          "
           [userFirstName]="post.authorFirstName"
           [userLastName]="post.authorLastName"
-        >
-        </user-post>
+        ></user-post>
       </div>
     </div>
     <ng-template #showLogo>
@@ -73,13 +104,12 @@
           Facebook, shmacebook. 
       </div> -->
       <div class="homeOptions">
-          <img src="../images/paper_plane.jpg">
+        <img src="../images/paper_plane.jpg" alt="Logo" />
       </div>
     </ng-template>
   </div>
   <mat-spinner *ngIf="isLoading" class="spinner"></mat-spinner>
 </div>
 
-
-                  <!--getting rid of footer for now because it was in the way and we can add it back later if necessary-->
+<!--getting rid of footer for now because it was in the way and we can add it back later if necessary-->
 <!-- <footer id="footer">Not affiliated with any other corporation involving books of faces (TM) not sure if we need a footer but here is one we could modify</footer> -->
