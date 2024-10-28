@@ -30,8 +30,7 @@ import { DeveloperPageComponent } from './developer-page/developer-page.componen
 import { ProfileIncompleteWarningComponent } from './create-profile/profile-incomplete-warning/profile-incomplete-warning.component';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { UserPostComponent } from './components/user-post/user-post.component';
-import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
-
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @NgModule({
   declarations: [
@@ -42,7 +41,7 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
     CreateProfileComponent,
     DeveloperPageComponent,
     ProfileIncompleteWarningComponent,
-    UserPostComponent
+    UserPostComponent,
   ],
   imports: [
     BrowserModule,
@@ -66,18 +65,18 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
     MatCardModule,
     MatAutocompleteModule,
     MatListModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
   ],
   providers: [
     provideAuth0({
       domain: environment.auth.domain,
       clientId: environment.auth.clientId,
       authorizationParams: {
-        redirect_uri: window.location.origin, 
-        connection: "email"
-      }
+        redirect_uri: window.location.origin,
+        connection: 'email',
+      },
     }),
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

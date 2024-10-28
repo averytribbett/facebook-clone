@@ -5,14 +5,14 @@ import { UserServiceService } from 'src/services/user-service.service';
 @Component({
   selector: 'app-user-feed',
   templateUrl: './user-feed.component.html',
-  styleUrls: ['./user-feed.component.css']
+  styleUrls: ['./user-feed.component.css'],
 })
 export class UserFeedComponent {
   public selectedUser = {
     id: 0,
-    firstName: "Please choose a name...",
-    lastName: "",
-    username: ""
+    firstName: 'Please choose a name...',
+    lastName: '',
+    username: '',
   } as UserModel;
 
   public availableUsers: UserModel[] = [];
@@ -55,10 +55,10 @@ export class UserFeedComponent {
 
   public relevantPosts: PostModel[] = [];
 
-  constructor(private userService: UserServiceService){}
+  constructor(private userService: UserServiceService) {}
 
   ngOnInit(): void {
-    this.userService.getAllUsers().subscribe(result => {
+    this.userService.getAllUsers().subscribe((result) => {
       console.log('result: ', result);
       this.availableUsers = result;
     });
@@ -69,5 +69,4 @@ export class UserFeedComponent {
     // console.log(allPosts);
     // this.relevantPosts = allPosts;
   }
-
 }
