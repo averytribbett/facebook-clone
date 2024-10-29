@@ -80,6 +80,7 @@ func main() {
 	authorized.GET("/api/user/findUserByName/:fullName", handlers.FindUserByNameHandler)
 	authorized.GET("/api/user/findUserByFirstAndLastName/:firstName/:lastName", handlers.FindUserByFullNameHandler)
 	authorized.GET("/api/friends/findFriendList/:username", handlers.GetFriendsListHandler)
+	authorized.GET("/api/friends/findFriendRequestList/:username", handlers.GetFriendRequestListHandler)
 	authorized.PUT("/api/friends/addPendingFriendship/:requestor/:requestee", handlers.AddOneFriendHandler)
 	authorized.GET("/api/friends/acceptFriendship/:originalRequestor/:acceptee", handlers.AcceptFriendshipHandler)
 	authorized.DELETE("/api/friends/deleteFriendshipRequest/:originalRequestor/:deleter", handlers.DeleteFriendshipRequestHandler)

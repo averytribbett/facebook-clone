@@ -31,7 +31,6 @@
 <button [disabled]="!shouldHaveWriteAccess" (click)="editProfile()">Edit Profile</button>
 <button *ngIf="shouldShowAddFriendButton" (click)="addFriend()">Add Friend</button>
 <button *ngIf="shouldShowDeleteFriendButton" (click)="deleteFriend(profileBeingViewedUsername)">Delete Friend</button>
-
 <div *ngIf="shouldShowProfileFeed" id="posts">
   <div *ngFor="let post of userPosts">
     <user-post
@@ -50,8 +49,8 @@
   <mat-card-subtitle *ngIf="!this.userFriends || this.userFriends.length === 0">Not even your mom is your friend...?</mat-card-subtitle>
   <mat-list *ngIf="this.userFriends && this.userFriends.length > 0">
     <div class="friendSectionList" *ngFor="let friend of userFriends">
-      <mat-list-item>{{ friend.friendId }}</mat-list-item>
-      <button *ngIf="shouldHaveWriteAccess" mat-icon-button (click)="deleteFriend(friend.friendId)">
+      <mat-list-item>{{friend.firstName}} {{friend.lastName}}  ({{ friend.username }})</mat-list-item>
+      <button *ngIf="shouldHaveWriteAccess" mat-icon-button (click)="deleteFriend(friend.username)">
         <mat-icon [ngStyle]="{'color':'orangered'}">delete</mat-icon>
       </button>
     </div>
@@ -63,12 +62,12 @@
   <mat-list *ngIf="this.userFriendRequests && this.userFriendRequests.length > 0">
     <div class="friendSectionList" *ngFor="let friend of userFriendRequests">
       <mat-list-item class="requestListItem">
-        <span matListItemTitle>{{ friend.userId }}</span>
+        <span matListItemTitle>{{ friend.firstName }} {{ friend.lastName }} ({{ friend.username }})</span>
       </mat-list-item>
-      <button mat-icon-button  (click)="acceptFriend(friend.userId)">
+      <button mat-icon-button  (click)="acceptFriend(friend.username)">
         <mat-icon [ngStyle]="{'color':'orangered'}">add_box</mat-icon>
       </button>
-      <button mat-icon-button (click)="deleteFriendRequest(friend.userId)">
+      <button mat-icon-button (click)="deleteFriendRequest(friend.username)">
         <mat-icon [ngStyle]="{'color':'orangered'}">delete</mat-icon>
       </button>
       <mat-divider></mat-divider>
