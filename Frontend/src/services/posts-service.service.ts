@@ -22,4 +22,11 @@ export class PostService {
   getFeedByTime(numOfPosts: number): Observable<PostModel[]> {
     return this.httpClient.get<PostModel[]>('api/posts/' + String(numOfPosts));
   }
+
+  addPost(userID: number, postText: string): Observable<boolean> {
+    return this.httpClient.post<boolean>(
+      `api/posts/${userID}/${postText}`,
+      null,
+    );
+  }
 }

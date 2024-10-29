@@ -50,7 +50,7 @@ func main() {
 	testarr = feed.FeedByRandom(used)
 	feed.DisplayModel(testarr)
 
-	AddReaction("thumbs_up", 3, 3)
+	// AddReaction("thumbs_up", 3, 3)
 
 	// setAuth0Variables()
 
@@ -81,6 +81,7 @@ func main() {
 	authorized.GET("/api/posts/user/:userID", handlers.GetUserPostsHandler)
 	authorized.GET("/api/posts/initial/:numOfPosts", handlers.GetInitialFeedByTimeHandler)
 	authorized.GET("/api/posts/:numOfPosts", handlers.GetFeedByTimeHandler)
+	authorized.POST("/api/posts/:userId/:postText", handlers.AddPostHandler)
 	authorized.GET("/api/user/findUserByName/:fullName", handlers.FindUserByNameHandler)
 	authorized.GET("/api/user/findUserByFirstAndLastName/:firstName/:lastName", handlers.FindUserByFullNameHandler)
 	authorized.GET("/api/friends/findFriendList/:username", handlers.GetFriendsListHandler)
@@ -299,32 +300,4 @@ func StatusCheck(username string, friendUsername string, status string) bool {
 		return false
 	}
 	return true
-}
-
-// func to add post
-func AddPost(user_id int, post_text string) {
-	dsn := "capstone:csc450@tcp(71.89.73.28:3306)/capstone"
-
-	// Open a connection to the database
-	db, err := sql.Open("mysql", dsn)
-	if err != nil {
-		panic(err)
-	}
-	defer db.Close()
-
-	// Ping the database to verify the connection is alive
-	err = db.Ping()
-	if err != nil {
-		panic(err)
-	}
-
-	// sql query
-	query := fmt.Sprintf("insert into posts (user_id, post_text) values (%d, '%s');", user_id, post_text)
-	println(query)
-
-	// execute query
-	_, err = db.Query(query)
-	if err != nil {
-		panic(err)
-	}
 }
