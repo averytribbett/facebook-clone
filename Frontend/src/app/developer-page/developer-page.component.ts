@@ -11,7 +11,7 @@ export class DeveloperPageComponent {
 
   constructor(private route: ActivatedRoute) {}
 
-  onInit(): void {
+  ngOnInit(): void {
     this.route.params.subscribe((params) => {
       this.isDeveloper = params['isDevelopmentEnvironment'];
     });

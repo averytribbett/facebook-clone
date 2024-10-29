@@ -29,7 +29,7 @@ export class CreateProfileComponent {
     @Inject(DOCUMENT) public document: Document,
   ) {}
 
-  onInit(): void {
+  ngOnInit(): void {
     this.initForm();
     this.route?.params.subscribe((params) => {
       this.isDeveloperMode = params['isDeveloperMode'];

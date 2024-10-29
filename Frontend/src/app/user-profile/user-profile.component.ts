@@ -49,7 +49,7 @@ export class UserProfileComponent {
     private postService: PostService,
   ) {}
 
-  onInit(): void {
+  ngOnInit(): void {
     this.userService.userAuth.isAuthenticated$.subscribe((result) => {
       if (!result) {
         this.userService.userAuth.loginWithRedirect({
