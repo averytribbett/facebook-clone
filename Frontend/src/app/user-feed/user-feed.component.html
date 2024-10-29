@@ -1,12 +1,12 @@
 <h1>FakeBook(TM) Feed</h1>
 <!-- when user feed loads, something will be called which gathers all posts from all friends on current logged in user's friend list?-->
 <h2>Please select the user whose posts you would like to see:</h2>
-    <select [(ngModel)]="selectedUser" (change)="changeSelectedUser($event)">
-        <option *ngFor="let user of availableUsers" [value]="user.username">
-            {{ user.username }}
-        </option>
-    </select>
-    <ul *ngFor="let post of relevantPosts">
-        <li>{{ post.postText }}</li>
-    </ul>
+<select [(ngModel)]="selectedUser" (change)="changeSelectedUser($event)">
+  <option *ngFor="let user of availableUsers" [value]="user.username">
+    {{ user.username }}
+  </option>
+</select>
+<ul *ngFor="let post of relevantPosts">
+  <li>{{ post.postText }}</li>
+</ul>
 <button routerLink="/">Back to Home</button>

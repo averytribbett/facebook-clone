@@ -8,7 +8,7 @@ describe('ProfileIncompleteWarningComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [ProfileIncompleteWarningComponent]
+      declarations: [ProfileIncompleteWarningComponent],
     });
     fixture = TestBed.createComponent(ProfileIncompleteWarningComponent);
     component = fixture.componentInstance;

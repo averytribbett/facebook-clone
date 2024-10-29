@@ -2,9 +2,9 @@ import { Component, EventEmitter, Inject, Input, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { UserModel } from 'src/models/user-model';
 import { UserServiceService } from 'src/services/user-service.service';
-import { MatDialog} from '@angular/material/dialog';
-import {MatButton} from '@angular/material/button';
-import {MatTooltip} from '@angular/material/tooltip';
+import { MatDialog } from '@angular/material/dialog';
+import { MatButton } from '@angular/material/button';
+import { MatTooltip } from '@angular/material/tooltip';
 import { AuthService } from '@auth0/auth0-angular';
 import { ProfileIncompleteWarningComponent } from './profile-incomplete-warning/profile-incomplete-warning.component';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -16,11 +16,11 @@ import { DOCUMENT } from '@angular/common';
   styleUrls: ['./create-profile.component.css'],
 })
 export class CreateProfileComponent {
-  @Input() currentUser: String = "";
+  @Input() currentUser = '';
   @Output() myEmitter$ = new EventEmitter<boolean>();
   @Output() returnHome$ = new EventEmitter<boolean>();
   public createProfileForm: FormGroup = new FormGroup({});
-  public isDeveloperMode: boolean = false;
+  public isDeveloperMode = false;
 
   constructor(
     private userService: UserServiceService,
@@ -29,15 +29,14 @@ export class CreateProfileComponent {
     private route: ActivatedRoute,
     private router: Router,
     @Inject(DOCUMENT) public document: Document,
+  ) {}
 
-  ){}
-  
   ngOnInit(): void {
     this.initForm();
-    this.route?.params.subscribe(params => {
+    this.route?.params.subscribe((params) => {
       this.isDeveloperMode = params['isDeveloperMode'];
     });
-    this.userService.userAuth.user$.subscribe(result => {
+    this.userService.userAuth.user$.subscribe((result) => {
       if (result) {
         this.currentUser = result.name as string;
         this.disableUserNameField();
@@ -59,10 +58,11 @@ export class CreateProfileComponent {
       firstName: this.createProfileForm.get('firstName')?.value,
       lastName: this.createProfileForm.get('lastName')?.value,
       bio: this.createProfileForm.get('bio')?.value,
-      username: this.currentUser ?? this.createProfileForm.get('username')?.value,
+      username:
+        this.currentUser ?? this.createProfileForm.get('username')?.value,
     } as UserModel;
 
-    this.userService.addNewUser(userToSend).subscribe(result => {
+    this.userService.addNewUser(userToSend).subscribe((result) => {
       this.router.navigate(['/home']);
     });
   }
@@ -75,17 +75,17 @@ export class CreateProfileComponent {
     myDialog.afterClosed().subscribe((result) => {
       this.dialogRef.closeAll();
       if (result) {
-        this.auth.logout({ 
+        this.auth.logout({
           logoutParams: {
-            returnTo: this.document.location.origin 
-          }
+            returnTo: this.document.location.origin,
+          },
         });
       }
     });
   }
 
   public disableUserNameField(): void {
-    if (this.currentUser !== null && this.currentUser !== "") {
+    if (this.currentUser !== null && this.currentUser !== '') {
       this.createProfileForm.get('username')?.disable();
     }
   }

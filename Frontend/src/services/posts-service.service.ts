@@ -4,21 +4,22 @@ import { Observable } from 'rxjs';
 import { PostModel } from 'src/models/post-model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class PostService {
+  constructor(private httpClient: HttpClient) {}
 
-  constructor(private httpClient: HttpClient) { }
-
-  getUserPosts(userID: number): Observable<PostModel[]>{
-    return this.httpClient.get<PostModel[]>("api/posts/user/" + String(userID));
+  getUserPosts(userID: number): Observable<PostModel[]> {
+    return this.httpClient.get<PostModel[]>('api/posts/user/' + String(userID));
   }
 
-  getInitialFeedByTime(numOfPosts: number): Observable<PostModel[]>{
-    return this.httpClient.get<PostModel[]>("api/posts/initial/" + String(numOfPosts));
+  getInitialFeedByTime(numOfPosts: number): Observable<PostModel[]> {
+    return this.httpClient.get<PostModel[]>(
+      'api/posts/initial/' + String(numOfPosts),
+    );
   }
 
-  getFeedByTime(numOfPosts: number): Observable<PostModel[]>{
-    return this.httpClient.get<PostModel[]>("api/posts/" + String(numOfPosts));
+  getFeedByTime(numOfPosts: number): Observable<PostModel[]> {
+    return this.httpClient.get<PostModel[]>('api/posts/' + String(numOfPosts));
   }
 }
