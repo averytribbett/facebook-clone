@@ -87,7 +87,10 @@
   </mat-card-subtitle>
   <mat-list *ngIf="this.userFriends && this.userFriends.length > 0">
     <div class="friendSectionList" *ngFor="let friend of userFriends">
-      <mat-list-item>{{friend.firstName}} {{friend.lastName}}  ({{ friend.username }})</mat-list-item>
+      <mat-list-item
+        >{{friend.firstName}} {{friend.lastName}} ({{ friend.username
+        }})</mat-list-item
+      >
       <button
         *ngIf="shouldHaveWriteAccess"
         mat-icon-button
@@ -106,9 +109,12 @@
   >
     <div class="friendSectionList" *ngFor="let friend of userFriendRequests">
       <mat-list-item class="requestListItem">
-        <span matListItemTitle>{{ friend.firstName }} {{ friend.lastName }} ({{ friend.username }})</span>
+        <span matListItemTitle
+          >{{ friend.firstName }} {{ friend.lastName }} ({{ friend.username
+          }})</span
+        >
       </mat-list-item>
-      <button mat-icon-button  (click)="acceptFriend(friend.username)">
+      <button mat-icon-button (click)="acceptFriend(friend.username)">
         <mat-icon [ngStyle]="{'color':'orangered'}">add_box</mat-icon>
       </button>
       <button mat-icon-button (click)="deleteFriendRequest(friend.username)">

@@ -1,7 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { FriendModel } from 'src/models/friend-model';
 import { UserModel } from 'src/models/user-model';
 
 @Injectable({
@@ -11,11 +10,15 @@ export class FriendServiceService {
   constructor(private httpClient: HttpClient) {}
 
   public getFriendList(username: string): Observable<UserModel[]> {
-    return this.httpClient.get<UserModel[]>("api/friends/findFriendList/" + username);
+    return this.httpClient.get<UserModel[]>(
+      'api/friends/findFriendList/' + username,
+    );
   }
 
   public getFriendRequestList(username: string): Observable<UserModel[]> {
-    return this.httpClient.get<UserModel[]>("api/friends/findFriendRequestList/" + username);
+    return this.httpClient.get<UserModel[]>(
+      'api/friends/findFriendRequestList/' + username,
+    );
   }
 
   public addFriendRequest(

@@ -50,7 +50,7 @@ export class HomeComponent {
   }
 
   // a double subscribe like this is probably not best practice, but  for now it works
-  ngOnInit(): void {
+  onInit(): void {
     this.userService.userAuth.user$.subscribe((result) => {
       // check if someone is signing up / logging in via auth0
       if (result) {
