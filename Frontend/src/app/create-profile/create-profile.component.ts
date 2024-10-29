@@ -3,8 +3,6 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { UserModel } from 'src/models/user-model';
 import { UserServiceService } from 'src/services/user-service.service';
 import { MatDialog } from '@angular/material/dialog';
-import { MatButton } from '@angular/material/button';
-import { MatTooltip } from '@angular/material/tooltip';
 import { AuthService } from '@auth0/auth0-angular';
 import { ProfileIncompleteWarningComponent } from './profile-incomplete-warning/profile-incomplete-warning.component';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -62,7 +60,7 @@ export class CreateProfileComponent {
         this.currentUser ?? this.createProfileForm.get('username')?.value,
     } as UserModel;
 
-    this.userService.addNewUser(userToSend).subscribe((result) => {
+    this.userService.addNewUser(userToSend).subscribe(() => {
       this.router.navigate(['/home']);
     });
   }

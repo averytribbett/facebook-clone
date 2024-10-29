@@ -15,7 +15,7 @@ const (
 	BLOCKED = "blocked"
 )
 
-func GetFriendsList(username string) []models.Friend {
+func GetFriendsList(username string) []models.User {
 	dbName := os.Getenv("DB_NAME")
 	dbPass := os.Getenv("DB_PASS")
 	dbHost := os.Getenv("DB_HOST")
@@ -37,7 +37,7 @@ func GetFriendsList(username string) []models.Friend {
 
 	var friendList []models.Friend
 	// sql query
-	rows, err2 := db.Query("SELECT user_id, friend_id, friend_status FROM friends WHERE user_id = ? OR friend_id = ?", username, username)
+	rows, err2 := db.Query("SELECT user_id, friend_id, friend_status FROM friends WHERE user_id = ? OR friend_id = ? AND friend_status='friends'", username, username)
 
 	if err2 != nil {
 		panic(err2)
@@ -54,7 +54,54 @@ func GetFriendsList(username string) []models.Friend {
 		friendList = append(friendList, friend)
 	}
 
-	return friendList
+	var friendListAsUsers = FillInFriendRequestDetails(friendList)
+
+	return friendListAsUsers
+}
+
+func GetFriendRequestList(username string) []models.User {
+	dbName := os.Getenv("DB_NAME")
+	dbPass := os.Getenv("DB_PASS")
+	dbHost := os.Getenv("DB_HOST")
+
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:3306)/capstone", dbName, dbPass, dbHost)
+
+	// Open a connection to the database
+	db, err := sql.Open("mysql", dsn)
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+
+	// Ping the database to verify the connection is alive
+	err = db.Ping()
+	if err != nil {
+		panic(err)
+	}
+
+	//var requestList []models.User
+	var friendRequestList []models.Friend
+	// sql query
+	rows, err2 := db.Query("SELECT user_id, friend_id, friend_status FROM friends WHERE friend_id = ? AND friend_status = 'pending'", username)
+
+	if err2 != nil {
+		panic(err2)
+	}
+
+	for rows.Next() {
+		// var requestor models.User
+		var friendQueryResult models.Friend
+
+		err3 := rows.Scan(&friendQueryResult.User_id, &friendQueryResult.Friend_id, &friendQueryResult.Friend_status)
+		if err3 != nil {
+			panic(err3)
+		}
+
+		friendRequestList = append(friendRequestList, friendQueryResult)
+	}
+	var friendRequestListAsUsers = FillInFriendRequestDetails(friendRequestList)
+
+	return friendRequestListAsUsers
 }
 
 func AddPendingFriend(friendRequestor string, friendRequestee string) error {
@@ -180,4 +227,38 @@ func DeleteFriend(friendToDelete string, deleter string) error {
 	}
 
 	return err3
+}
+
+func FillInFriendRequestDetails(requestList []models.Friend) []models.User {
+
+	dbName := os.Getenv("DB_NAME")
+	dbPass := os.Getenv("DB_PASS")
+	dbHost := os.Getenv("DB_HOST")
+
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:3306)/capstone", dbName, dbPass, dbHost)
+
+	// Open a connection to the database
+	db, err := sql.Open("mysql", dsn)
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+
+	// Ping the database to verify the connection is alive
+	err = db.Ping()
+	if err != nil {
+		panic(err)
+	}
+	var requestListAsUsers []models.User
+	for _, value := range requestList {
+		var requestor models.User
+		err4 := db.QueryRow("SELECT id, first_name, last_name, username, bio FROM users WHERE username = ?", value.User_id).Scan(&requestor.Id, &requestor.FirstName, &requestor.LastName, &requestor.Username, &requestor.Bio)
+
+		if err4 != nil {
+			panic(err4)
+		}
+
+		requestListAsUsers = append(requestListAsUsers, requestor)
+	}
+	return requestListAsUsers
 }

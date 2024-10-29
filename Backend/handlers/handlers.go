@@ -92,8 +92,12 @@ func FindUserByFullNameHandler(c *gin.Context) {
 
 func GetFriendsListHandler(c *gin.Context) {
 	username := c.Param("username")
-	fmt.Println("username: " + username)
 	c.JSON(http.StatusOK, friends.GetFriendsList(username))
+}
+
+func GetFriendRequestListHandler(c *gin.Context) {
+	username := c.Param("username")
+	c.JSON(http.StatusOK, friends.GetFriendRequestList(username))
 }
 
 func AddOneFriendHandler(c *gin.Context) {
