@@ -123,3 +123,12 @@ func DeleteFriendshipHandler(c *gin.Context) {
 	deleter := c.Param("deleter")
 	c.JSON(http.StatusOK, friends.DeleteFriend(friendToDelete, deleter))
 }
+
+func AddPostHandler(c *gin.Context) {
+	var userId, err = strconv.Atoi(c.Param("userId"))
+	if err != nil {
+		fmt.Println(err)
+	}
+	postText := c.Param("postText")
+	c.JSON(http.StatusOK, feed.AddPost(userId, postText))
+}

@@ -341,6 +341,33 @@ func FeedByRandom(exclude []int) []models.Post {
 	return data
 }
 
+// func to add post
+func AddPost(user_id int, post_text string) bool {
+	dsn := "capstone:csc450@tcp(71.89.73.28:3306)/capstone"
+
+	// Open a connection to the database
+	db, err := sql.Open("mysql", dsn)
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+
+	// Ping the database to verify the connection is alive
+	err = db.Ping()
+	if err != nil {
+		panic(err)
+	}
+
+	// sql query
+	query := fmt.Sprintf("insert into posts (user_id, post_text) values (%d, '%s');", user_id, post_text)
+	println(query)
+
+	// execute query
+	_, err = db.Query(query)
+
+	return !(err != nil)
+}
+
 // func to display posts
 func DisplayPost(posts []string) {
 	for i := 0; i < len(posts); i++ {

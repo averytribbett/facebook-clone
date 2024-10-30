@@ -85,6 +85,25 @@
       *ngIf="auth.user$ | async as user; else showLogo"
       class="posts-container"
     >
+      <form [formGroup]="createPostForm">
+        <div id="createPost">
+          <mat-form-field color="warn">
+            <input
+              matInput
+              formControlName="createPostInput"
+              placeholder="What's on your mind?"
+            />
+          </mat-form-field>
+          <button
+            id="submitButton"
+            mat-raised-button
+            [disabled]="!createPostForm.get('createPostInput')?.value"
+            (click)="createNewPost()"
+          >
+            Post
+          </button>
+        </div>
+      </form>
       <div *ngFor="let post of feed">
         <user-post
           [likes]="post.reactCount"
