@@ -1,6 +1,7 @@
 package profile
 
 import (
+	
 	"database/sql"
 	"fmt"
 	"log"
@@ -14,6 +15,7 @@ import (
 )
 
 var (
+
 	mtx      sync.RWMutex
 	onceList sync.Once
 	onceDB   sync.Once
@@ -21,6 +23,7 @@ var (
 )
 
 func init() {
+
 	onceDB.Do(initializeDB)
 }
 
@@ -52,6 +55,7 @@ func initializeDB() {
 }
 
 func Get() []models.User {
+
 	var list []models.User
 	rows, err := db.Query("SELECT id, first_name, last_name, username, bio FROM users")
 	if err != nil {
@@ -99,6 +103,7 @@ func GetOneUserByUsername(username string) models.User {
 }
 
 func FindUserByFullName(firstName string, lastName string) models.User {
+
 	var returnUser models.User
 
 	err := db.QueryRow("SELECT id, first_name, last_name, username, bio FROM users WHERE first_name = ? AND last_name = ?", firstName, lastName).Scan(&returnUser.Id, &returnUser.FirstName, &returnUser.LastName, &returnUser.Username, &returnUser.Bio)
@@ -111,6 +116,7 @@ func FindUserByFullName(firstName string, lastName string) models.User {
 }
 
 func AddNewUser(newUser models.User) error {
+
 	var oldUser = GetOneUserByUsername(newUser.Username)
 
 	if oldUser.Id == 0 {
@@ -128,6 +134,7 @@ func AddNewUser(newUser models.User) error {
 }
 
 func FindUserByName(firstName string, lastName string) []models.User {
+
 	var rows *sql.Rows
 	var returnList []models.User
 	var err error
@@ -158,7 +165,7 @@ func FindUserByName(firstName string, lastName string) []models.User {
 
 func EditName(userID int, newFirst string, newLast string){
 
-
+	// Some checks included here to decide on editing first name, last name, or both. 
 	if len(newLast) > 0 && len(newFirst) > 0{
 
 		query := "UPDATE users SET first_name = ? last_name = ? WHERE id = ?"
@@ -218,21 +225,65 @@ func EditUsername(userID int, newUsername string){
 	}
 }
 
-func DeleteUser(userID int){
+func DeleteUser(userID int) error{
 
-	// defer func ()  {
-	// 	if err !=nil {
-
-	// 	}
-	// }
-	
-	// query for deleting the user
-	query := "UPDATE users SET first_name = ? last_name = ? bio = ? WHERE id = ?"
-	_, err := db.Exec(query,"Deleted","user","",userID)
+	var username string
+	//Beginning transactions for the database, so they can be rolled back if an error occurs midway.
+	txn, err := db.Begin()
 
 	if err != nil {
-		log.Println(err)
+		return err
 	}
+
+	// deferring the function to either commit the transactions, or roll them back depending on if an error is thrown. 
+    defer func() {
+        if err != nil {
+            txn.Rollback()
+        } else {
+            err = txn.Commit()
+        }
+    }()
+
+	// getting username to delete from Friends table
+	err = txn.QueryRow("SELECT username FROM users WHERE id = ?",userID).Scan(&username)
+
+	// removing from reactions table
+	_, err = txn.Exec("DELETE FROM reactions WHERE user_id = ?",userID)
+	if err != nil {
+		return err
+	}
+
+	// removing from replies table
+	_, err = txn.Exec("DELETE FROM replies WHERE user_id = ?",userID)
+
+	if err != nil {
+		return err
+	}
+
+	// removing from posts table
+	_, err = txn.Exec("DELETE FROM posts WHERE user_id = ?",userID)
+
+	if err != nil {
+		return err
+	}
+
+	// removing from friends table
+	_, err = txn.Exec("DELETE FROM friends WHERE user_id = ?",username)
+
+	if err != nil {
+		return err
+	}
+
+	// Deleting the user
+	_, err = txn.Exec("DELETE FROM users WHERE id = ?",userID)
+
+	if err != nil {
+		return err
+	}
+
+
+	return nil
+
 }
 
  
