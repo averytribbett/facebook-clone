@@ -1,7 +1,7 @@
 package profile
 
 import (
-	
+
 	"database/sql"
 	"fmt"
 	"log"
@@ -163,7 +163,7 @@ func FindUserByName(firstName string, lastName string) []models.User {
 }
 
 
-func EditName(userID int, newFirst string, newLast string){
+func EditName(userID int, newFirst string, newLast string) error{
 
 	// Some checks included here to decide on editing first name, last name, or both. 
 	if len(newLast) > 0 && len(newFirst) > 0{
@@ -172,7 +172,7 @@ func EditName(userID int, newFirst string, newLast string){
 		_, err := db.Exec(query,newFirst,newLast,userID)
 
 		if err != nil {
-			log.Println(err)
+			return err
 		}
 
 	}else if len(newLast) > 0{
@@ -181,7 +181,7 @@ func EditName(userID int, newFirst string, newLast string){
 		_, err := db.Exec(query,newLast,userID)
 
 		if err != nil {
-			log.Println(err)
+			return err
 		}
 
 	}else{
@@ -190,15 +190,15 @@ func EditName(userID int, newFirst string, newLast string){
 		_, err := db.Exec(query,newFirst,userID)
 
 		if err != nil {
-			log.Println(err)
+	
 		}
 
 	}
 
-
+	return nil
 }
 
-func EditBio(userID int, newBio string){
+func EditBio(userID int, newBio string) error{
 
 	if len(newBio) > 0{
 
@@ -206,13 +206,14 @@ func EditBio(userID int, newBio string){
 		_, err := db.Exec(query,newBio,userID)
 
 		if err != nil {
-			log.Println(err)
+			return err
 		}
 	}
-		
+
+	return nil
 }
 
-func EditUsername(userID int, newUsername string){
+func EditUsername(userID int, newUsername string) error{
 
 	if len(newUsername) > 0{
 
@@ -220,9 +221,11 @@ func EditUsername(userID int, newUsername string){
 		_, err := db.Exec(query,newUsername,userID)
 
 		if err != nil {
-			log.Println(err)
+			return err
 		}
 	}
+
+	return nil
 }
 
 func DeleteUser(userID int) error{

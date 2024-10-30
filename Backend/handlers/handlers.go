@@ -124,14 +124,35 @@ func DeleteFriendshipHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, friends.DeleteFriend(friendToDelete, deleter))
 }
 
-func EditNameHandler(){
+func EditNameHandler(c *gin.Context){
 
+	userID, _ := strconv.Atoi(c.Param("id"))
+	newName := c.Param("newName")
+
+	newNameSections := strings.Split(newName, " ")
+
+	c.JSON(http.StatusOK, profile.EditName(userID,newNameSections[0],newNameSections[1]))
 }
 
-func EditBioHandler(){
+func EditBioHandler(c *gin.Context){
 
+	userID, _ := strconv.Atoi(c.Param("id"))
+	newBio := c.Param("newBio")
+
+	c.JSON(http.StatusOK, profile.EditBio(userID,newBio))
 }
 
-func DeleteUserHandler(){
+func EditUsernameHandler(c *gin.Context){
+
+	userID, _ := strconv.Atoi(c.Param("id"))
+	newUsername := c.Param("newUsername")
+
+	c.JSON(http.StatusOK, profile.EditBio(userID,newUsername))
+}
+
+func DeleteUserHandler(c *gin.Context){
+
+	userID, _ := strconv.Atoi(c.Param("id"))
 	
+	c.JSON(http.StatusOK, profile.DeleteUser(userID))
 }
