@@ -25,6 +25,7 @@ func init() {
 }
 
 func initializeDB() {
+
 	dbName := os.Getenv("DB_NAME")
 	dbPass := os.Getenv("DB_PASS")
 	dbHost := os.Getenv("DB_HOST")
@@ -154,22 +155,96 @@ func FindUserByName(firstName string, lastName string) []models.User {
 	return returnList
 }
 
+
+func EditName(userID int, newFirst string, newLast string){
+
+
+	if len(newLast) > 0 && len(newFirst) > 0{
+
+		query := "UPDATE users SET first_name = ? last_name = ? WHERE id = ?"
+		_, err := db.Exec(query,newFirst,newLast,userID)
+
+		if err != nil {
+			log.Println(err)
+		}
+
+	}else if len(newLast) > 0{
+
+		query := "UPDATE users SET last_name = ? WHERE id = ?"
+		_, err := db.Exec(query,newLast,userID)
+
+		if err != nil {
+			log.Println(err)
+		}
+
+	}else{
+
+		query := "UPDATE users SET first_name = ? WHERE id = ?"
+		_, err := db.Exec(query,newFirst,userID)
+
+		if err != nil {
+			log.Println(err)
+		}
+
+	}
+
+
+}
+
+func EditBio(userID int, newBio string){
+
+	if len(newBio) > 0{
+
+		query := "UPDATE users SET bio = ? WHERE id = ?"
+		_, err := db.Exec(query,newBio,userID)
+
+		if err != nil {
+			log.Println(err)
+		}
+	}
+		
+}
+
+func EditUsername(userID int, newUsername string){
+
+	if len(newUsername) > 0{
+
+		query := "UPDATE users SET username = ? WHERE id = ?"
+		_, err := db.Exec(query,newUsername,userID)
+
+		if err != nil {
+			log.Println(err)
+		}
+	}
+}
+
+func DeleteUser(userID int){
+
+	// defer func ()  {
+	// 	if err !=nil {
+
+	// 	}
+	// }
+	
+	// query for deleting the user
+	query := "UPDATE users SET first_name = ? last_name = ? bio = ? WHERE id = ?"
+	_, err := db.Exec(query,"Deleted","user","",userID)
+
+	if err != nil {
+		log.Println(err)
+	}
+}
+
+ 
+
 /*
 endpoint ideas for a user profile:
 
 Tdo:
 1. emails/usernames need to be uinque
-2. change to prepared statements
-3. do rows need to be closed?
-4. does the DB need to be closed
-5. more descriptive errors
+2. more descriptive errors
 
-Requirements:
-1. getFriendList
-2. getUserPosts
-3. probably something regarding logging out / logging in?
 
-Optional:
 1. getUserPhotos
 
 

@@ -78,6 +78,7 @@ func main() {
 	authorized.GET("/api/username/:username", handlers.GetOneUserbyUsernameHandler)
 	authorized.PUT("/api/user/addNewUser", handlers.AddNewUserHandler)
 
+
 	authorized.GET("/api/posts/user/:userID", handlers.GetUserPostsHandler)
 	authorized.GET("/api/posts/initial/:numOfPosts", handlers.GetInitialFeedByTimeHandler)
 	authorized.GET("/api/posts/:numOfPosts", handlers.GetFeedByTimeHandler)

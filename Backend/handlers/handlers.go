@@ -123,3 +123,15 @@ func DeleteFriendshipHandler(c *gin.Context) {
 	deleter := c.Param("deleter")
 	c.JSON(http.StatusOK, friends.DeleteFriend(friendToDelete, deleter))
 }
+
+func EditNameHandler(){
+
+}
+
+func EditBioHandler(){
+
+}
+
+func DeleteUserHandler(){
+	
+}
