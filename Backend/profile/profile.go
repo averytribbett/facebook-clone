@@ -163,13 +163,13 @@ func FindUserByName(firstName string, lastName string) []models.User {
 }
 
 
-func EditName(userID int, newFirst string, newLast string) error{
+func EditName(username string, newFirst string, newLast string) error{
 
 	// Some checks included here to decide on editing first name, last name, or both. 
 	if len(newLast) > 0 && len(newFirst) > 0{
 
-		query := "UPDATE users SET first_name = ?, last_name = ? WHERE id = ?"
-		_, err := db.Exec(query,newFirst,newLast,userID)
+		query := "UPDATE users SET first_name = ?, last_name = ? username= ?"
+		_, err := db.Exec(query,newFirst,newLast,username)
 
 		if err != nil {
 			return err
@@ -177,8 +177,8 @@ func EditName(userID int, newFirst string, newLast string) error{
 
 	}else if len(newLast) > 0{
 
-		query := "UPDATE users SET last_name = ? WHERE id = ?"
-		_, err := db.Exec(query,newLast,userID)
+		query := "UPDATE users SET last_name = ? username = ?"
+		_, err := db.Exec(query,newLast,username)
 
 		if err != nil {
 			return err
@@ -186,8 +186,8 @@ func EditName(userID int, newFirst string, newLast string) error{
 
 	}else{
 
-		query := "UPDATE users SET first_name = ? WHERE id = ?"
-		_, err := db.Exec(query,newFirst,userID)
+		query := "UPDATE users SET first_name = ? username = ?"
+		_, err := db.Exec(query,newFirst,username)
 
 		if err != nil {
 	
@@ -198,12 +198,12 @@ func EditName(userID int, newFirst string, newLast string) error{
 	return nil
 }
 
-func EditBio(userID int, newBio string) error{
+func EditBio(username string, newBio string) error{
 
 	if len(newBio) > 0{
 
-		query := "UPDATE users SET bio = ? WHERE id = ?"
-		_, err := db.Exec(query,newBio,userID)
+		query := "UPDATE users SET bio = ? WHERE username = ?"
+		_, err := db.Exec(query,newBio,username)
 
 		if err != nil {
 			return err
@@ -213,12 +213,12 @@ func EditBio(userID int, newBio string) error{
 	return nil
 }
 
-func EditUsername(userID int, newUsername string) error{
+func EditUsername(username string, newUsername string) error{
 
 	if len(newUsername) > 0{
 
-		query := "UPDATE users SET username = ? WHERE id = ?"
-		_, err := db.Exec(query,newUsername,userID)
+		query := "UPDATE users SET username = ? WHERE username = ?"
+		_, err := db.Exec(query,newUsername,username)
 
 		if err != nil {
 			return err
@@ -228,9 +228,8 @@ func EditUsername(userID int, newUsername string) error{
 	return nil
 }
 
-func DeleteUser(userID int) error{
+func DeleteUser(username string) error{
 
-	var username string
 	//Beginning transactions for the database, so they can be rolled back if an error occurs midway.
 	txn, err := db.Begin()
 
@@ -246,9 +245,10 @@ func DeleteUser(userID int) error{
             err = txn.Commit()
         }
     }()
-
+	
+	var userID int
 	// getting username to delete from Friends table
-	err = txn.QueryRow("SELECT username FROM users WHERE id = ?",userID).Scan(&username)
+	err = txn.QueryRow("SELECT id FROM users WHERE username = ?",username).Scan(&userID)
 
 	// removing from reactions table
 	_, err = txn.Exec("DELETE FROM reactions WHERE user_id = ?",userID)
@@ -278,7 +278,7 @@ func DeleteUser(userID int) error{
 	}
 
 	// Deleting the user
-	_, err = txn.Exec("DELETE FROM users WHERE id = ?",userID)
+	_, err = txn.Exec("DELETE FROM users WHERE username = ?",username)
 
 	if err != nil {
 		return err

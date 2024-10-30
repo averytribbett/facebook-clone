@@ -126,33 +126,33 @@ func DeleteFriendshipHandler(c *gin.Context) {
 
 func EditNameHandler(c *gin.Context){
 
-	userID, _ := strconv.Atoi(c.Param("id"))
+	username:= c.Param("username")
 	newName := c.Param("newName")
 
 	newNameSections := strings.Split(newName, " ")
 
-	c.JSON(http.StatusOK, profile.EditName(userID,newNameSections[0],newNameSections[1]))
+	c.JSON(http.StatusOK, profile.EditName(username,newNameSections[0],newNameSections[1]))
 }
 
 func EditBioHandler(c *gin.Context){
 
-	userID, _ := strconv.Atoi(c.Param("id"))
+	username:= c.Param("username")
 	newBio := c.Param("newBio")
 
-	c.JSON(http.StatusOK, profile.EditBio(userID,newBio))
+	c.JSON(http.StatusOK, profile.EditBio(username,newBio))
 }
 
 func EditUsernameHandler(c *gin.Context){
 
-	userID, _ := strconv.Atoi(c.Param("id"))
+	username:= c.Param("username")
 	newUsername := c.Param("newUsername")
 
-	c.JSON(http.StatusOK, profile.EditBio(userID,newUsername))
+	c.JSON(http.StatusOK, profile.EditUsername(username, newUsername))
 }
 
 func DeleteUserHandler(c *gin.Context){
 
-	userID, _ := strconv.Atoi(c.Param("id"))
-	
-	c.JSON(http.StatusOK, profile.DeleteUser(userID))
+	username := c.Param("username")
+
+	c.JSON(http.StatusOK, profile.DeleteUser(username))
 }
