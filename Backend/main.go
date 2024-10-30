@@ -20,6 +20,7 @@ import (
 	"fakebook.com/project/feed"
 	"fakebook.com/project/handlers"
 	"fakebook.com/project/models"
+	"fakebook.com/project/profile"
 	"github.com/auth0-community/go-auth0"
 	"github.com/gin-gonic/gin"
 	jose "gopkg.in/square/go-jose.v2"
@@ -50,7 +51,8 @@ func main() {
 	testarr = feed.FeedByRandom(used)
 	feed.DisplayModel(testarr)
 
-	AddReaction("thumbs_up", 3, 3)
+	// AddReaction("thumbs_up", 3, 3)
+
 
 	// setAuth0Variables()
 
@@ -76,7 +78,7 @@ func main() {
 	authorized.GET("/api/users", handlers.GetUsersHandler)
 	authorized.GET("/api/user/:id", handlers.GetOneUserHandler)
 	authorized.GET("/api/username/:username", handlers.GetOneUserbyUsernameHandler)
-	authorized.PUT("/api/user/addNewUser", handlers.AddNewUserHandler)
+	authorized.POST("/api/user/addNewUser", handlers.AddNewUserHandler)
 	authorized.PATCH("/api/user/editFullName/:newName/:id", handlers.EditNameHandler)
 	authorized.PATCH("/api/user/editBio/:newBio/:id", handlers.EditBioHandler)
 	authorized.PATCH("/api/user/editUsername/:newUsername/:id", handlers.EditUsernameHandler)

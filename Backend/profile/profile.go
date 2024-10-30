@@ -168,7 +168,7 @@ func EditName(userID int, newFirst string, newLast string) error{
 	// Some checks included here to decide on editing first name, last name, or both. 
 	if len(newLast) > 0 && len(newFirst) > 0{
 
-		query := "UPDATE users SET first_name = ? last_name = ? WHERE id = ?"
+		query := "UPDATE users SET first_name = ?, last_name = ? WHERE id = ?"
 		_, err := db.Exec(query,newFirst,newLast,userID)
 
 		if err != nil {
