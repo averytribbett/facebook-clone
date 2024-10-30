@@ -168,7 +168,7 @@ func EditName(username string, newFirst string, newLast string) error{
 	// Some checks included here to decide on editing first name, last name, or both. 
 	if len(newLast) > 0 && len(newFirst) > 0{
 
-		query := "UPDATE users SET first_name = ?, last_name = ? username= ?"
+		query := "UPDATE users SET first_name = ?, last_name = ? WHERE username= ?"
 		_, err := db.Exec(query,newFirst,newLast,username)
 
 		if err != nil {
@@ -177,7 +177,7 @@ func EditName(username string, newFirst string, newLast string) error{
 
 	}else if len(newLast) > 0{
 
-		query := "UPDATE users SET last_name = ? username = ?"
+		query := "UPDATE users SET last_name = ? WHERE username = ?"
 		_, err := db.Exec(query,newLast,username)
 
 		if err != nil {
@@ -186,7 +186,7 @@ func EditName(username string, newFirst string, newLast string) error{
 
 	}else{
 
-		query := "UPDATE users SET first_name = ? username = ?"
+		query := "UPDATE users SET first_name = ? WHERE username = ?"
 		_, err := db.Exec(query,newFirst,username)
 
 		if err != nil {
@@ -271,7 +271,7 @@ func DeleteUser(username string) error{
 	}
 
 	// removing from friends table
-	_, err = txn.Exec("DELETE FROM friends WHERE user_id = ?",username)
+	_, err = txn.Exec("DELETE FROM friends WHERE username = ?",username)
 
 	if err != nil {
 		return err
