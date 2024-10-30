@@ -11,12 +11,7 @@
         <span>{{ likes }} Likes</span>
       </div>
       <div class="post-details-row">
-        <a
-          role="button"
-          tabindex="0"
-          (click)="openComments()"
-          (keydown)="onKeyDown($event)"
-        >
+        <a role="button" tabindex="0" (click)="openComments()">
           {{ comments }} Comments
         </a>
       </div>

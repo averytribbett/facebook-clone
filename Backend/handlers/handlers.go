@@ -156,3 +156,12 @@ func DeleteUserHandler(c *gin.Context){
 
 	c.JSON(http.StatusOK, profile.DeleteUser(username))
 }
+
+func AddPostHandler(c *gin.Context) {
+	var userId, err = strconv.Atoi(c.Param("userId"))
+	if err != nil {
+		fmt.Println(err)
+	}
+	postText := c.Param("postText")
+	c.JSON(http.StatusOK, feed.AddPost(userId, postText))
+}

@@ -4,7 +4,7 @@ import { AuthService } from '@auth0/auth0-angular';
 import { environment } from '../../environment';
 import { UserServiceService } from 'src/services/user-service.service';
 import { Observable } from 'rxjs';
-import { FormControl } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 import { DisplayNameUserModel, UserModel } from 'src/models/user-model';
 import { Router } from '@angular/router';
 import { PostService } from 'src/services/posts-service.service';
@@ -38,6 +38,7 @@ export class HomeComponent {
   public numOfPosts = 0;
   public isLoading = false;
   public endOfFeed = false;
+  public createPostForm: FormGroup = new FormGroup({});
 
   constructor(
     public auth: AuthService,
@@ -94,6 +95,14 @@ export class HomeComponent {
           }
         });
       }
+    });
+
+    this.initPostForm();
+  }
+
+  public initPostForm(): void {
+    this.createPostForm = new FormGroup({
+      createPostInput: new FormControl(''),
     });
   }
 
@@ -164,5 +173,35 @@ export class HomeComponent {
         console.error('Error loading posts:', error);
       },
     );
+  }
+
+  createNewPost(): void {
+    if (!this.currentUser.id) {
+      return;
+    }
+    this.postService
+      .addPost(
+        this.currentUser.id,
+        this.createPostForm.get('createPostInput')?.value,
+      )
+      .subscribe((result) => {
+        if (result) {
+          // If successful post reinitialize feed
+          this.isLoading = true;
+          this.postService.getInitialFeedByTime(20).subscribe((result) => {
+            // Reset component
+            if (result.length) {
+              this.feed = result;
+              this.numOfPosts = 0;
+              this.createPostForm = new FormGroup({
+                createPostInput: new FormControl(''),
+              });
+            }
+          });
+          this.isLoading = false;
+        } else {
+          console.error('Something went wrong making the post');
+        }
+      });
   }
 }
