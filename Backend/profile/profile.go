@@ -1,6 +1,7 @@
 package profile
 
 import (
+
 	"database/sql"
 	"fmt"
 	"log"
@@ -14,6 +15,7 @@ import (
 )
 
 var (
+
 	mtx      sync.RWMutex
 	onceList sync.Once
 	onceDB   sync.Once
@@ -21,10 +23,12 @@ var (
 )
 
 func init() {
+
 	onceDB.Do(initializeDB)
 }
 
 func initializeDB() {
+
 	dbName := os.Getenv("DB_NAME")
 	dbPass := os.Getenv("DB_PASS")
 	dbHost := os.Getenv("DB_HOST")
@@ -51,6 +55,7 @@ func initializeDB() {
 }
 
 func Get() []models.User {
+
 	var list []models.User
 	rows, err := db.Query("SELECT id, first_name, last_name, username, bio FROM users")
 	if err != nil {
@@ -98,6 +103,7 @@ func GetOneUserByUsername(username string) models.User {
 }
 
 func FindUserByFullName(firstName string, lastName string) models.User {
+
 	var returnUser models.User
 
 	err := db.QueryRow("SELECT id, first_name, last_name, username, bio FROM users WHERE first_name = ? AND last_name = ?", firstName, lastName).Scan(&returnUser.Id, &returnUser.FirstName, &returnUser.LastName, &returnUser.Username, &returnUser.Bio)
@@ -110,6 +116,7 @@ func FindUserByFullName(firstName string, lastName string) models.User {
 }
 
 func AddNewUser(newUser models.User) error {
+
 	var oldUser = GetOneUserByUsername(newUser.Username)
 
 	if oldUser.Id == 0 {
@@ -127,6 +134,7 @@ func AddNewUser(newUser models.User) error {
 }
 
 func FindUserByName(firstName string, lastName string) []models.User {
+
 	var rows *sql.Rows
 	var returnList []models.User
 	var err error
@@ -154,22 +162,143 @@ func FindUserByName(firstName string, lastName string) []models.User {
 	return returnList
 }
 
+
+func EditName(username string, newFirst string, newLast string) error{
+
+	// Some checks included here to decide on editing first name, last name, or both. 
+	if len(newLast) > 0 && len(newFirst) > 0{
+
+		query := "UPDATE users SET first_name = ?, last_name = ? WHERE username= ?"
+		_, err := db.Exec(query,newFirst,newLast,username)
+
+		if err != nil {
+			return err
+		}
+
+	}else if len(newLast) > 0{
+
+		query := "UPDATE users SET last_name = ? WHERE username = ?"
+		_, err := db.Exec(query,newLast,username)
+
+		if err != nil {
+			return err
+		}
+
+	}else{
+
+		query := "UPDATE users SET first_name = ? WHERE username = ?"
+		_, err := db.Exec(query,newFirst,username)
+
+		if err != nil {
+	
+		}
+
+	}
+
+	return nil
+}
+
+func EditBio(username string, newBio string) error{
+
+	if len(newBio) > 0{
+
+		query := "UPDATE users SET bio = ? WHERE username = ?"
+		_, err := db.Exec(query,newBio,username)
+
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func EditUsername(username string, newUsername string) error{
+
+	if len(newUsername) > 0{
+
+		query := "UPDATE users SET username = ? WHERE username = ?"
+		_, err := db.Exec(query,newUsername,username)
+
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func DeleteUser(username string) error{
+
+	//Beginning transactions for the database, so they can be rolled back if an error occurs midway.
+	txn, err := db.Begin()
+
+	if err != nil {
+		return err
+	}
+
+	// deferring the function to either commit the transactions, or roll them back depending on if an error is thrown. 
+    defer func() {
+        if err != nil {
+            txn.Rollback()
+        } else {
+            err = txn.Commit()
+        }
+    }()
+	
+	var userID int
+	// getting username to delete from Friends table
+	err = txn.QueryRow("SELECT id FROM users WHERE username = ?",username).Scan(&userID)
+
+	// removing from reactions table
+	_, err = txn.Exec("DELETE FROM reactions WHERE user_id = ?",userID)
+	if err != nil {
+		return err
+	}
+
+	// removing from replies table
+	_, err = txn.Exec("DELETE FROM replies WHERE user_id = ?",userID)
+
+	if err != nil {
+		return err
+	}
+
+	// removing from posts table
+	_, err = txn.Exec("DELETE FROM posts WHERE user_id = ?",userID)
+
+	if err != nil {
+		return err
+	}
+
+	// removing from friends table
+	_, err = txn.Exec("DELETE FROM friends WHERE user_id = ? or friend_id =?",username)
+
+	if err != nil {
+		return err
+	}
+
+	// Deleting the user
+	_, err = txn.Exec("DELETE FROM users WHERE username = ?",username)
+
+	if err != nil {
+		return err
+	}
+
+
+	return nil
+
+}
+
+ 
+
 /*
 endpoint ideas for a user profile:
 
 Tdo:
 1. emails/usernames need to be uinque
-2. change to prepared statements
-3. do rows need to be closed?
-4. does the DB need to be closed
-5. more descriptive errors
+2. more descriptive errors
 
-Requirements:
-1. getFriendList
-2. getUserPosts
-3. probably something regarding logging out / logging in?
 
-Optional:
 1. getUserPhotos
 
 
