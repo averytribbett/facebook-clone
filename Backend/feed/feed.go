@@ -407,7 +407,7 @@ func GetReplies(post_id int) [][]string {
 	}
 
 	// sql query to grab reply info
-	query := "SELECT replier.username AS replier_username, replier.first_name AS replier_first_name, replier.last_name AS replier_last_name, replies.reply_text AS reply_text FROM posts JOIN users ON posts.user_id = users.id LEFT JOIN replies ON posts.post_id = replies.post_id LEFT JOIN users AS replier ON replies.user_id = replier.id WHERE posts.post_id = " + strconv.Itoa(post_id) + ";"
+	query := "SELECT replier.username AS replier_username, replier.first_name AS replier_first_name, replier.last_name AS replier_last_name, replies.reply_text AS reply_text FROM posts JOIN users ON posts.user_id = users.id LEFT JOIN replies ON posts.post_id = replies.post_id LEFT JOIN users AS replier ON replies.username = replier.username WHERE posts.post_id = " + strconv.Itoa(post_id) + ";"
 	// x rows of sql result
 	rows, err := db.Query(query)
 	if err != nil {

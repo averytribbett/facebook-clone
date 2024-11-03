@@ -82,8 +82,6 @@ func main() {
 	authorized.PATCH("/api/user/editUsername/:newUsername/:username", handlers.EditUsernameHandler)
 	authorized.DELETE("/api/user/deleteUser/:username", handlers.DeleteUserHandler)
 
-
-
 	authorized.GET("/api/posts/user/:userID", handlers.GetUserPostsHandler)
 	authorized.GET("/api/posts/initial/:numOfPosts", handlers.GetInitialFeedByTimeHandler)
 	authorized.GET("/api/posts/:numOfPosts", handlers.GetFeedByTimeHandler)
@@ -195,7 +193,7 @@ func AddReaction(emoji string, post_id int, user_id int) {
 	}
 }
 
-func AddReply(text string, post_id int, user_id int) {
+func AddReply(text string, post_id int, username string) {
 	dbName := os.Getenv("DB_NAME")
 	dbPass := os.Getenv("DB_PASS")
 	dbHost := os.Getenv("DB_HOST")
@@ -216,7 +214,7 @@ func AddReply(text string, post_id int, user_id int) {
 	}
 
 	// sql query
-	query := fmt.Sprintf("INSERT INTO replies VALUES (%s, %s, %s);", strconv.Itoa(post_id), strconv.Itoa(user_id), text)
+	query := fmt.Sprintf("INSERT INTO replies VALUES (%s, %s, %s);", strconv.Itoa(post_id), username, text)
 
 	// execute sql
 	_, err = db.Query(query)
