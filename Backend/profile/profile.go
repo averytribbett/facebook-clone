@@ -1,7 +1,6 @@
 package profile
 
 import (
-
 	"database/sql"
 	"fmt"
 	"log"
@@ -15,7 +14,6 @@ import (
 )
 
 var (
-
 	mtx      sync.RWMutex
 	onceList sync.Once
 	onceDB   sync.Once
@@ -162,35 +160,34 @@ func FindUserByName(firstName string, lastName string) []models.User {
 	return returnList
 }
 
+func EditName(username string, newFirst string, newLast string) error {
 
-func EditName(username string, newFirst string, newLast string) error{
-
-	// Some checks included here to decide on editing first name, last name, or both. 
-	if len(newLast) > 0 && len(newFirst) > 0{
+	// Some checks included here to decide on editing first name, last name, or both.
+	if len(newLast) > 0 && len(newFirst) > 0 {
 
 		query := "UPDATE users SET first_name = ?, last_name = ? WHERE username= ?"
-		_, err := db.Exec(query,newFirst,newLast,username)
+		_, err := db.Exec(query, newFirst, newLast, username)
 
 		if err != nil {
 			return err
 		}
 
-	}else if len(newLast) > 0{
+	} else if len(newLast) > 0 {
 
 		query := "UPDATE users SET last_name = ? WHERE username = ?"
-		_, err := db.Exec(query,newLast,username)
+		_, err := db.Exec(query, newLast, username)
 
 		if err != nil {
 			return err
 		}
 
-	}else{
+	} else {
 
 		query := "UPDATE users SET first_name = ? WHERE username = ?"
-		_, err := db.Exec(query,newFirst,username)
+		_, err := db.Exec(query, newFirst, username)
 
 		if err != nil {
-	
+
 		}
 
 	}
@@ -198,12 +195,12 @@ func EditName(username string, newFirst string, newLast string) error{
 	return nil
 }
 
-func EditBio(username string, newBio string) error{
+func EditBio(username string, newBio string) error {
 
-	if len(newBio) > 0{
+	if len(newBio) > 0 {
 
 		query := "UPDATE users SET bio = ? WHERE username = ?"
-		_, err := db.Exec(query,newBio,username)
+		_, err := db.Exec(query, newBio, username)
 
 		if err != nil {
 			return err
@@ -213,12 +210,12 @@ func EditBio(username string, newBio string) error{
 	return nil
 }
 
-func EditUsername(username string, newUsername string) error{
+func EditUsername(username string, newUsername string) error {
 
-	if len(newUsername) > 0{
+	if len(newUsername) > 0 {
 
 		query := "UPDATE users SET username = ? WHERE username = ?"
-		_, err := db.Exec(query,newUsername,username)
+		_, err := db.Exec(query, newUsername, username)
 
 		if err != nil {
 			return err
@@ -228,7 +225,7 @@ func EditUsername(username string, newUsername string) error{
 	return nil
 }
 
-func DeleteUser(username string) error{
+func DeleteUser(username string) error {
 
 	//Beginning transactions for the database, so they can be rolled back if an error occurs midway.
 	txn, err := db.Begin()
@@ -237,59 +234,56 @@ func DeleteUser(username string) error{
 		return err
 	}
 
-	// deferring the function to either commit the transactions, or roll them back depending on if an error is thrown. 
-    defer func() {
-        if err != nil {
-            txn.Rollback()
-        } else {
-            err = txn.Commit()
-        }
-    }()
-	
+	// deferring the function to either commit the transactions, or roll them back depending on if an error is thrown.
+	defer func() {
+		if err != nil {
+			txn.Rollback()
+		} else {
+			err = txn.Commit()
+		}
+	}()
+
 	var userID int
 	// getting username to delete from Friends table
-	err = txn.QueryRow("SELECT id FROM users WHERE username = ?",username).Scan(&userID)
+	err = txn.QueryRow("SELECT id FROM users WHERE username = ?", username).Scan(&userID)
 
 	// removing from reactions table
-	_, err = txn.Exec("DELETE FROM reactions WHERE user_id = ?",userID)
+	_, err = txn.Exec("DELETE FROM reactions WHERE user_id = ?", userID)
 	if err != nil {
 		return err
 	}
 
 	// removing from replies table
-	_, err = txn.Exec("DELETE FROM replies WHERE user_id = ?",userID)
+	_, err = txn.Exec("DELETE FROM replies WHERE username = ?", username)
 
 	if err != nil {
 		return err
 	}
 
 	// removing from posts table
-	_, err = txn.Exec("DELETE FROM posts WHERE user_id = ?",userID)
+	_, err = txn.Exec("DELETE FROM posts WHERE user_id = ?", userID)
 
 	if err != nil {
 		return err
 	}
 
 	// removing from friends table
-	_, err = txn.Exec("DELETE FROM friends WHERE user_id = ? or friend_id =?",username)
+	_, err = txn.Exec("DELETE FROM friends WHERE user_id = ? or friend_id =?", username)
 
 	if err != nil {
 		return err
 	}
 
 	// Deleting the user
-	_, err = txn.Exec("DELETE FROM users WHERE username = ?",username)
+	_, err = txn.Exec("DELETE FROM users WHERE username = ?", username)
 
 	if err != nil {
 		return err
 	}
 
-
 	return nil
 
 }
-
- 
 
 /*
 endpoint ideas for a user profile:
