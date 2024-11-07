@@ -1,7 +1,10 @@
 package handlers
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"strconv"
 	"strings"
@@ -124,33 +127,33 @@ func DeleteFriendshipHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, friends.DeleteFriend(friendToDelete, deleter))
 }
 
-func EditNameHandler(c *gin.Context){
+func EditNameHandler(c *gin.Context) {
 
-	username:= c.Param("username")
+	username := c.Param("username")
 	newName := c.Param("newName")
 
 	newNameSections := strings.Split(newName, " ")
 
-	c.JSON(http.StatusOK, profile.EditName(username,newNameSections[0],newNameSections[1]))
+	c.JSON(http.StatusOK, profile.EditName(username, newNameSections[0], newNameSections[1]))
 }
 
-func EditBioHandler(c *gin.Context){
+func EditBioHandler(c *gin.Context) {
 
-	username:= c.Param("username")
+	username := c.Param("username")
 	newBio := c.Param("newBio")
 
-	c.JSON(http.StatusOK, profile.EditBio(username,newBio))
+	c.JSON(http.StatusOK, profile.EditBio(username, newBio))
 }
 
-func EditUsernameHandler(c *gin.Context){
+func EditUsernameHandler(c *gin.Context) {
 
-	username:= c.Param("username")
+	username := c.Param("username")
 	newUsername := c.Param("newUsername")
 
 	c.JSON(http.StatusOK, profile.EditUsername(username, newUsername))
 }
 
-func DeleteUserHandler(c *gin.Context){
+func DeleteUserHandler(c *gin.Context) {
 
 	username := c.Param("username")
 
@@ -164,4 +167,25 @@ func AddPostHandler(c *gin.Context) {
 	}
 	postText := c.Param("postText")
 	c.JSON(http.StatusOK, feed.AddPost(userId, postText))
+}
+
+func AddReplyHandler(c *gin.Context) {
+	var reply models.Reply
+	body, err := io.ReadAll(c.Request.Body)
+	if err != nil {
+		fmt.Println("i do not really care, I just want to graduate")
+	}
+	c.Request.Body = io.NopCloser(bytes.NewBuffer(body))
+	json.Unmarshal(body, &reply)
+
+	c.JSON(http.StatusOK, feed.AddReply((reply)))
+}
+
+func GetAllRepliesHandler(c *gin.Context) {
+	var postId int
+	postId, err := strconv.Atoi(c.Param("postId"))
+	if err != nil {
+		panic(err)
+	}
+	c.JSON(http.StatusOK, feed.GetReplies(postId))
 }

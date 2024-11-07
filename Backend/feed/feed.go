@@ -384,14 +384,47 @@ func DisplayPostArr(posts [][]string) {
 	}
 }
 
-// func to get replies on a post
-func GetReplies(post_id int) [][]string {
+func AddReply(reply models.Reply) error {
 	dbName := os.Getenv("DB_NAME")
 	dbPass := os.Getenv("DB_PASS")
 	dbHost := os.Getenv("DB_HOST")
 
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:3306)/capstone", dbName, dbPass, dbHost)
-	var data [][]string
+
+	// Open a connection to the database
+	db, err := sql.Open("mysql", dsn)
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+
+	// Ping the database to verify the connection is alive
+	err = db.Ping()
+	if err != nil {
+		panic(err)
+	}
+
+	// sql query
+	query := fmt.Sprintf("INSERT INTO replies VALUES ('%s', '%s', '%s');", strconv.Itoa(reply.PostId), reply.UserId, reply.ReplyText)
+
+	fmt.Println("The dumbass query")
+	fmt.Println(query)
+	// execute sql
+	_, err = db.Query(query)
+	if err != nil {
+		panic(err)
+	}
+	return err
+}
+
+// func to get replies on a post
+func GetReplies(post_id int) []models.Reply {
+	dbName := os.Getenv("DB_NAME")
+	dbPass := os.Getenv("DB_PASS")
+	dbHost := os.Getenv("DB_HOST")
+
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:3306)/capstone", dbName, dbPass, dbHost)
+	var data []models.Reply
 
 	// Open a connection to the database
 	db, err := sql.Open("mysql", dsn)
@@ -407,7 +440,7 @@ func GetReplies(post_id int) [][]string {
 	}
 
 	// sql query to grab reply info
-	query := "SELECT replier.username AS replier_username, replier.first_name AS replier_first_name, replier.last_name AS replier_last_name, replies.reply_text AS reply_text FROM posts JOIN users ON posts.user_id = users.id LEFT JOIN replies ON posts.post_id = replies.post_id LEFT JOIN users AS replier ON replies.user_id = replier.id WHERE posts.post_id = " + strconv.Itoa(post_id) + ";"
+	query := "SELECT replier.username AS replier_username, replier.first_name AS replier_first_name, replier.last_name AS replier_last_name, replies.reply_text AS reply_text FROM posts JOIN users ON posts.user_id = users.id LEFT JOIN replies ON posts.post_id = replies.post_id LEFT JOIN users AS replier ON replies.username = replier.username WHERE posts.post_id = " + strconv.Itoa(post_id) + ";"
 	// x rows of sql result
 	rows, err := db.Query(query)
 	if err != nil {
@@ -416,11 +449,17 @@ func GetReplies(post_id int) [][]string {
 	defer rows.Close()
 
 	// format each row of the result
+	// if rows.NextResultSet() {
+	// 	fmt.Println("we have a row")
+	// } else {
+	// 	fmt.Println("we don't have shit")
+	// }
 	for rows.Next() {
-		var replierUsername string
-		var replierFirstName string
-		var replierLastName string
-		var replyText string
+		fmt.Println("we got into rows.Next")
+		var replierUsername sql.NullString
+		var replierFirstName sql.NullString
+		var replierLastName sql.NullString
+		var replyText sql.NullString
 
 		// scan result and set the values to each variable
 		err = rows.Scan(&replierUsername, &replierFirstName, &replierLastName, &replyText)
@@ -428,12 +467,16 @@ func GetReplies(post_id int) [][]string {
 			panic(err)
 		}
 
-		var reply []string
-		reply = append(reply, replierUsername)
-		reply = append(reply, replierFirstName)
-		reply = append(reply, replierLastName)
-		reply = append(reply, replyText)
-		data = append(data, reply)
+		if replierUsername.Valid {
+			reply := models.Reply{
+				ReplierUsername:  replierUsername.String,
+				ReplierFirstName: replierFirstName.String,
+				ReplierLastName:  replierLastName.String,
+				ReplyText:        replyText.String,
+				PostId:           post_id,
+			}
+			data = append(data, reply)
+		}
 	}
 	db.Close()
 	// return the reply data
