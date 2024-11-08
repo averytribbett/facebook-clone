@@ -95,6 +95,8 @@ func main() {
 	authorized.DELETE("/api/friends/deleteFriendshipRequest/:originalRequestor/:deleter", handlers.DeleteFriendshipRequestHandler)
 	authorized.DELETE("/api/friends/deleteFriendship/:friendToDelete/:deleter", handlers.DeleteFriendshipHandler)
 
+	authorized.POST("/api/reactions/addReaction/:emoji/:post_id/:user_id", handlers.AddReactionHandler)
+
 	err := r.Run(":3000")
 	if err != nil {
 		panic(err)
@@ -149,47 +151,6 @@ func CORSMiddleware() gin.HandlerFunc {
 		}
 
 		c.Next()
-	}
-}
-
-func AddReaction(emoji string, post_id int, user_id int) {
-	dbName := os.Getenv("DB_NAME")
-	dbPass := os.Getenv("DB_PASS")
-	dbHost := os.Getenv("DB_HOST")
-
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:3306)/capstone", dbName, dbPass, dbHost)
-
-	// Open a connection to the database
-	db, err := sql.Open("mysql", dsn)
-	if err != nil {
-		panic(err)
-	}
-	defer db.Close()
-
-	// Ping the database to verify the connection is alive
-	err = db.Ping()
-	if err != nil {
-		panic(err)
-	}
-
-	// swap emoji name with the html code for the emoji
-	code := ""
-	switch emoji {
-	case "thumbs_up":
-		code = "&#128077;"
-	case "thumbs_down":
-		code = "&#128078;"
-	case "heart":
-		code = "&#129505:"
-	}
-
-	// sql query
-	query := fmt.Sprintf("INSERT INTO reactions VALUES (%s, %s, %s);", strconv.Itoa(post_id), strconv.Itoa(user_id), code)
-
-	// execute sql
-	_, err = db.Query(query)
-	if err != nil {
-		panic(err)
 	}
 }
 

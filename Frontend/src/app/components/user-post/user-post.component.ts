@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { PostService } from 'src/services/posts-service.service';
 
 @Component({
   selector: 'user-post',
@@ -12,14 +13,17 @@ export class UserPostComponent {
   @Input() userAvatar!: string;
   @Input() userFirstName!: string;
   @Input() userLastName!: string;
+  @Input() postId!: number;
+  @Input() userId!: number;
 
-  constructor() {
+  constructor(private postService: PostService) {
     console.log('Temporary for linter');
   }
 
   reactToPost(reactionType: string): void {
-    /** @TODO create post reaction here */
-    console.log(reactionType);
+    this.postService.addReaction(reactionType, this.postId, this.userId).subscribe((response) => {
+      console.log(response);
+    });
   }
 
   openComments(): void {

@@ -10,6 +10,7 @@ import (
 	"fakebook.com/project/friends"
 	"fakebook.com/project/models"
 	"fakebook.com/project/profile"
+	"fakebook.com/project/reactions"
 	"github.com/gin-gonic/gin"
 )
 
@@ -164,4 +165,17 @@ func AddPostHandler(c *gin.Context) {
 	}
 	postText := c.Param("postText")
 	c.JSON(http.StatusOK, feed.AddPost(userId, postText))
+}
+
+func AddReactionHandler(c *gin.Context) {
+	emoji := c.Param("emoji")
+	post_id, err := strconv.Atoi(c.Param("post_id"))
+	if err != nil {
+		fmt.Println(err)
+	}
+	user_id, err := strconv.Atoi(c.Param("user_id"))
+	if err != nil {
+		fmt.Println(err)
+	}
+	c.JSON(http.StatusOK, reactions.AddReaction(emoji, post_id, user_id))
 }
