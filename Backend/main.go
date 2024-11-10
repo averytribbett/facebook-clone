@@ -86,6 +86,8 @@ func main() {
 	authorized.GET("/api/posts/initial/:numOfPosts", handlers.GetInitialFeedByTimeHandler)
 	authorized.GET("/api/posts/:numOfPosts", handlers.GetFeedByTimeHandler)
 	authorized.POST("/api/posts/:userId/:postText", handlers.AddPostHandler)
+	authorized.POST("/api/posts/reply", handlers.AddReplyHandler)
+	authorized.GET("/api/posts/getAllReplies/:postId", handlers.GetAllRepliesHandler)
 	authorized.GET("/api/user/findUserByName/:fullName", handlers.FindUserByNameHandler)
 	authorized.GET("/api/user/findUserByFirstAndLastName/:firstName/:lastName", handlers.FindUserByFullNameHandler)
 	authorized.GET("/api/friends/findFriendList/:username", handlers.GetFriendsListHandler)
@@ -185,36 +187,6 @@ func AddReaction(emoji string, post_id int, user_id int) {
 
 	// sql query
 	query := fmt.Sprintf("INSERT INTO reactions VALUES (%s, %s, %s);", strconv.Itoa(post_id), strconv.Itoa(user_id), code)
-
-	// execute sql
-	_, err = db.Query(query)
-	if err != nil {
-		panic(err)
-	}
-}
-
-func AddReply(text string, post_id int, username string) {
-	dbName := os.Getenv("DB_NAME")
-	dbPass := os.Getenv("DB_PASS")
-	dbHost := os.Getenv("DB_HOST")
-
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:3306)/capstone", dbName, dbPass, dbHost)
-
-	// Open a connection to the database
-	db, err := sql.Open("mysql", dsn)
-	if err != nil {
-		panic(err)
-	}
-	defer db.Close()
-
-	// Ping the database to verify the connection is alive
-	err = db.Ping()
-	if err != nil {
-		panic(err)
-	}
-
-	// sql query
-	query := fmt.Sprintf("INSERT INTO replies VALUES (%s, %s, %s);", strconv.Itoa(post_id), username, text)
 
 	// execute sql
 	_, err = db.Query(query)
