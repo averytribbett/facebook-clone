@@ -407,8 +407,6 @@ func AddReply(reply models.Reply) error {
 	// sql query
 	query := fmt.Sprintf("INSERT INTO replies VALUES ('%s', '%s', '%s');", strconv.Itoa(reply.PostId), reply.UserId, reply.ReplyText)
 
-	fmt.Println("The dumbass query")
-	fmt.Println(query)
 	// execute sql
 	_, err = db.Query(query)
 	if err != nil {

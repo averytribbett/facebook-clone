@@ -12,28 +12,24 @@
       </div>
       <div class="post-details-row">
         <a
-          *ngIf="comments > 1 || comments === 0"
           role="button"
           tabindex="0"
           (click)="openComments()"
         >
-          {{ comments }} Comments
-        </a>
-        <a
-          *ngIf="comments === 1"
-          role="button"
-          tabindex="0"
-          (click)="openComments()"
-        >
-          {{ comments }} Comment
+          {{ comments }} {{ comments === 1 ? 'Comment' : 'Comments' }}
         </a>
       </div>
     </div>
-    <div *ngIf="shouldShowComments">
+    <div *ngIf="shouldShowComments" class="divider"></div>
+    <div class="comment-list" *ngIf="shouldShowComments">
       <ul *ngFor="let reply of replyList">
-        <li>{{ reply.replyText }}</li>
-        <li>{{ reply.replierFirstName }} {{ reply.replierLastName}}</li>
+        <div class="comment-item">
+          <li class="list-username">{{ reply.replierFirstName }} {{ reply.replierLastName}}</li>
+          <li class="list-text">{{ reply.replyText }}</li>
+          <div class="comment-divider"></div>
+        </div>
       </ul>
+      <div *ngIf="shouldShowComments" class="divider"></div>
       <a role="button" tabindex="1" (click)="closeComments()">Hide Comments</a>
     </div>
     <div *ngIf="shouldShowCommentText" class="comment-actions">
