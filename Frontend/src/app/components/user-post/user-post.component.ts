@@ -31,6 +31,18 @@ export class UserPostComponent {
     console.log('temp for linter');
   }
 
+  ngOnInit(): void {
+    this.getReplies();
+  }
+
+  getReplies(): void {
+    this.postService.getReplies(this.postId).subscribe((result) => {
+      console.log('the replies: ', result);
+      this.replyList = result ?? [];
+      this.comments = this.replyList ? this.replyList.length : 0;
+    });
+  }
+
   reactToPost(reactionType: string): void {
     this.postService.addReaction(reactionType, this.postId, this.userId).subscribe((response) => {
       console.log(response);
