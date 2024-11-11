@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { PostModel } from 'src/models/post-model';
+import { PostModel, ReplyModel } from 'src/models/post-model';
 
 @Injectable({
   providedIn: 'root',
@@ -27,6 +27,17 @@ export class PostService {
     return this.httpClient.post<boolean>(
       `api/posts/${userID}/${postText}`,
       null,
+    );
+  }
+
+  addComment(reply: ReplyModel): Observable<boolean> {
+    console.log('reply: ', reply);
+    return this.httpClient.post<boolean>(`api/posts/reply`, reply);
+  }
+
+  getReplies(postId: number): Observable<ReplyModel[]> {
+    return this.httpClient.get<ReplyModel[]>(
+      'api/posts/getAllReplies/' + postId,
     );
   }
 

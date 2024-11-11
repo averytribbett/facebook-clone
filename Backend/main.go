@@ -86,6 +86,8 @@ func main() {
 	authorized.GET("/api/posts/initial/:numOfPosts", handlers.GetInitialFeedByTimeHandler)
 	authorized.GET("/api/posts/:numOfPosts", handlers.GetFeedByTimeHandler)
 	authorized.POST("/api/posts/:userId/:postText", handlers.AddPostHandler)
+	authorized.POST("/api/posts/reply", handlers.AddReplyHandler)
+	authorized.GET("/api/posts/getAllReplies/:postId", handlers.GetAllRepliesHandler)
 	authorized.GET("/api/user/findUserByName/:fullName", handlers.FindUserByNameHandler)
 	authorized.GET("/api/user/findUserByFirstAndLastName/:firstName/:lastName", handlers.FindUserByFullNameHandler)
 	authorized.GET("/api/friends/findFriendList/:username", handlers.GetFriendsListHandler)

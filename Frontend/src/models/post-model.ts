@@ -8,3 +8,12 @@ export interface PostModel {
   replyCount: number;
   // author profile picture
 }
+
+export interface ReplyModel {
+  postId: number;
+  userId: string;
+  replyText: string;
+  replierFirstName?: string;
+  replierLastName?: string;
+  replierUsername: string;
+}

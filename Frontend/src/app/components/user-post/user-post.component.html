@@ -11,9 +11,44 @@
         <span>{{ likes }} Likes</span>
       </div>
       <div class="post-details-row">
-        <a role="button" tabindex="0" (click)="openComments()">
-          {{ comments }} Comments
+        <a
+          role="button"
+          tabindex="0"
+          (click)="openComments()"
+        >
+          {{ comments }} {{ comments === 1 ? 'Comment' : 'Comments' }}
         </a>
+      </div>
+    </div>
+    <div *ngIf="shouldShowComments" class="divider"></div>
+    <div class="comment-list" *ngIf="shouldShowComments">
+      <ul *ngFor="let reply of replyList">
+        <div class="comment-item">
+          <li class="list-username">{{ reply.replierFirstName }} {{ reply.replierLastName}}</li>
+          <li class="list-text">{{ reply.replyText }}</li>
+          <div class="comment-divider"></div>
+        </div>
+      </ul>
+      <div *ngIf="shouldShowComments" class="divider"></div>
+      <a role="button" tabindex="1" (click)="closeComments()">Hide Comments</a>
+    </div>
+    <div *ngIf="shouldShowCommentText" class="comment-actions">
+      <mat-form-field>
+        <textarea
+          [(ngModel)]="commentText"
+          matInput
+          placeholder="Ex. It makes me feel..."
+        ></textarea>
+      </mat-form-field>
+      <div class="post-replies">
+        <button (click)="comment()" class="interaction-row">
+          <mat-icon class="icon">send</mat-icon>
+          <p>Comment</p>
+        </button>
+        <button (click)="cancel()" class="interaction-row">
+          <mat-icon class="icon">delete_forever</mat-icon>
+          <p>Cancel</p>
+        </button>
       </div>
     </div>
     <div class="divider"></div>
