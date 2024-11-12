@@ -9,18 +9,31 @@ import { PostModel, ReplyModel } from 'src/models/post-model';
 export class PostService {
   constructor(private httpClient: HttpClient) {}
 
-  getUserPosts(userID: number): Observable<PostModel[]> {
-    return this.httpClient.get<PostModel[]>('api/posts/user/' + String(userID));
-  }
-
-  getInitialFeedByTime(numOfPosts: number): Observable<PostModel[]> {
+  getUserPosts(
+    userID: number,
+    loggedInUserId: number,
+  ): Observable<PostModel[]> {
     return this.httpClient.get<PostModel[]>(
-      'api/posts/initial/' + String(numOfPosts),
+      'api/posts/user/' + String(userID) + '/' + String(loggedInUserId),
     );
   }
 
-  getFeedByTime(numOfPosts: number): Observable<PostModel[]> {
-    return this.httpClient.get<PostModel[]>('api/posts/' + String(numOfPosts));
+  getInitialFeedByTime(
+    numOfPosts: number,
+    loggedInUserId: number,
+  ): Observable<PostModel[]> {
+    return this.httpClient.get<PostModel[]>(
+      'api/posts/initial/' + String(numOfPosts) + '/' + String(loggedInUserId),
+    );
+  }
+
+  getFeedByTime(
+    numOfPosts: number,
+    loggedInUserId: number,
+  ): Observable<PostModel[]> {
+    return this.httpClient.get<PostModel[]>(
+      'api/posts/' + String(numOfPosts) + '/' + String(loggedInUserId),
+    );
   }
 
   addPost(userID: number, postText: string): Observable<boolean> {

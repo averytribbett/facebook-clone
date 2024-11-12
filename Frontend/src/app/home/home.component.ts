@@ -69,13 +69,16 @@ export class HomeComponent {
             } else {
               this.router.navigate(['/home']);
               this.currentUser = result;
+              this.postService
+                .getInitialFeedByTime(20, this.currentUser.id || -1)
+                .subscribe((result) => {
+                  if (result.length) {
+                    this.feed = result;
+                    }
+            }); 
             }
           });
-        this.postService.getInitialFeedByTime(20).subscribe((result) => {
-          if (result.length) {
-            this.feed = result;
-          }
-        });
+        
       }
     });
 
@@ -152,8 +155,9 @@ export class HomeComponent {
     this.numOfPosts += 20;
 
     // Fetch 20 more posts from backend
-    this.postService.getFeedByTime(this.numOfPosts).subscribe(
-      async (result: PostModel[]) => {
+    this.postService
+      .getFeedByTime(this.numOfPosts, this.currentUser.id || -1)
+      .subscribe(async (result: PostModel[]) => {
         // Check for success
         if (result && result.length) {
           // Pause for 1 seconds to simulate loading (api takes like 1 milisecond)
@@ -188,9 +192,11 @@ export class HomeComponent {
         if (result) {
           // If successful post reinitialize feed
           this.isLoading = true;
-          this.postService.getInitialFeedByTime(20).subscribe((result) => {
-            // Reset component
-            if (result.length) {
+          this.postService
+            .getInitialFeedByTime(20, this.currentUser.id || - 1)
+            .subscribe((result) => {
+              // Reset component
+              if (result.length) {
               this.feed = result;
               this.numOfPosts = 0;
               this.createPostForm = new FormGroup({

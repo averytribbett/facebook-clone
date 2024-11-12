@@ -8,4 +8,5 @@ type Post struct {
 	AuthorLastName  string `json:"authorLastName"`
 	ReplyCount      int    `json:"replyCount"`
 	ReactionCount   int    `json:"reactCount"`
+	HasReacted      bool   `json:"hasReacted"`
 }

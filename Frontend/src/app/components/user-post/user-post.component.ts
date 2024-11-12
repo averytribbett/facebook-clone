@@ -16,6 +16,7 @@ export class UserPostComponent {
   @Input() userAvatar!: string;
   @Input() userFirstName!: string;
   @Input() userLastName!: string;
+  @Input() hasReacted!: boolean;
   @Input() postId!: number;
   @Input() userId!: number;
   public shouldShowCommentText = false;

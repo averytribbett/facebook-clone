@@ -50,7 +50,11 @@ func GetUserPostsHandler(c *gin.Context) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	c.JSON(http.StatusOK, feed.GetUserPosts(userID))
+	var loggedInUserId, err2 = strconv.Atoi(c.Param("loggedInUserId"))
+	if err2 != nil {
+		fmt.Println(err2)
+	}
+	c.JSON(http.StatusOK, feed.GetUserPosts(userID, loggedInUserId))
 }
 
 func GetInitialFeedByTimeHandler(c *gin.Context) {
@@ -58,7 +62,11 @@ func GetInitialFeedByTimeHandler(c *gin.Context) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	c.JSON(http.StatusOK, feed.InitialFeedByTime(numOfPosts))
+	var loggedInUserId, err2 = strconv.Atoi(c.Param("loggedInUserId"))
+	if err2 != nil {
+		fmt.Println(err2)
+	}
+	c.JSON(http.StatusOK, feed.InitialFeedByTime(numOfPosts, loggedInUserId))
 }
 
 func GetFeedByTimeHandler(c *gin.Context) {
@@ -66,7 +74,11 @@ func GetFeedByTimeHandler(c *gin.Context) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	c.JSON(http.StatusOK, feed.FeedByTime(numOfPosts))
+	var loggedInUserId, err2 = strconv.Atoi(c.Param("loggedInUserId"))
+	if err2 != nil {
+		fmt.Println(err2)
+	}
+	c.JSON(http.StatusOK, feed.FeedByTime(numOfPosts, loggedInUserId))
 }
 
 func FindUserByNameHandler(c *gin.Context) {

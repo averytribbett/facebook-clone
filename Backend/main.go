@@ -33,22 +33,22 @@ var (
 type User models.User
 
 func main() {
-	initialPostCount := 3
+	// initialPostCount := 3
 
-	println("\n\n\nStarting time sort: \n")
+	// println("\n\n\nStarting time sort: \n")
 
-	testarr := feed.InitialFeedByTime(initialPostCount)
-	feed.DisplayModel(testarr)
-	testarr = feed.FeedByTime(initialPostCount)
-	feed.DisplayModel(testarr)
+	// testarr := feed.InitialFeedByTime(initialPostCount)
+	// feed.DisplayModel(testarr)
+	// testarr = feed.FeedByTime(initialPostCount)
+	// feed.DisplayModel(testarr)
 
-	println("\n\n\nStarting random sort: \n")
+	// println("\n\n\nStarting random sort: \n")
 
-	var used []int
-	testarr, used = feed.InitialFeedByRandom(3)
-	feed.DisplayModel(testarr)
-	testarr = feed.FeedByRandom(used)
-	feed.DisplayModel(testarr)
+	// var used []int
+	// testarr, used = feed.InitialFeedByRandom(3)
+	// feed.DisplayModel(testarr)
+	// testarr = feed.FeedByRandom(used)
+	// feed.DisplayModel(testarr)
 
 	// AddReaction("thumbs_up", 3, 3)
 
@@ -82,9 +82,9 @@ func main() {
 	authorized.PATCH("/api/user/editUsername/:newUsername/:username", handlers.EditUsernameHandler)
 	authorized.DELETE("/api/user/deleteUser/:username", handlers.DeleteUserHandler)
 
-	authorized.GET("/api/posts/user/:userID", handlers.GetUserPostsHandler)
-	authorized.GET("/api/posts/initial/:numOfPosts", handlers.GetInitialFeedByTimeHandler)
-	authorized.GET("/api/posts/:numOfPosts", handlers.GetFeedByTimeHandler)
+	authorized.GET("/api/posts/user/:userID/:loggedInUserId", handlers.GetUserPostsHandler)
+	authorized.GET("/api/posts/initial/:numOfPosts/:loggedInUserId", handlers.GetInitialFeedByTimeHandler)
+	authorized.GET("/api/posts/:numOfPosts/:loggedInUserId", handlers.GetFeedByTimeHandler)
 	authorized.POST("/api/posts/:userId/:postText", handlers.AddPostHandler)
 	authorized.POST("/api/posts/reply", handlers.AddReplyHandler)
 	authorized.GET("/api/posts/getAllReplies/:postId", handlers.GetAllRepliesHandler)

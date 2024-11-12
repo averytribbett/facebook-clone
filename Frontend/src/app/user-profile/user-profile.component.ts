@@ -80,7 +80,7 @@ export class UserProfileComponent {
             this.selectedUser = result;
             if (this.selectedUser.id) {
               this.postService
-                .getUserPosts(this.selectedUser.id)
+                .getUserPosts(this.selectedUser.id, -1)
                 .subscribe((result) => {
                   if (result && result.length) {
                     this.userPosts = result;
