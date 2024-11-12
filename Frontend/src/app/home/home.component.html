@@ -129,6 +129,11 @@
     </ng-template>
   </div>
   <mat-spinner *ngIf="isLoading" class="spinner"></mat-spinner>
+  <div>
+    <input type="file" accept="image/*" (change)="fileChanged($event)" />
+    <img ng-if="previewUrl" [src]="previewUrl" alt="Profile Preview" width="150" />
+    <button (click)="uploadFile()">Upload</button>
+  </div>
 </div>
 
 <!--getting rid of footer for now because it was in the way and we can add it back later if necessary-->

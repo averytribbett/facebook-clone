@@ -33,24 +33,10 @@ var (
 type User models.User
 
 func main() {
-	initialPostCount := 3
+	http.HandleFunc("/upload", handlers.UploadImageHandler)
 
-	println("\n\n\nStarting time sort: \n")
-
-	testarr := feed.InitialFeedByTime(initialPostCount)
-	feed.DisplayModel(testarr)
-	testarr = feed.FeedByTime(initialPostCount)
-	feed.DisplayModel(testarr)
-
-	println("\n\n\nStarting random sort: \n")
-
-	var used []int
-	testarr, used = feed.InitialFeedByRandom(3)
-	feed.DisplayModel(testarr)
-	testarr = feed.FeedByRandom(used)
-	feed.DisplayModel(testarr)
-
-	// AddReaction("thumbs_up", 3, 3)
+	log.Println("Server started on http://localhost:8080")
+	log.Fatal(http.ListenAndServe(":8080", nil))
 
 	// setAuth0Variables()
 

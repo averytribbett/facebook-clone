@@ -10,6 +10,12 @@ import { Router } from '@angular/router';
 import { PostService } from 'src/services/posts-service.service';
 import { PostModel } from 'src/models/post-model';
 
+
+
+
+
+import { HttpClient } from '@angular/common/http';
+
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
@@ -40,12 +46,24 @@ export class HomeComponent {
   public endOfFeed = false;
   public createPostForm: FormGroup = new FormGroup({});
 
+
+
+
+  public file: File | null = null;
+  public previewUrl: string | null = null;
+
+
+
+
+
+
   constructor(
     public auth: AuthService,
     @Inject(DOCUMENT) public document: Document,
     public userService: UserServiceService,
     public router: Router,
     public postService: PostService,
+    private http: HttpClient,
   ) {
     this.document.addEventListener('scroll', this.onScroll.bind(this));
   }
@@ -203,5 +221,43 @@ export class HomeComponent {
           console.error('Something went wrong making the post');
         }
       });
+  }
+
+
+
+
+
+
+
+
+  fileChanged(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+        this.file = input.files[0];
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            this.previewUrl = e.target?.result as string;
+        };
+        reader.readAsDataURL(this.file);
+    }
+  }
+
+  uploadFile(): void {
+    if (!this.file) {
+        alert("Please select a file");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", this.file);
+
+    this.http.post('http://localhost:8080/upload', formData).subscribe(
+        (response) => {
+            alert("File uploaded successfully");
+        },
+        (error) => {
+            console.error("Error uploading file", error);
+        }
+    );
   }
 }

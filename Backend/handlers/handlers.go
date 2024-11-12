@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -188,4 +190,53 @@ func GetAllRepliesHandler(c *gin.Context) {
 		panic(err)
 	}
 	c.JSON(http.StatusOK, feed.GetReplies(postId))
+}
+
+func UploadImageHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Limit the size of the upload (10MB in this case)
+	err := r.ParseMultipartForm(10 << 20) // Max upload size: 10MB
+	if err != nil {
+		http.Error(w, "File too large", http.StatusBadRequest)
+		return
+	}
+
+	// Retrieve the file from the request form
+	file, handler, err := r.FormFile("file")
+	if err != nil {
+		http.Error(w, "Error retrieving file", http.StatusBadRequest)
+		return
+	}
+	defer file.Close()
+
+	// Ensure the "uploads" directory exists
+	uploadDir := "uploads"
+	if err := os.MkdirAll(uploadDir, os.ModePerm); err != nil {
+		http.Error(w, "Unable to create upload directory", http.StatusInternalServerError)
+		return
+	}
+
+	// Define the full path to save the uploaded file
+	filePath := filepath.Join(uploadDir, handler.Filename)
+
+	// Create the file on the server
+	dst, err := os.Create(filePath)
+	if err != nil {
+		http.Error(w, "Error saving file", http.StatusInternalServerError)
+		return
+	}
+	defer dst.Close()
+
+	// Copy the uploaded file data to the server's file
+	if _, err := io.Copy(dst, file); err != nil {
+		http.Error(w, "Error saving file", http.StatusInternalServerError)
+		return
+	}
+
+	// Respond with success and the file path
+	fmt.Fprintf(w, "File uploaded successfully: %s\n", filePath)
 }
