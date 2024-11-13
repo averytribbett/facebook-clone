@@ -112,6 +112,14 @@
   color: gray;
 }
 
+.liked {
+  color: blue !important;
+}
+
+.likedText {
+  color: blue !important;
+}
+
 .interaction-row p {
   margin: 0;
   color: gray;

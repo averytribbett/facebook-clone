@@ -10,17 +10,22 @@ import { UserServiceService } from 'src/services/user-service.service';
   styleUrls: ['./user-post.component.css'],
 })
 export class UserPostComponent {
-  @Input() likes!: number;
+  @Input() initialLikes!: number;
   @Input() comments!: number;
   @Input() postText!: string;
   @Input() userAvatar!: string;
   @Input() userFirstName!: string;
   @Input() userLastName!: string;
+  @Input() initialHasReacted!: boolean;
   @Input() postId!: number;
+  @Input() userId!: number;
   public shouldShowCommentText = false;
   public commentText = '';
   public shouldShowComments = false;
   public replyList: ReplyModel[] = [];
+  public hasReacted = false;
+  public likes = 0;
+  public isLoading = false;
 
   constructor(
     private userService: UserServiceService,
@@ -32,6 +37,8 @@ export class UserPostComponent {
 
   ngOnInit(): void {
     this.getReplies();
+    this.hasReacted = this.initialHasReacted;
+    this.likes = this.initialLikes;
   }
 
   getReplies(): void {
@@ -43,8 +50,41 @@ export class UserPostComponent {
   }
 
   reactToPost(reactionType: string): void {
-    /** @TODO create post reaction here */
-    console.log(reactionType);
+    // Early exit if loading (prevents double click)
+    if (this.isLoading) return;
+
+    this.isLoading = true;
+
+    // Delete the reaction (toggle effect)
+    if (this.hasReacted) {
+      this.postService.deleteReaction(this.postId, this.userId).subscribe({
+        next: (response) => {
+          if (response) {
+            this.hasReacted = false;
+            this.likes--;
+          }
+          this.isLoading = false;
+        },
+        error: () => {
+          this.isLoading = false;
+        },
+      });
+    } else {
+      this.postService
+        .addReaction(reactionType, this.postId, this.userId)
+        .subscribe({
+          next: (response) => {
+            if (response) {
+              this.hasReacted = true;
+              this.likes++;
+            }
+            this.isLoading = false;
+          },
+          error: () => {
+            this.isLoading = false;
+          },
+        });
+    }
   }
 
   openComments(): void {

@@ -11,11 +11,7 @@
         <span>{{ likes }} Likes</span>
       </div>
       <div class="post-details-row">
-        <a
-          role="button"
-          tabindex="0"
-          (click)="openComments()"
-        >
+        <a role="button" tabindex="0" (click)="openComments()">
           {{ comments }} {{ comments === 1 ? 'Comment' : 'Comments' }}
         </a>
       </div>
@@ -24,7 +20,9 @@
     <div class="comment-list" *ngIf="shouldShowComments">
       <ul *ngFor="let reply of replyList">
         <div class="comment-item">
-          <li class="list-username">{{ reply.replierFirstName }} {{ reply.replierLastName}}</li>
+          <li class="list-username">
+            {{ reply.replierFirstName }} {{ reply.replierLastName}}
+          </li>
           <li class="list-text">{{ reply.replyText }}</li>
           <div class="comment-divider"></div>
         </div>
@@ -54,9 +52,19 @@
     <div class="divider"></div>
   </div>
   <div class="post-footer">
-    <button (click)="reactToPost('like')" class="interaction-row">
-      <mat-icon class="icon">thumb_up_off_alt</mat-icon>
-      <p>Like</p>
+    <button
+      (click)="reactToPost('thumbs_up')"
+      class="interaction-row"
+      [disabled]="isLoading"
+    >
+      <ng-container *ngIf="hasReacted">
+        <mat-icon class="liked">thumb_up_alt</mat-icon>
+        <p class="likedText">Liked</p>
+      </ng-container>
+      <ng-container *ngIf="!hasReacted">
+        <mat-icon class="icon">thumb_up_off_alt</mat-icon>
+        <p>Like</p>
+      </ng-container>
     </button>
     <button (click)="openCommentInput()" class="interaction-row">
       <mat-icon class="icon">chat_bubble_outline</mat-icon>

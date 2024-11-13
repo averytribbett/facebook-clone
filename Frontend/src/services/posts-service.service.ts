@@ -9,18 +9,31 @@ import { PostModel, ReplyModel } from 'src/models/post-model';
 export class PostService {
   constructor(private httpClient: HttpClient) {}
 
-  getUserPosts(userID: number): Observable<PostModel[]> {
-    return this.httpClient.get<PostModel[]>('api/posts/user/' + String(userID));
-  }
-
-  getInitialFeedByTime(numOfPosts: number): Observable<PostModel[]> {
+  getUserPosts(
+    userID: number,
+    loggedInUserId: number,
+  ): Observable<PostModel[]> {
     return this.httpClient.get<PostModel[]>(
-      'api/posts/initial/' + String(numOfPosts),
+      'api/posts/user/' + String(userID) + '/' + String(loggedInUserId),
     );
   }
 
-  getFeedByTime(numOfPosts: number): Observable<PostModel[]> {
-    return this.httpClient.get<PostModel[]>('api/posts/' + String(numOfPosts));
+  getInitialFeedByTime(
+    numOfPosts: number,
+    loggedInUserId: number,
+  ): Observable<PostModel[]> {
+    return this.httpClient.get<PostModel[]>(
+      'api/posts/initial/' + String(numOfPosts) + '/' + String(loggedInUserId),
+    );
+  }
+
+  getFeedByTime(
+    numOfPosts: number,
+    loggedInUserId: number,
+  ): Observable<PostModel[]> {
+    return this.httpClient.get<PostModel[]>(
+      'api/posts/' + String(numOfPosts) + '/' + String(loggedInUserId),
+    );
   }
 
   addPost(userID: number, postText: string): Observable<boolean> {
@@ -38,6 +51,23 @@ export class PostService {
   getReplies(postId: number): Observable<ReplyModel[]> {
     return this.httpClient.get<ReplyModel[]>(
       'api/posts/getAllReplies/' + postId,
+    );
+  }
+
+  addReaction(
+    emoji: string,
+    post_id: number,
+    user_id: number,
+  ): Observable<boolean> {
+    return this.httpClient.post<boolean>(
+      `api/reactions/addReaction/${emoji}/${post_id}/${user_id}`,
+      null,
+    );
+  }
+
+  deleteReaction(post_id: number, user_id: number): Observable<boolean> {
+    return this.httpClient.delete<boolean>(
+      `api/reactions/deleteReaction/${post_id}/${user_id}`,
     );
   }
 }

@@ -67,7 +67,7 @@ func GetPostData(post_id int) []string {
 }
 
 // func to get all the posts from a user
-func GetUserPosts(user_id int) []models.Post {
+func GetUserPosts(user_id int, loggedInUserId int) []models.Post {
 	dbName := os.Getenv("DB_NAME")
 	dbPass := os.Getenv("DB_PASS")
 	dbHost := os.Getenv("DB_HOST")
@@ -90,10 +90,10 @@ func GetUserPosts(user_id int) []models.Post {
 	}
 
 	// sql query
-	query := "SELECT posts.post_id, posts.post_text, users.id AS user_id, users.first_name, users.last_name, (SELECT COUNT(*) FROM replies WHERE replies.post_id = posts.post_id) AS reply_count, (SELECT COUNT(*) FROM reactions WHERE reactions.post_id = posts.post_id) AS reaction_count FROM posts JOIN users ON posts.user_id = users.id LEFT JOIN reactions ON posts.post_id = reactions.post_id WHERE posts.user_id=\"" + strconv.Itoa(user_id) + "\"ORDER BY posts.post_id DESC;"
+	query := "SELECT posts.post_id, posts.post_text, users.id AS user_id, users.first_name, users.last_name, (SELECT COUNT(*) FROM replies WHERE replies.post_id = posts.post_id) AS reply_count, (SELECT COUNT(*) FROM reactions WHERE reactions.post_id = posts.post_id) AS reaction_count, EXISTS(SELECT 1 FROM reactions WHERE reactions.post_id = posts.post_id AND reactions.user_id = ?) AS has_reacted FROM posts JOIN users ON posts.user_id = users.id LEFT JOIN reactions ON posts.post_id = reactions.post_id WHERE posts.user_id=\"" + strconv.Itoa(user_id) + "\"ORDER BY posts.post_id DESC;"
 
 	// x rows of sql result
-	rows, err := db.Query(query)
+	rows, err := db.Query(query, loggedInUserId)
 	if err != nil {
 		panic(err)
 	}
@@ -101,13 +101,15 @@ func GetUserPosts(user_id int) []models.Post {
 
 	// format each row of the result
 	for rows.Next() {
-		var post models.Post
-
+		var post models.Post 
+		var hasReacted int
 		// scan result and set the values to each variable
-		err = rows.Scan(&post.Id, &post.Text, &post.AuthorId, &post.AuthorFirstName, &post.AuthorLastName, &post.ReactionCount, &post.ReplyCount)
+		err = rows.Scan(&post.Id, &post.Text, &post.AuthorId, &post.AuthorFirstName, &post.AuthorLastName, &post.ReplyCount, &post.ReactionCount, &hasReacted)
 		if err != nil {
 			panic(err)
 		}
+
+		post.HasReacted = hasReacted == 1
 
 		data = append(data, post)
 	}
@@ -116,7 +118,7 @@ func GetUserPosts(user_id int) []models.Post {
 }
 
 // func to initialize feed by time sort
-func InitialFeedByTime(numOfPosts int) []models.Post {
+func InitialFeedByTime(numOfPosts int, loggedInUserId int) []models.Post {
 	dbName := os.Getenv("DB_NAME")
 	dbPass := os.Getenv("DB_PASS")
 	dbHost := os.Getenv("DB_HOST")
@@ -138,10 +140,10 @@ func InitialFeedByTime(numOfPosts int) []models.Post {
 	}
 
 	// sql query
-	query := "SELECT posts.post_id, posts.post_text, users.id AS user_id, users.first_name, users.last_name, (SELECT COUNT(*) FROM replies WHERE replies.post_id = posts.post_id) AS reply_count, (SELECT COUNT(*) FROM reactions WHERE reactions.post_id = posts.post_id) AS reaction_count FROM posts JOIN users ON posts.user_id = users.id LEFT JOIN reactions ON posts.post_id = reactions.post_id ORDER BY posts.post_id DESC LIMIT " + strconv.Itoa(numOfPosts) + ";"
+	query := "SELECT posts.post_id, posts.post_text, users.id AS user_id, users.first_name, users.last_name, (SELECT COUNT(*) FROM replies WHERE replies.post_id = posts.post_id) AS reply_count, (SELECT COUNT(*) FROM reactions WHERE reactions.post_id = posts.post_id) AS reaction_count, EXISTS(SELECT 1 FROM reactions WHERE reactions.post_id = posts.post_id AND reactions.user_id = ?) AS has_reacted FROM posts JOIN users ON posts.user_id = users.id LEFT JOIN reactions ON posts.post_id = reactions.post_id ORDER BY posts.post_id DESC LIMIT " + strconv.Itoa(numOfPosts) + ";"
 
 	// x rows of sql result
-	rows, err := db.Query(query)
+	rows, err := db.Query(query, loggedInUserId)
 	if err != nil {
 		panic(err)
 	}
@@ -149,13 +151,17 @@ func InitialFeedByTime(numOfPosts int) []models.Post {
 
 	// format each row of the result
 	for rows.Next() {
-
-		var post models.Post
+		var hasReacted int
+		var post models.Post	
 		// scan result and set the values to each variable
-		err = rows.Scan(&post.Id, &post.Text, &post.AuthorId, &post.AuthorFirstName, &post.AuthorLastName, &post.ReactionCount, &post.ReplyCount)
+		err = rows.Scan(&post.Id, &post.Text, &post.AuthorId, &post.AuthorFirstName, &post.AuthorLastName, &post.ReplyCount, &post.ReactionCount, &hasReacted)
 		if err != nil {
 			panic(err)
 		}
+
+		post.HasReacted = hasReacted == 1
+		println("has reacted post : ", post.Id)
+		println(post.HasReacted)
 
 		data = append(data, post)
 	}
@@ -165,7 +171,7 @@ func InitialFeedByTime(numOfPosts int) []models.Post {
 
 // @TODO add user id to filter only friends posts
 // func to sort feed by post time
-func FeedByTime(numOfPosts int) []models.Post {
+func FeedByTime(numOfPosts int, loggedInUserId int) []models.Post {
 	dbName := os.Getenv("DB_NAME")
 	dbPass := os.Getenv("DB_PASS")
 	dbHost := os.Getenv("DB_HOST")
@@ -187,10 +193,10 @@ func FeedByTime(numOfPosts int) []models.Post {
 	}
 
 	// sql query
-	query := "SELECT posts.post_id, posts.post_text, users.id AS user_id, users.first_name, users.last_name, (SELECT COUNT(*) FROM replies WHERE replies.post_id = posts.post_id) AS reply_count, (SELECT COUNT(*) FROM reactions WHERE reactions.post_id = posts.post_id) AS reaction_count FROM posts JOIN users ON posts.user_id = users.id LEFT JOIN reactions ON posts.post_id = reactions.post_id ORDER BY posts.post_id DESC;"
+	query := "SELECT posts.post_id, posts.post_text, users.id AS user_id, users.first_name, users.last_name, (SELECT COUNT(*) FROM replies WHERE replies.post_id = posts.post_id) AS reply_count, (SELECT COUNT(*) FROM reactions WHERE reactions.post_id = posts.post_id) AS reaction_count, EXISTS(SELECT 1 FROM reactions WHERE reactions.post_id = posts.post_id AND reactions.user_id = ?) AS has_reacted FROM posts JOIN users ON posts.user_id = users.id LEFT JOIN reactions ON posts.post_id = reactions.post_id ORDER BY posts.post_id DESC;"
 
 	// x rows of sql result
-	rows, err := db.Query(query)
+	rows, err := db.Query(query, loggedInUserId)
 	if err != nil {
 		panic(err)
 	}
@@ -211,11 +217,14 @@ func FeedByTime(numOfPosts int) []models.Post {
 			break
 		}
 		var post models.Post
+		var hasReacted int
 		// scan result and set the values to each variable
-		err = rows.Scan(&post.Id, &post.Text, &post.AuthorId, &post.AuthorFirstName, &post.AuthorLastName, &post.ReactionCount, &post.ReplyCount)
+		err = rows.Scan(&post.Id, &post.Text, &post.AuthorId, &post.AuthorFirstName, &post.AuthorLastName, &post.ReplyCount, &post.ReactionCount, &hasReacted)
 		if err != nil {
 			panic(err)
 		}
+
+		post.HasReacted = hasReacted == 1
 
 		data = append(data, post)
 	}

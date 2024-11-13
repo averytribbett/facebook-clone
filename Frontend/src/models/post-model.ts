@@ -6,6 +6,7 @@ export interface PostModel {
   authorLastName: string;
   reactCount: number;
   replyCount: number;
+  hasReacted: boolean;
   // author profile picture
 }
 

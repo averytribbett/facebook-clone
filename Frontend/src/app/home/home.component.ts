@@ -69,13 +69,15 @@ export class HomeComponent {
             } else {
               this.router.navigate(['/home']);
               this.currentUser = result;
+              this.postService
+                .getInitialFeedByTime(20, this.currentUser.id || -1)
+                .subscribe((result) => {
+                  if (result.length) {
+                    this.feed = result;
+                  }
+                });
             }
           });
-        this.postService.getInitialFeedByTime(20).subscribe((result) => {
-          if (result.length) {
-            this.feed = result;
-          }
-        });
       }
     });
 
@@ -152,27 +154,29 @@ export class HomeComponent {
     this.numOfPosts += 20;
 
     // Fetch 20 more posts from backend
-    this.postService.getFeedByTime(this.numOfPosts).subscribe(
-      async (result: PostModel[]) => {
-        // Check for success
-        if (result && result.length) {
-          // Pause for 1 seconds to simulate loading (api takes like 1 milisecond)
-          await new Promise((r) => setTimeout(r, 1000));
-          // Append new posts to existing feed
-          this.feed = [...this.feed, ...result];
-        } else {
-          // Once we get an empty array we know we are at the end of the feed
-          this.endOfFeed = true;
-        }
-        // Loading is complete
-        this.isLoading = false;
-      },
-      (error) => {
-        // Will just be the end of the feed
-        this.isLoading = false;
-        console.error('Error loading posts:', error);
-      },
-    );
+    this.postService
+      .getFeedByTime(this.numOfPosts, this.currentUser.id || -1)
+      .subscribe(
+        async (result: PostModel[]) => {
+          // Check for success
+          if (result && result.length) {
+            // Pause for 1 seconds to simulate loading (api takes like 1 milisecond)
+            await new Promise((r) => setTimeout(r, 1000));
+            // Append new posts to existing feed
+            this.feed = [...this.feed, ...result];
+          } else {
+            // Once we get an empty array we know we are at the end of the feed
+            this.endOfFeed = true;
+          }
+          // Loading is complete
+          this.isLoading = false;
+        },
+        (error) => {
+          // Will just be the end of the feed
+          this.isLoading = false;
+          console.error('Error loading posts:', error);
+        },
+      );
   }
 
   createNewPost(): void {
@@ -188,16 +192,18 @@ export class HomeComponent {
         if (result) {
           // If successful post reinitialize feed
           this.isLoading = true;
-          this.postService.getInitialFeedByTime(20).subscribe((result) => {
-            // Reset component
-            if (result.length) {
-              this.feed = result;
-              this.numOfPosts = 0;
-              this.createPostForm = new FormGroup({
-                createPostInput: new FormControl(''),
-              });
-            }
-          });
+          this.postService
+            .getInitialFeedByTime(20, this.currentUser.id || -1)
+            .subscribe((result) => {
+              // Reset component
+              if (result.length) {
+                this.feed = result;
+                this.numOfPosts = 0;
+                this.createPostForm = new FormGroup({
+                  createPostInput: new FormControl(''),
+                });
+              }
+            });
           this.isLoading = false;
         } else {
           console.error('Something went wrong making the post');

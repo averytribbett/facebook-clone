@@ -13,6 +13,7 @@ import (
 	"fakebook.com/project/friends"
 	"fakebook.com/project/models"
 	"fakebook.com/project/profile"
+	"fakebook.com/project/reactions"
 	"github.com/gin-gonic/gin"
 )
 
@@ -49,7 +50,11 @@ func GetUserPostsHandler(c *gin.Context) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	c.JSON(http.StatusOK, feed.GetUserPosts(userID))
+	var loggedInUserId, err2 = strconv.Atoi(c.Param("loggedInUserId"))
+	if err2 != nil {
+		fmt.Println(err2)
+	}
+	c.JSON(http.StatusOK, feed.GetUserPosts(userID, loggedInUserId))
 }
 
 func GetInitialFeedByTimeHandler(c *gin.Context) {
@@ -57,7 +62,11 @@ func GetInitialFeedByTimeHandler(c *gin.Context) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	c.JSON(http.StatusOK, feed.InitialFeedByTime(numOfPosts))
+	var loggedInUserId, err2 = strconv.Atoi(c.Param("loggedInUserId"))
+	if err2 != nil {
+		fmt.Println(err2)
+	}
+	c.JSON(http.StatusOK, feed.InitialFeedByTime(numOfPosts, loggedInUserId))
 }
 
 func GetFeedByTimeHandler(c *gin.Context) {
@@ -65,7 +74,11 @@ func GetFeedByTimeHandler(c *gin.Context) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	c.JSON(http.StatusOK, feed.FeedByTime(numOfPosts))
+	var loggedInUserId, err2 = strconv.Atoi(c.Param("loggedInUserId"))
+	if err2 != nil {
+		fmt.Println(err2)
+	}
+	c.JSON(http.StatusOK, feed.FeedByTime(numOfPosts, loggedInUserId))
 }
 
 func FindUserByNameHandler(c *gin.Context) {
@@ -188,4 +201,29 @@ func GetAllRepliesHandler(c *gin.Context) {
 		panic(err)
 	}
 	c.JSON(http.StatusOK, feed.GetReplies(postId))
+}
+
+func AddReactionHandler(c *gin.Context) {
+	emoji := c.Param("emoji")
+	post_id, err := strconv.Atoi(c.Param("post_id"))
+	if err != nil {
+		fmt.Println(err)
+	}
+	user_id, err := strconv.Atoi(c.Param("user_id"))
+	if err != nil {
+		fmt.Println(err)
+	}
+	c.JSON(http.StatusOK, reactions.AddReaction(emoji, post_id, user_id))
+}
+
+func DeleteReactionHandler(c *gin.Context) {
+	post_id, err := strconv.Atoi(c.Param("post_id"))
+	if err != nil {
+		fmt.Println(err)
+	}
+	user_id, err := strconv.Atoi(c.Param("user_id"))
+	if err != nil {
+		fmt.Println(err)
+	}
+	c.JSON(http.StatusOK, reactions.DeleteReaction(post_id, user_id))
 }

@@ -33,22 +33,22 @@ var (
 type User models.User
 
 func main() {
-	initialPostCount := 3
+	// initialPostCount := 3
 
-	println("\n\n\nStarting time sort: \n")
+	// println("\n\n\nStarting time sort: \n")
 
-	testarr := feed.InitialFeedByTime(initialPostCount)
-	feed.DisplayModel(testarr)
-	testarr = feed.FeedByTime(initialPostCount)
-	feed.DisplayModel(testarr)
+	// testarr := feed.InitialFeedByTime(initialPostCount)
+	// feed.DisplayModel(testarr)
+	// testarr = feed.FeedByTime(initialPostCount)
+	// feed.DisplayModel(testarr)
 
-	println("\n\n\nStarting random sort: \n")
+	// println("\n\n\nStarting random sort: \n")
 
-	var used []int
-	testarr, used = feed.InitialFeedByRandom(3)
-	feed.DisplayModel(testarr)
-	testarr = feed.FeedByRandom(used)
-	feed.DisplayModel(testarr)
+	// var used []int
+	// testarr, used = feed.InitialFeedByRandom(3)
+	// feed.DisplayModel(testarr)
+	// testarr = feed.FeedByRandom(used)
+	// feed.DisplayModel(testarr)
 
 	// AddReaction("thumbs_up", 3, 3)
 
@@ -82,9 +82,9 @@ func main() {
 	authorized.PATCH("/api/user/editUsername/:newUsername/:username", handlers.EditUsernameHandler)
 	authorized.DELETE("/api/user/deleteUser/:username", handlers.DeleteUserHandler)
 
-	authorized.GET("/api/posts/user/:userID", handlers.GetUserPostsHandler)
-	authorized.GET("/api/posts/initial/:numOfPosts", handlers.GetInitialFeedByTimeHandler)
-	authorized.GET("/api/posts/:numOfPosts", handlers.GetFeedByTimeHandler)
+	authorized.GET("/api/posts/user/:userID/:loggedInUserId", handlers.GetUserPostsHandler)
+	authorized.GET("/api/posts/initial/:numOfPosts/:loggedInUserId", handlers.GetInitialFeedByTimeHandler)
+	authorized.GET("/api/posts/:numOfPosts/:loggedInUserId", handlers.GetFeedByTimeHandler)
 	authorized.POST("/api/posts/:userId/:postText", handlers.AddPostHandler)
 	authorized.POST("/api/posts/reply", handlers.AddReplyHandler)
 	authorized.GET("/api/posts/getAllReplies/:postId", handlers.GetAllRepliesHandler)
@@ -96,6 +96,9 @@ func main() {
 	authorized.GET("/api/friends/acceptFriendship/:originalRequestor/:acceptee", handlers.AcceptFriendshipHandler)
 	authorized.DELETE("/api/friends/deleteFriendshipRequest/:originalRequestor/:deleter", handlers.DeleteFriendshipRequestHandler)
 	authorized.DELETE("/api/friends/deleteFriendship/:friendToDelete/:deleter", handlers.DeleteFriendshipHandler)
+
+	authorized.POST("/api/reactions/addReaction/:emoji/:post_id/:user_id", handlers.AddReactionHandler)
+	authorized.DELETE("/api/reactions/deleteReaction/:post_id/:user_id", handlers.DeleteReactionHandler)
 
 	err := r.Run(":3000")
 	if err != nil {
@@ -154,7 +157,7 @@ func CORSMiddleware() gin.HandlerFunc {
 	}
 }
 
-func AddReaction(emoji string, post_id int, user_id int) {
+func AddReply(text string, post_id int, username string) {
 	dbName := os.Getenv("DB_NAME")
 	dbPass := os.Getenv("DB_PASS")
 	dbHost := os.Getenv("DB_HOST")
@@ -174,19 +177,8 @@ func AddReaction(emoji string, post_id int, user_id int) {
 		panic(err)
 	}
 
-	// swap emoji name with the html code for the emoji
-	code := ""
-	switch emoji {
-	case "thumbs_up":
-		code = "&#128077;"
-	case "thumbs_down":
-		code = "&#128078;"
-	case "heart":
-		code = "&#129505:"
-	}
-
 	// sql query
-	query := fmt.Sprintf("INSERT INTO reactions VALUES (%s, %s, %s);", strconv.Itoa(post_id), strconv.Itoa(user_id), code)
+	query := fmt.Sprintf("INSERT INTO replies VALUES (%s, %s, %s);", strconv.Itoa(post_id), username, text)
 
 	// execute sql
 	_, err = db.Query(query)
