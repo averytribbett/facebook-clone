@@ -106,7 +106,7 @@
       </form>
       <div *ngFor="let post of feed">
         <user-post
-          [likes]="post.reactCount"
+          [initialLikes]="post.reactCount"
           [comments]="post.replyCount"
           [postText]="post.text"
           [userAvatar]="
@@ -116,7 +116,7 @@
           [userLastName]="post.authorLastName"
           [postId]="post.id"
           [userId]="post.authorId"
-          [hasReacted]="post.hasReacted"
+          [initialHasReacted]="post.hasReacted"
         ></user-post>
       </div>
     </div>

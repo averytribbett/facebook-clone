@@ -104,7 +104,7 @@ func GetUserPosts(user_id int, loggedInUserId int) []models.Post {
 		var post models.Post 
 		var hasReacted int
 		// scan result and set the values to each variable
-		err = rows.Scan(&post.Id, &post.Text, &post.AuthorId, &post.AuthorFirstName, &post.AuthorLastName, &post.ReactionCount, &post.ReplyCount, &hasReacted)
+		err = rows.Scan(&post.Id, &post.Text, &post.AuthorId, &post.AuthorFirstName, &post.AuthorLastName, &post.ReplyCount, &post.ReactionCount, &hasReacted)
 		if err != nil {
 			panic(err)
 		}
@@ -219,7 +219,7 @@ func FeedByTime(numOfPosts int, loggedInUserId int) []models.Post {
 		var post models.Post
 		var hasReacted int
 		// scan result and set the values to each variable
-		err = rows.Scan(&post.Id, &post.Text, &post.AuthorId, &post.AuthorFirstName, &post.AuthorLastName, &post.ReactionCount, &post.ReplyCount, &hasReacted)
+		err = rows.Scan(&post.Id, &post.Text, &post.AuthorId, &post.AuthorFirstName, &post.AuthorLastName, &post.ReplyCount, &post.ReactionCount, &hasReacted)
 		if err != nil {
 			panic(err)
 		}

@@ -32,6 +32,7 @@ export class UserProfileComponent {
   public shouldShowFriendRequests = false;
   public userPosts: PostModel[] = [];
   public loggedInUsername = '';
+  public loggedInUserId = 0;
   public profileBeingViewedUsername = '';
   public isDeveloper = false;
   public shouldHaveWriteAccess = false;
@@ -75,12 +76,21 @@ export class UserProfileComponent {
           this.availableUsers = result;
         });
         this.userService
+          .getUserByUsername(this.userService.loggedInUsername)
+          .subscribe((result) => {
+            if (result?.id !== undefined) {
+              this.loggedInUserId = result.id;
+            } else {
+              this.loggedInUserId = 0;
+            }
+          });
+        this.userService
           .getUserByUsername(this.profileBeingViewedUsername)
           .subscribe((result) => {
             this.selectedUser = result;
             if (this.selectedUser.id) {
               this.postService
-                .getUserPosts(this.selectedUser.id, -1)
+                .getUserPosts(this.selectedUser.id, this.loggedInUserId)
                 .subscribe((result) => {
                   if (result && result.length) {
                     this.userPosts = result;

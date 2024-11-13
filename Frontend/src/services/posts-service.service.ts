@@ -54,7 +54,20 @@ export class PostService {
     );
   }
 
-  addReaction(emoji: string, post_id: number, user_id: number): Observable<boolean> {
-    return this.httpClient.post<boolean>(`api/reactions/addReaction/${emoji}/${post_id}/${user_id}`, null);
+  addReaction(
+    emoji: string,
+    post_id: number,
+    user_id: number,
+  ): Observable<boolean> {
+    return this.httpClient.post<boolean>(
+      `api/reactions/addReaction/${emoji}/${post_id}/${user_id}`,
+      null,
+    );
+  }
+
+  deleteReaction(post_id: number, user_id: number): Observable<boolean> {
+    return this.httpClient.delete<boolean>(
+      `api/reactions/deleteReaction/${post_id}/${user_id}`,
+    );
   }
 }

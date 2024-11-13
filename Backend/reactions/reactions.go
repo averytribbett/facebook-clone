@@ -53,3 +53,30 @@ func AddReaction(emoji string, post_id int, user_id int) bool {
 // @TODO update reaction
 
 // @TODO delete reaction
+func DeleteReaction(post_id int, user_id int) bool {
+	dbName := os.Getenv("DB_NAME")
+	dbPass := os.Getenv("DB_PASS")
+	dbHost := os.Getenv("DB_HOST")
+
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:3306)/capstone", dbName, dbPass, dbHost)
+
+	// Open a connection to the database
+	db, err := sql.Open("mysql", dsn)
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+
+	// Ping the database to verify the connection is alive
+	err = db.Ping()
+	if err != nil {
+		panic(err)
+	}
+
+	query := "DELETE FROM reactions WHERE post_id = ? AND user_id = ?;"
+	_, err = db.Exec(query, post_id, user_id)
+	if err != nil {
+		panic(err)
+	}
+	return true
+}

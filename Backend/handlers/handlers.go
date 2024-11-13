@@ -215,3 +215,15 @@ func AddReactionHandler(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, reactions.AddReaction(emoji, post_id, user_id))
 }
+
+func DeleteReactionHandler(c *gin.Context) {
+	post_id, err := strconv.Atoi(c.Param("post_id"))
+	if err != nil {
+		fmt.Println(err)
+	}
+	user_id, err := strconv.Atoi(c.Param("user_id"))
+	if err != nil {
+		fmt.Println(err)
+	}
+	c.JSON(http.StatusOK, reactions.DeleteReaction(post_id, user_id))
+}
