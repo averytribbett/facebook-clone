@@ -1,3 +1,4 @@
+<!-- eslint-disable prettier/prettier -->
 <div class="main-container">
   <mat-toolbar id="header">
     <div class="header-left">
@@ -130,9 +131,12 @@
   </div>
   <mat-spinner *ngIf="isLoading" class="spinner"></mat-spinner>
   <div>
-    <input type="file" accept="image/*" (change)="fileChanged($event)" />
+    <input type="file" accept="image/*" (change)="uploaded($event)" />
     <img ng-if="previewUrl" [src]="previewUrl" alt="Profile Preview" width="150" />
     <button (click)="uploadFile()">Upload</button>
+    <div *ngIf="profileImageUrl">
+      <img [src]="profileImageUrl" alt="Profile Picture" width="150" height="150" />
+    </div>
   </div>
 </div>
 

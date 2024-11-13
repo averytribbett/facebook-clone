@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { DOCUMENT } from '@angular/common';
 import { Component, Inject } from '@angular/core';
 import { AuthService } from '@auth0/auth0-angular';
@@ -45,18 +46,10 @@ export class HomeComponent {
   public isLoading = false;
   public endOfFeed = false;
   public createPostForm: FormGroup = new FormGroup({});
-
-
-
-
   public file: File | null = null;
   public previewUrl: string | null = null;
-
-
-
-
-
-
+  public username: string | null = null;
+  public profileImageUrl: string | null = null;
   constructor(
     public auth: AuthService,
     @Inject(DOCUMENT) public document: Document,
@@ -66,6 +59,12 @@ export class HomeComponent {
     private http: HttpClient,
   ) {
     this.document.addEventListener('scroll', this.onScroll.bind(this));
+    this.auth.user$.subscribe(user => {
+      this.username = user?.email || null;
+      if (this.username) {
+          this.loadProfilePicture(this.username);
+      }
+  });
   }
 
   // a double subscribe like this is probably not best practice, but  for now it works
@@ -223,14 +222,7 @@ export class HomeComponent {
       });
   }
 
-
-
-
-
-
-
-
-  fileChanged(event: Event): void {
+  uploaded(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
         this.file = input.files[0];
@@ -247,9 +239,14 @@ export class HomeComponent {
         alert("Please select a file");
         return;
     }
+    if (!this.username) {
+        alert("No username found for the current user.");
+        return;
+    }
 
     const formData = new FormData();
     formData.append("file", this.file);
+    formData.append("username", this.username);
 
     this.http.post('http://localhost:8080/upload', formData).subscribe(
         (response) => {
@@ -259,5 +256,19 @@ export class HomeComponent {
             console.error("Error uploading file", error);
         }
     );
+    location.reload();
+  }
+
+  loadProfilePicture(username: string): void {
+    this.http.get<{ imageName: string }>(`http://localhost:8080/getProfilePicture?username=${username}`)
+        .subscribe(
+            (response) => {
+                // Construct the full URL for the profile picture
+                this.profileImageUrl = `http://localhost:8080/uploads/${response.imageName}`;
+            },
+            (error) => {
+                console.error("Error loading profile picture", error);
+            }
+        );
   }
 }

@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"bytes"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -10,6 +11,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 
 	"fakebook.com/project/feed"
 	"fakebook.com/project/friends"
@@ -198,14 +200,12 @@ func UploadImageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Limit the size of the upload (10MB in this case)
-	err := r.ParseMultipartForm(10 << 20) // Max upload size: 10MB
-	if err != nil {
-		http.Error(w, "File too large", http.StatusBadRequest)
+	username := r.FormValue("username")
+	if username == "" {
+		http.Error(w, "Username is required", http.StatusBadRequest)
 		return
 	}
 
-	// Retrieve the file from the request form
 	file, handler, err := r.FormFile("file")
 	if err != nil {
 		http.Error(w, "Error retrieving file", http.StatusBadRequest)
@@ -213,17 +213,14 @@ func UploadImageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer file.Close()
 
-	// Ensure the "uploads" directory exists
+	// creates a filename based on the username and when it was uploaded
+	extension := filepath.Ext(handler.Filename)
+	newFileName := fmt.Sprintf("%s_%d%s", username, time.Now().UnixNano(), extension)
+
 	uploadDir := "uploads"
-	if err := os.MkdirAll(uploadDir, os.ModePerm); err != nil {
-		http.Error(w, "Unable to create upload directory", http.StatusInternalServerError)
-		return
-	}
+	os.MkdirAll(uploadDir, os.ModePerm)
+	filePath := filepath.Join(uploadDir, newFileName)
 
-	// Define the full path to save the uploaded file
-	filePath := filepath.Join(uploadDir, handler.Filename)
-
-	// Create the file on the server
 	dst, err := os.Create(filePath)
 	if err != nil {
 		http.Error(w, "Error saving file", http.StatusInternalServerError)
@@ -231,12 +228,75 @@ func UploadImageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer dst.Close()
 
-	// Copy the uploaded file data to the server's file
 	if _, err := io.Copy(dst, file); err != nil {
 		http.Error(w, "Error saving file", http.StatusInternalServerError)
 		return
 	}
 
-	// Respond with success and the file path
-	fmt.Fprintf(w, "File uploaded successfully: %s\n", filePath)
+	dbName := os.Getenv("DB_NAME")
+	dbPass := os.Getenv("DB_PASS")
+	dbHost := os.Getenv("DB_HOST")
+
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:3306)/capstone", dbName, dbPass, dbHost)
+
+	db, err := sql.Open("mysql", dsn)
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+
+	// Ping the database to verify the connection is alive
+	err = db.Ping()
+	if err != nil {
+		panic(err)
+	}
+
+	stmt, err := db.Prepare("delete from capstone.pfp where username = ?")
+	if err != nil {
+		panic(err)
+	}
+	defer stmt.Close()
+	_, err = stmt.Exec(username)
+	if err != nil {
+		panic(err)
+	}
+
+	stmt, err = db.Prepare("INSERT INTO pfp (username, image_name) VALUES (?, ?)")
+	if err != nil {
+		panic(err)
+	}
+	defer stmt.Close()
+	_, err = stmt.Exec(username, newFileName)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Fprintf(w, "File uploaded successfully for user %s: %s\n", username, newFileName)
+}
+
+func GetProfilePictureHandler(db *sql.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Get the username from the query parameter
+		username := r.URL.Query().Get("username")
+		if username == "" {
+			http.Error(w, "Username is required", http.StatusBadRequest)
+			return
+		}
+
+		var imageName string
+		query := "SELECT image_name FROM pfp WHERE username = ?"
+		err := db.QueryRow(query, username).Scan(&imageName)
+		if err == sql.ErrNoRows {
+			http.Error(w, "No profile picture found for this user", http.StatusNotFound)
+			return
+		} else if err != nil {
+			http.Error(w, "Database error", http.StatusInternalServerError)
+			fmt.Println("Error retrieving profile picture:", err)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		jsonResponse := map[string]string{"imageName": imageName}
+		json.NewEncoder(w).Encode(jsonResponse)
+	}
 }

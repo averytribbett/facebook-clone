@@ -17,7 +17,6 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 
-	"fakebook.com/project/feed"
 	"fakebook.com/project/handlers"
 	"fakebook.com/project/models"
 	"github.com/auth0-community/go-auth0"
@@ -33,11 +32,38 @@ var (
 type User models.User
 
 func main() {
+	// getProfilePicture wont work without passing the db connection from main
+	// i tried putting the connection in the actual function instead of here and it will not work
+	// ...... i tried to make to work for like 1 hour
+	// im done -_-
+	dbName := os.Getenv("DB_NAME")
+	dbPass := os.Getenv("DB_PASS")
+	dbHost := os.Getenv("DB_HOST")
+
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:3306)/capstone", dbName, dbPass, dbHost)
+
+	// Open a connection to the database
+	db, err := sql.Open("mysql", dsn)
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+
+	// Ping the database to verify the connection is alive
+	err = db.Ping()
+	if err != nil {
+		panic(err)
+	}
+
 	http.HandleFunc("/upload", handlers.UploadImageHandler)
+
+	http.Handle("/uploads/", http.StripPrefix("/uploads/", http.FileServer(http.Dir("uploads"))))
+
+	// Apply CORS middleware to the GetProfilePictureHandler
+	http.Handle("/getProfilePicture", enableCORS(http.HandlerFunc(handlers.GetProfilePictureHandler(db))))
 
 	log.Println("Server started on http://localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
-
 	// setAuth0Variables()
 
 	r := gin.Default()
@@ -83,13 +109,10 @@ func main() {
 	authorized.DELETE("/api/friends/deleteFriendshipRequest/:originalRequestor/:deleter", handlers.DeleteFriendshipRequestHandler)
 	authorized.DELETE("/api/friends/deleteFriendship/:friendToDelete/:deleter", handlers.DeleteFriendshipHandler)
 
-	err := r.Run(":3000")
+	err = r.Run(":3000")
 	if err != nil {
 		panic(err)
 	}
-
-	feed.GetPostData(2)
-
 }
 
 func setAuth0Variables() {
@@ -263,4 +286,20 @@ func StatusCheck(username string, friendUsername string, status string) bool {
 		return false
 	}
 	return true
+}
+
+func enableCORS(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Allow requests from http://localhost:4200
+		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:4200")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
 }
