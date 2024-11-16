@@ -195,6 +195,30 @@ func EditName(username string, newFirst string, newLast string) error {
 	return nil
 }
 
+func EditFirstName(username string, newFirstName string) error {
+
+	query := "UPDATE users SET first_name = ? WHERE username = ?"
+	_, err := db.Exec(query, newFirstName, username)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return err
+}
+
+func EditLastName(username string, newLastName string) error {
+
+	query := "UPDATE users SET last_name = ? WHERE username = ?"
+	_, err := db.Exec(query, newLastName, username)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return err
+}
+
 func EditBio(username string, newBio string) error {
 
 	if len(newBio) > 0 {

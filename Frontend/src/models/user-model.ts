@@ -20,3 +20,15 @@ export interface PostModel {
   userFirstName: string;
   userLastName: string;
 }
+
+export const profileEditOptions = [
+  "First Name",
+  "Last Name",
+  "Bio"
+];
+
+export enum EditOptions {
+  FirstName = "First Name",
+  LastName = "Last Name",
+  Bio = "Bio"
+}

@@ -150,6 +150,20 @@ func EditNameHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, profile.EditName(username, newNameSections[0], newNameSections[1]))
 }
 
+func EditFirstNameHandler(c *gin.Context) {
+	username := c.Param("username")
+	newFirstName := c.Param("newFirstName")
+
+	c.JSON(http.StatusOK, profile.EditFirstName(username, newFirstName))
+}
+
+func EditLastNameHandler(c *gin.Context) {
+	username := c.Param("username")
+	newLastName := c.Param("newLastName")
+
+	c.JSON(http.StatusOK, profile.EditLastName(username, newLastName))
+}
+
 func EditBioHandler(c *gin.Context) {
 
 	username := c.Param("username")
