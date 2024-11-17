@@ -136,6 +136,10 @@ export class HomeComponent {
       });
   }
 
+  getOptionText(option: DisplayNameUserModel): string {
+    return option.firstName + ' ' + option.lastName;
+  }
+
   // Method to handle scroll event
   onScroll(): void {
     // Calculate the distance from the bottom of the page
