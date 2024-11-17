@@ -1,14 +1,15 @@
 import { DOCUMENT } from '@angular/common';
-import { Component, EventEmitter, Inject, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Inject, Input, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
-import { UserModel } from 'src/models/user-model';
+import { EditOptions, profileEditOptions, UserModel } from 'src/models/user-model';
 import { PostModel } from 'src/models/post-model';
 import { UserServiceService } from 'src/services/user-service.service';
 import { ActivatedRoute } from '@angular/router';
 import { FriendServiceService } from 'src/services/friend-service.service';
 import { PostService } from 'src/services/posts-service.service';
 import { forkJoin } from 'rxjs';
+import { MatChipEvent, MatChipListbox, MatChipOption, MatChipSelectionChange, } from '@angular/material/chips';
 @Component({
   selector: 'app-user-profile',
   templateUrl: './user-profile.component.html',
@@ -23,6 +24,8 @@ export class UserProfileComponent {
     lastName: '',
     username: '',
   } as UserModel;
+  @ViewChild('chipList') chipList!: MatChipListbox;
+  @ViewChildren(MatChipOption) chipOptions!: QueryList<MatChipOption>;
 
   public loginForm: FormGroup = new FormGroup({});
   public availableUsers: UserModel[] = [];
@@ -40,6 +43,12 @@ export class UserProfileComponent {
   public shouldShowAddFriendButton = false;
   public shouldShowDeleteFriendButton = false;
   public userFriendRequests: UserModel[] = [];
+  public isEditing = false;
+  public isEditingOptionSelected = false;
+  public isSubmitEditButtonDisabled = false;
+  public newProfileInfo = "";
+  public editOptions = profileEditOptions;
+  public currentAttributeBeingEdited = "";
 
   constructor(
     private userService: UserServiceService,
@@ -88,17 +97,7 @@ export class UserProfileComponent {
           .getUserByUsername(this.profileBeingViewedUsername)
           .subscribe((result) => {
             this.selectedUser = result;
-            if (this.selectedUser.id) {
-              this.postService
-                .getUserPosts(this.selectedUser.id, this.loggedInUserId)
-                .subscribe((result) => {
-                  if (result && result.length) {
-                    this.userPosts = result;
-                  } else {
-                    this.userPosts = [];
-                  }
-                });
-            }
+            this.getUserPosts();
           });
         this.retrieveAndUpdateFriendLists();
       }
@@ -115,12 +114,25 @@ export class UserProfileComponent {
 
     forkJoin([friendListObservable, friendRequestListObservable]).subscribe(
       (result) => {
-        console.log('first result: ', result[0]);
-        console.log('second result: ', result[1]);
         this.getFriendLists(result[0], result[1]);
       },
     );
   }
+
+public getUserPosts(): void {
+  if(this.selectedUser.id) {
+    this.postService
+    .getUserPosts(this.selectedUser.id, this.loggedInUserId)
+    .subscribe((result) => {
+      if (result && result.length) {
+        this.userPosts = result;
+      } else {
+        this.userPosts = [];
+      }
+    });
+  }
+}
+
   public getFriendLists(
     friendList: UserModel[],
     friendRequestList: UserModel[],
@@ -188,7 +200,63 @@ export class UserProfileComponent {
   }
 
   public editProfile(): void {
-    console.log('LET ME IN!!! LET ME EDIT!!!!!!!!!!!!!!!!!!!!!!');
+    this.isEditing = true;
+  }
+
+  public cancelEditing(): void {
+    this.isEditing = false;
+    this.clearEditing(false);
+  }
+
+  public setProfileEditingParameters(attribute: string, isSelected: boolean): void {
+    console.log('attribute: ', attribute);
+    this.isEditingOptionSelected = isSelected;
+    this.currentAttributeBeingEdited = attribute ?? "";
+    if (!this.isEditingOptionSelected){
+      this.newProfileInfo = "";
+    }
+  }
+
+  public editProfileAttribute(): void {
+    this.isSubmitEditButtonDisabled = true;
+    console.log('what are we editing: ', this.currentAttributeBeingEdited);
+    if (this.currentAttributeBeingEdited === EditOptions.Bio) {
+      this.userService.editProfileBio(this.newProfileInfo, this.userService.loggedInUsername).subscribe(() => {
+        this.selectedUser.bio = this.newProfileInfo;
+        this.clearEditing();
+      });
+    } else if (this.currentAttributeBeingEdited === EditOptions.FirstName) {
+      this.userService.editProfileFirstName(this.newProfileInfo, this.userService.loggedInUsername).subscribe(() => {
+        this.selectedUser.firstName = this.newProfileInfo;
+        this.clearEditing();
+      });
+    } else if (this.currentAttributeBeingEdited === EditOptions.LastName) {
+      console.log('new profile info: ', this.newProfileInfo);
+      this.userService.editProfileLastName(this.newProfileInfo, this.userService.loggedInUsername).subscribe(() => {
+        this.selectedUser.lastName = this.newProfileInfo;
+        this.clearEditing();
+      });
+    } else {
+      this.toaster.error('I\'m not sure how you did it, but whatever option you selected doesn\'t exist... try again, pal');
+    }
+  }
+
+  public clearEditing(requiresMessage = true): void {
+    if (requiresMessage) {
+      this.toaster.show(`${this.currentAttributeBeingEdited} updated successfully`);
+
+    }
+    this.newProfileInfo = "";
+    this.isEditingOptionSelected = false;
+    this.isSubmitEditButtonDisabled = false;
+    const chipOption = this.chipOptions.toArray().find(chip => chip.value === this.currentAttributeBeingEdited);
+    if (chipOption) {
+      chipOption.deselect();
+    }
+    if (this.currentAttributeBeingEdited !== EditOptions.Bio) {
+      this.getUserPosts();
+    }
+    this.currentAttributeBeingEdited = "";
   }
 
   public addFriend(): void {

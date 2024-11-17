@@ -46,6 +46,20 @@ export class UserServiceService {
     );
   }
 
+  editProfileBio(newBio: string, username: string): Observable<boolean> {
+    return this.httpClient.patch<boolean>(`/api/user/editBio/${newBio}/${username}`, null);
+  }
+
+  editProfileFirstName(newFirstName: string, username: string): Observable<boolean> {
+    console.log('we are editing the first name');
+    return this.httpClient.patch<boolean>(`/api/user/editFirstName/${newFirstName}/${username}`, null);
+  }
+
+  editProfileLastName(newLastName: string, username: string): Observable<boolean> {
+    console.log('we are editing the last name');
+    return this.httpClient.patch<boolean>(`/api/user/editLastName/${newLastName}/${username}`, null);
+  }
+
   setValue(value: string) {
     this.loggedInUsername = value;
     localStorage.setItem('myValue', value);

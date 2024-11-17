@@ -46,3 +46,24 @@ user-post {
     justify-content: center;
     margin: 15px;
 }
+
+#profile-edit-container {
+    display: flex;
+    flex-direction: row;
+}
+
+#profile-edit-info {
+    margin-top: 10px;
+    margin-left: 20px;
+}
+
+.edit-profile-submit {
+    border: 1px solid orangered;
+    background-color: lightgoldenrodyellow;
+    margin: 5px;
+}
+
+#edit-form-field {
+    border-radius: 15px;
+    box-shadow: 1px 1px 30px;
+}

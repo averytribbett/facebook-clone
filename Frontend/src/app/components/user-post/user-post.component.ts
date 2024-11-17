@@ -43,7 +43,6 @@ export class UserPostComponent {
 
   getReplies(): void {
     this.postService.getReplies(this.postId).subscribe((result) => {
-      console.log('the replies: ', result);
       this.replyList = result ?? [];
       this.comments = this.replyList ? this.replyList.length : 0;
     });
@@ -120,16 +119,13 @@ export class UserPostComponent {
         this.shouldShowCommentText = false;
         this.commentText = '';
         this.getReplies();
-        console.log('comment in backend hopefully');
       });
     }
-
-    console.log('sending comment to backend');
   }
 
   cancel(): void {
     this.shouldShowCommentText = false;
-    console.log('other cancel functionality such as clearing the current text');
+    this.commentText = "";
   }
 
   closeComments(): void {
