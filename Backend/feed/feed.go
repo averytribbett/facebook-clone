@@ -101,7 +101,7 @@ func GetUserPosts(user_id int, loggedInUserId int) []models.Post {
 
 	// format each row of the result
 	for rows.Next() {
-		var post models.Post 
+		var post models.Post
 		var hasReacted int
 		// scan result and set the values to each variable
 		err = rows.Scan(&post.Id, &post.Text, &post.AuthorId, &post.AuthorFirstName, &post.AuthorLastName, &post.ReplyCount, &post.ReactionCount, &hasReacted)
@@ -152,7 +152,7 @@ func InitialFeedByTime(numOfPosts int, loggedInUserId int) []models.Post {
 	// format each row of the result
 	for rows.Next() {
 		var hasReacted int
-		var post models.Post	
+		var post models.Post
 		// scan result and set the values to each variable
 		err = rows.Scan(&post.Id, &post.Text, &post.AuthorId, &post.AuthorFirstName, &post.AuthorLastName, &post.ReplyCount, &post.ReactionCount, &hasReacted)
 		if err != nil {
@@ -414,12 +414,12 @@ func AddReply(reply models.Reply) error {
 	}
 
 	// sql query
-	query := fmt.Sprintf("INSERT INTO replies VALUES ('%s', '%s', '%s');", strconv.Itoa(reply.PostId), reply.UserId, reply.ReplyText)
+	query := "INSERT INTO replies (post_id, username, reply_text) VALUES (?, ?, ?)"
 
 	// execute sql
-	_, err = db.Query(query)
-	if err != nil {
-		panic(err)
+	_, err2 := db.Exec(query, reply.PostId, reply.UserId, reply.ReplyText)
+	if err2 != nil {
+		panic(err2)
 	}
 	return err
 }
