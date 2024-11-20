@@ -18,11 +18,19 @@
           <mat-icon [ngStyle]="{ color: 'orangered' }">home</mat-icon>
           <span>Home</span>
         </button>
-        <button mat-menu-item *ngIf="shouldHaveWriteAccess && !isEditing" (click)="editProfile()">
+        <button
+          mat-menu-item
+          *ngIf="shouldHaveWriteAccess && !isEditing"
+          (click)="editProfile()"
+        >
           <mat-icon [ngStyle]="{ color: 'orangered' }">edit</mat-icon>
           <span>Edit</span>
         </button>
-        <button mat-menu-item *ngIf="shouldHaveWriteAccess && isEditing" (click)="cancelEditing()">
+        <button
+          mat-menu-item
+          *ngIf="shouldHaveWriteAccess && isEditing"
+          (click)="cancelEditing()"
+        >
           <mat-icon [ngStyle]="{ color: 'orangered' }">block</mat-icon>
           <span>Exit Editing Mode</span>
         </button>
@@ -33,18 +41,25 @@
     <div id="profile-edit-container">
       <div id="profile-info">
         <mat-card-title>
-          {{ selectedUser.firstName }} {{ selectedUser.lastName }} 
+          {{ selectedUser.firstName }} {{ selectedUser.lastName }}
           <mat-card-subtitle>{{ selectedUser.username }}</mat-card-subtitle>
         </mat-card-title>
         <mat-card-content>{{ selectedUser.bio }}</mat-card-content>
       </div>
-      <div  *ngIf="isEditing" id="profile-edit-info">
+      <div *ngIf="isEditing" id="profile-edit-info">
         <mat-label>Please select an item to edit:</mat-label>
-        <mat-chip-listbox #chipList class="mat-mdc-chip-set-stacked" aria-label="Profile edit options">
-            <mat-chip-option *ngFor="let option of editOptions"
+        <mat-chip-listbox
+          #chipList
+          class="mat-mdc-chip-set-stacked"
+          aria-label="Profile edit options"
+        >
+          <mat-chip-option
+            *ngFor="let option of editOptions"
             #chipOption
             (selectionChange)="setProfileEditingParameters(option, $event.selected)"
-            color="secondary">{{option}}</mat-chip-option>
+            color="secondary"
+            >{{option}}</mat-chip-option
+          >
         </mat-chip-listbox>
         <mat-form-field *ngIf="isEditingOptionSelected" id="edit-form-field">
           <textarea

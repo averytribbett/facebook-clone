@@ -90,3 +90,17 @@ img {
   margin-bottom: 20px;
 }
 
+.createPostInput {
+  width: 590px;
+}
+
+#submitButton {
+  margin-left: 10px;
+  height: 56px;
+  width: 100px;
+}
+
+#submitButton:not(:disabled) {
+  background-color: orangered;
+  color: white;
+}
