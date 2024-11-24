@@ -126,7 +126,7 @@ export class UserPostComponent {
 
   cancel(): void {
     this.shouldShowCommentText = false;
-    this.commentText = "";
+    this.commentText = '';
   }
 
   closeComments(): void {
