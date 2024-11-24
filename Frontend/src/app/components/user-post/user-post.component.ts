@@ -26,6 +26,7 @@ export class UserPostComponent {
   public hasReacted = false;
   public likes = 0;
   public isLoading = false;
+  public showReactionTypes = false;
 
   constructor(
     private userService: UserServiceService,
@@ -130,5 +131,10 @@ export class UserPostComponent {
 
   closeComments(): void {
     this.shouldShowComments = false;
+  }
+
+  setShowReactionTypes(value: boolean): void {
+    console.log('showReactionTypes: ', value);
+    this.showReactionTypes = value;
   }
 }

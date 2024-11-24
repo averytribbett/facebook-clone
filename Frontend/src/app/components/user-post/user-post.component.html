@@ -52,10 +52,27 @@
     <div class="divider"></div>
   </div>
   <div class="post-footer">
+    
+    <div class="post-reactions" *ngIf="showReactionTypes">
+      <button>
+        <mat-icon class="icon">thumb_up_alt</mat-icon>
+        <p>Like</p>
+      </button>
+      <button>
+        <mat-icon class="icon">thumb_down_alt</mat-icon>
+        <p>Dislike</p>
+      </button>
+      <button>
+        <mat-icon class="icon">favorite_border</mat-icon>
+        <p>Heart</p>
+      </button>
+    </div>
     <button
       (click)="reactToPost('thumbs_up')"
       class="interaction-row"
       [disabled]="isLoading"
+      (onmouseenter)="setShowReactionTypes(true)"
+      (onmouseleave)="setShowReactionTypes(false)"
     >
       <ng-container *ngIf="hasReacted">
         <mat-icon class="liked">thumb_up_alt</mat-icon>
