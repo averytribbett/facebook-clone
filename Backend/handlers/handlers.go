@@ -2,12 +2,15 @@ package handlers
 
 import (
 	"bytes"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
+	"time"
 
 	"fakebook.com/project/feed"
 	"fakebook.com/project/friends"
@@ -240,4 +243,128 @@ func DeleteReactionHandler(c *gin.Context) {
 		fmt.Println(err)
 	}
 	c.JSON(http.StatusOK, reactions.DeleteReaction(post_id, user_id))
+}
+
+func UploadImageHandler(c *gin.Context) {
+	err := c.Request.ParseMultipartForm(10 << 20) // Limit file size to 10 MB
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Unable to parse form"})
+		return
+	}
+
+	file, fileHeader, err := c.Request.FormFile("file")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Unable to retrieve file"})
+		return
+	}
+	defer file.Close()
+
+	username := c.PostForm("username")
+	if username == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Username is required"})
+		return
+	}
+
+	timestamp := time.Now().Format("20060102150405") // Format: YYYYMMDDHHMMSS
+	fileExtension := ""
+	if extIndex := strings.LastIndex(fileHeader.Filename, "."); extIndex != -1 {
+		fileExtension = fileHeader.Filename[extIndex:]
+	}
+	fileName := fmt.Sprintf("%s_%s%s", username, timestamp, fileExtension)
+	savePath := "uploads/" + fileName
+
+	out, err := os.Create(savePath)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to save file"})
+		return
+	}
+	defer out.Close()
+
+	_, err = io.Copy(out, file)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to save file"})
+		return
+	}
+
+	dbName := os.Getenv("DB_NAME")
+	dbPass := os.Getenv("DB_PASS")
+	dbHost := os.Getenv("DB_HOST")
+
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:3306)/capstone", dbName, dbPass, dbHost)
+
+	// Open a connection to the database
+	db, err := sql.Open("mysql", dsn)
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+
+	// Ping the database to verify the connection is alive
+	err = db.Ping()
+	if err != nil {
+		panic(err)
+	}
+
+	var exists bool
+	err = db.QueryRow("SELECT EXISTS(SELECT 1 FROM pfp WHERE username = ?)", username).Scan(&exists)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Database query error"})
+		return
+	}
+
+	if !exists {
+		_, err = db.Exec("INSERT INTO pfp (username, image_name) VALUES (?, ?)", username, "none")
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to insert new user"})
+			return
+		}
+	}
+
+	_, err = db.Exec("UPDATE pfp SET image_name = ? WHERE username = ?", fileName, username)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update image name"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message":   "File uploaded successfully",
+		"file_name": fileName,
+		"file_path": savePath,
+	})
+}
+
+func GetProfilePictureHandler(db *sql.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		username := c.Query("username") // Get username from query parameters
+
+		if username == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Username is required"})
+			return
+		}
+
+		//fmt.Println("Querying for username:", username)
+
+		var imageName string
+		err := db.QueryRow("SELECT image_name FROM pfp WHERE username = ?", username).Scan(&imageName)
+
+		if err != nil {
+			if err == sql.ErrNoRows {
+				c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+			} else {
+				fmt.Println("Database query error:", err)
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
+			}
+			return
+		}
+
+		//fmt.Println(imageName)
+
+		c.JSON(http.StatusOK, gin.H{
+			"imageName": imageName,
+		})
+	}
+}
+
+func FileServerHandler(c *gin.Context) {
+	http.StripPrefix("/uploads/", http.FileServer(http.Dir("uploads"))).ServeHTTP(c.Writer, c.Request)
 }
