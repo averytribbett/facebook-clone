@@ -22,12 +22,9 @@ import { ActivatedRoute } from '@angular/router';
 import { FriendServiceService } from 'src/services/friend-service.service';
 import { PostService } from 'src/services/posts-service.service';
 import { forkJoin } from 'rxjs';
-import {
-  MatChipEvent,
-  MatChipListbox,
-  MatChipOption,
-  MatChipSelectionChange,
-} from '@angular/material/chips';
+import { MatChipEvent, MatChipListbox, MatChipOption, MatChipSelectionChange, } from '@angular/material/chips';
+import { HttpClient } from '@angular/common/http';
+import { AuthService } from '@auth0/auth0-angular';
 @Component({
   selector: 'app-user-profile',
   templateUrl: './user-profile.component.html',
@@ -66,7 +63,12 @@ export class UserProfileComponent {
   public isSubmitEditButtonDisabled = false;
   public newProfileInfo = '';
   public editOptions = profileEditOptions;
-  public currentAttributeBeingEdited = '';
+  public currentAttributeBeingEdited = "";
+  public file: File | null = null;
+  public previewUrl: string | null = null;
+  public username: string | null = null;
+  public profileImageUrl: string = 'http://localhost:3000/uploads/default.png';
+  public selectedFile: File | null = null;
 
   constructor(
     private userService: UserServiceService,
@@ -75,7 +77,16 @@ export class UserProfileComponent {
     private friendService: FriendServiceService,
     private toaster: ToastrService,
     private postService: PostService,
-  ) {}
+    private http: HttpClient,
+    public auth: AuthService,
+  ) {
+    this.auth.user$.subscribe(user => {
+      this.username = user?.email || null;
+      if (this.username) {
+          this.loadProfilePicture(this.username);
+      }
+  });
+  }
 
   ngOnInit(): void {
     this.userService.userAuth.isAuthenticated$.subscribe((result) => {
@@ -331,5 +342,69 @@ export class UserProfileComponent {
       .subscribe(() => {
         this.retrieveAndUpdateFriendLists();
       });
+  }
+
+  uploaded(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.selectedFile = input.files[0];
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.profileImageUrl = e.target.result;
+      };
+      reader.readAsDataURL(this.selectedFile);
+    }
+  }
+
+  uploadFile() {
+    if (this.selectedFile) {
+      const formData = new FormData();
+      formData.append('file', this.selectedFile);
+      formData.append('username', this.userService.loggedInUsername);
+
+      this.http
+        .post<{ profileImageUrl: string }>('http://localhost:3000/upload', formData)
+        .subscribe({
+          next: (response) => {
+            this.profileImageUrl = response.profileImageUrl;
+            this.selectedFile = null;
+            console.log('Profile picture updated successfully', response);
+          },
+          error: (error) => {
+            console.error('Error uploading profile picture:', error);
+          },
+        });
+    }
+    location.reload();
+  }
+
+  loadProfilePicture(username: string): void {
+    this.http.get<{ imageName: string }>(`http://localhost:3000/getProfilePicture?username=${username}`)
+        .subscribe(
+            (response) => {
+                this.profileImageUrl = `http://localhost:3000/uploads/${response.imageName}`;
+            },
+            (error) => {
+                console.error("Error loading profile picture", error);
+            }
+        );
+  }
+
+  triggerFileInput() {
+    const fileInput = document.querySelector('input[type="file"]') as HTMLElement;
+    fileInput.click();
+  }
+
+  handleFileSelection(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.selectedFile = input.files[0];
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.profileImageUrl = e.target.result;
+      };
+      reader.readAsDataURL(this.selectedFile);
+      this.uploadFile();
+    }
   }
 }

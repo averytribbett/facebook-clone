@@ -50,6 +50,9 @@ user-post {
 #profile-edit-container {
     display: flex;
     flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 20px;
 }
 
 #profile-edit-info {
@@ -66,4 +69,28 @@ user-post {
 #edit-form-field {
     border-radius: 15px;
     box-shadow: 1px 1px 30px;
+}
+
+#profileImageContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#profileImage {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    cursor: pointer;
+    object-fit: cover;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s;
+}
+
+#profileImage:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+#profileDetailsContainer {
+    flex-grow: 1;
 }

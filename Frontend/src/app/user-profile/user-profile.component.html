@@ -39,7 +39,25 @@
   </div>
   <div id="profileInfo">
     <div id="profile-edit-container">
-      <div id="profile-info">
+      <div id="profileImageContainer">
+        <img
+          id="profileImage"
+          [src]="profileImageUrl || 'http://localhost:3000/uploads/default-profile.jpg'"
+          alt="Profile Picture"
+          width="150"
+          height="150"
+          (click)="triggerFileInput()"
+        />
+        <input
+          #fileInput
+          type="file"
+          accept="image/*"
+          (change)="handleFileSelection($event)"
+          style="display: none;"
+        />
+      </div>
+    
+      <div id="profileDetailsContainer">
         <mat-card-title>
           {{ selectedUser.firstName }} {{ selectedUser.lastName }}
           <mat-card-subtitle>{{ selectedUser.username }}</mat-card-subtitle>
@@ -47,6 +65,33 @@
         <mat-card-content>{{ selectedUser.bio }}</mat-card-content>
       </div>
       <div *ngIf="isEditing" id="profile-edit-info">
+      </div>
+    </div>
+    <div id="profileActionsContainer">
+      <button
+        mat-stroked-button
+        class="profileSectionButton"
+        (click)="showFeedCard()"
+      >
+        Feed
+      </button>
+      <button
+        mat-stroked-button
+        class="profileSectionButton"
+        (click)="showFriendCard()"
+      >
+        Friends
+      </button>
+      <button
+        *ngIf="shouldHaveWriteAccess"
+        mat-stroked-button
+        class="profileSectionButton"
+        (click)="showFriendRequestCard()"
+      >
+        Friend Requests
+      </button>
+    </div>
+      <div  *ngIf="isEditing" id="profile-edit-info">
         <mat-label>Please select an item to edit:</mat-label>
         <mat-chip-listbox
           #chipList
@@ -79,31 +124,6 @@
         </button>
       </div>
     </div>
-    <mat-card-actions>
-      <button
-        mat-stroked-button
-        class="profileSectionButton"
-        (click)="showFeedCard()"
-      >
-        Feed
-      </button>
-      <button
-        mat-stroked-button
-        class="profileSectionButton"
-        (click)="showFriendCard()"
-      >
-        Friends
-      </button>
-      <button
-        *ngIf="shouldHaveWriteAccess"
-        mat-stroked-button
-        class="profileSectionButton"
-        (click)="showFriendRequestCard()"
-      >
-        Friend Requests
-      </button>
-    </mat-card-actions>
-  </div>
 </mat-card>
 <button *ngIf="shouldShowAddFriendButton" (click)="addFriend()">
   Add Friend

@@ -54,7 +54,27 @@ func main() {
 
 	// setAuth0Variables()
 
+	dbName := os.Getenv("DB_NAME")
+	dbPass := os.Getenv("DB_PASS")
+	dbHost := os.Getenv("DB_HOST")
+
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:3306)/capstone", dbName, dbPass, dbHost)
+
+	// Open a connection to the database
+	db, err := sql.Open("mysql", dsn)
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+
+	// Ping the database to verify the connection is alive
+	err = db.Ping()
+	if err != nil {
+		panic(err)
+	}
+
 	r := gin.Default()
+	r.Use(CORSMiddleware())
 	// r.Use(CORSMiddleware())
 	// This will ensure that the angular files are served correctly
 	r.NoRoute(func(c *gin.Context) {
@@ -102,7 +122,11 @@ func main() {
 	authorized.POST("/api/reactions/addReaction/:emoji/:post_id/:user_id", handlers.AddReactionHandler)
 	authorized.DELETE("/api/reactions/deleteReaction/:post_id/:user_id", handlers.DeleteReactionHandler)
 
-	err := r.Run(":3000")
+	authorized.GET("/uploads/*filepath", handlers.FileServerHandler)
+	authorized.POST("/upload", handlers.UploadImageHandler)
+	authorized.GET("/getProfilePicture", handlers.GetProfilePictureHandler(db))
+
+	err = r.Run(":3000")
 	if err != nil {
 		panic(err)
 	}
@@ -271,4 +295,20 @@ func StatusCheck(username string, friendUsername string, status string) bool {
 		return false
 	}
 	return true
+}
+
+func enableCORS(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Allow requests from http://localhost:4200
+		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:4200")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
 }
