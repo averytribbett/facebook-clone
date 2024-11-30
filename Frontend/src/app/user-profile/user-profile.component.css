@@ -94,3 +94,9 @@ user-post {
 #profileDetailsContainer {
     flex-grow: 1;
 }
+
+.manage-friend-button {
+    border: solid 1px orangered;
+    background-color: lightgoldenrodyellow;
+    margin: 10px;
+}

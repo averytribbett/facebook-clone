@@ -110,25 +110,22 @@ export class UserProfileComponent {
         ) {
           this.shouldHaveWriteAccess = true;
         }
-        this.userService.getAllUsers().subscribe((result) => {
-          this.availableUsers = result;
-        });
-        this.userService
-          .getUserByUsername(this.userService.loggedInUsername)
-          .subscribe((result) => {
-            if (result?.id !== undefined) {
-              this.loggedInUserId = result.id;
+        const loggedInUserIdObservable = this.userService.getUserByUsername(this.userService.loggedInUsername);
+        const profileBeingViewedObservable = this.userService.getUserByUsername(this.profileBeingViewedUsername);
+
+        forkJoin([loggedInUserIdObservable, profileBeingViewedObservable]).subscribe(
+          (result) => {
+            if (result[0]?.id !== undefined) {
+              this.loggedInUserId = result[0].id;
             } else {
               this.loggedInUserId = 0;
             }
-          });
-        this.userService
-          .getUserByUsername(this.profileBeingViewedUsername)
-          .subscribe((result) => {
-            this.selectedUser = result;
+            this.selectedUser = result[1];
+            this.profileBeingViewedUsername = this.selectedUser.username;
             this.getUserPosts();
-          });
-        this.retrieveAndUpdateFriendLists();
+            this.retrieveAndUpdateFriendLists();
+          },
+        );
       }
     });
   }

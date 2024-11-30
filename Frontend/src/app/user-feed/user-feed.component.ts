@@ -58,10 +58,6 @@ export class UserFeedComponent {
   constructor(private userService: UserServiceService) {}
 
   ngOnInit(): void {
-    this.userService.getAllUsers().subscribe((result) => {
-      console.log('result: ', result);
-      this.availableUsers = result;
-    });
   }
 
   public changeSelectedUser(user: any): void {

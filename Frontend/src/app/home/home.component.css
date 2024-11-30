@@ -86,6 +86,10 @@ img {
     padding-top: 20px;
 }
 
+#matSearchBar {
+  width: 350px;
+}
+
 .spinner {
   margin-bottom: 20px;
 }
