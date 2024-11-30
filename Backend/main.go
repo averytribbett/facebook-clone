@@ -120,6 +120,7 @@ func main() {
 	authorized.DELETE("/api/friends/deleteFriendship/:friendToDelete/:deleter", handlers.DeleteFriendshipHandler)
 
 	authorized.POST("/api/reactions/addReaction/:emoji/:post_id/:user_id", handlers.AddReactionHandler)
+	authorized.PUT("/api/reactions/updateReaction/:emoji/:post_id/:user_id", handlers.UpdateReactionHandler)
 	authorized.DELETE("/api/reactions/deleteReaction/:post_id/:user_id", handlers.DeleteReactionHandler)
 
 	authorized.GET("/uploads/*filepath", handlers.FileServerHandler)

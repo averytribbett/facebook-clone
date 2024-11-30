@@ -74,6 +74,7 @@ export class HomeComponent {
                 .getInitialFeedByTime(20, this.currentUser.id || -1)
                 .subscribe((result) => {
                   if (result.length) {
+                    console.log(result);
                     this.feed = result;
                   }
                 });

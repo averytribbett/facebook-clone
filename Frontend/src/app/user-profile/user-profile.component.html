@@ -147,7 +147,7 @@
 <div *ngIf="shouldShowProfileFeed && (shouldHaveWriteAccess || shouldShowDeleteFriendButton)" id="posts">
   <div *ngFor="let post of userPosts">
     <user-post
-      [initialLikes]="post.reactCount"
+      [initialReactions]="post.reactionCount"
       [comments]="post.replyCount"
       [postText]="post.text"
       [userAvatar]="
@@ -157,7 +157,8 @@
       [userLastName]="post.authorLastName"
       [postId]="post.id"
       [userId]="post.authorId"
-      [initialHasReacted]="post.hasReacted"
+      [loggedInUserId]="loggedInUserId"
+      [initialReactionByUser]="post.reactionByUser"
     ></user-post>
   </div>
 </div>
