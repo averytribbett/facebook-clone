@@ -110,9 +110,6 @@ export class UserProfileComponent {
         ) {
           this.shouldHaveWriteAccess = true;
         }
-        this.userService.getAllUsers().subscribe((result) => {
-          this.availableUsers = result;
-        });
         const loggedInUserIdObservable = this.userService.getUserByUsername(this.userService.loggedInUsername);
         const profileBeingViewedObservable = this.userService.getUserByUsername(this.profileBeingViewedUsername);
 

@@ -39,6 +39,7 @@ export class HomeComponent {
   public isLoading = false;
   public endOfFeed = false;
   public createPostForm: FormGroup = new FormGroup({});
+  public continueSearch = true;
 
   constructor(
     public auth: AuthService,
@@ -82,23 +83,25 @@ export class HomeComponent {
     });
 
     this.myControl.valueChanges.subscribe((searchValue) => {
-      const newVal = searchValue as string;
-      if (newVal) {
-        this.userService.searchUser(newVal).subscribe((result) => {
-          const userList: DisplayNameUserModel[] = [];
-          if (result) {
-            for (const user of result) {
-              userList.push({
-                firstName: user.firstName,
-                lastName: user.lastName,
-              });
+            const newVal = searchValue as string;
+      if (newVal && newVal.length >= 5 && this.continueSearch) {
+        this.continueSearch = false;
+          this.userService.searchUser(newVal).subscribe((result) => {
+            const userList: DisplayNameUserModel[] = [];
+            if (result) {
+              for (const user of result) {
+                userList.push({
+                  firstName: user.firstName,
+                  lastName: user.lastName,
+                  username: user.username
+                });
+              }
+              this.friendList = userList;
             }
-            this.friendList = userList;
-          }
-        });
-      }
-    });
-
+            this.continueSearch = true;
+          });
+        }
+      });
     this.initPostForm();
   }
 
@@ -128,16 +131,18 @@ export class HomeComponent {
     });
   }
 
-  findFriend(searchFirstName: string, searchLastName: string): void {
-    this.userService
-      .searchUserByFirstAndLastName(searchFirstName, searchLastName)
-      .subscribe((result) => {
-        this.router.navigate(['/profile', result.username, false]);
-      });
+  findFriend(username: string): void {
+    this.router.navigate(['/profile', username, false]);
+    // this.userService
+    //   .searchUserByFirstAndLastName(searchFirstName, searchLastName)
+    //   .subscribe((result) => {
+    //     this.router.navigate(['/profile', result.username, false]);
+    //   });
   }
 
   getOptionText(option: DisplayNameUserModel): string {
-    return option.firstName + ' ' + option.lastName;
+    return `${option.firstName} ${option.lastName} (${option.username})`;
+    //return option.firstName + ' ' + option.lastName + '(';
   }
 
   // Method to handle scroll event

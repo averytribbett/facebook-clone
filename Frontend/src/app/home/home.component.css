@@ -86,6 +86,10 @@ img {
     padding-top: 20px;
 }
 
+#searchOption {
+  width: 250px;
+}
+
 .spinner {
   margin-bottom: 20px;
 }

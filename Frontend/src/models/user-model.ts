@@ -9,6 +9,7 @@ export interface UserModel {
 export interface DisplayNameUserModel {
   firstName: string;
   lastName: string;
+  username: string;
 }
 
 /** @TODO remove this and replace with new PostModel in ./models/post-model.ts */

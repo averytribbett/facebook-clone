@@ -21,9 +21,10 @@
           />
           <mat-autocomplete #auto="matAutocomplete">
             <mat-option
+              id="searchOption"
               *ngFor="let option of friendList"
               [value]="getOptionText(option)"
-              (click)="findFriend(option.firstName, option.lastName)"
+              (click)="findFriend(option.username)"
             >
               {{ getOptionText(option) }}
             </mat-option>

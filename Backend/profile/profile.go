@@ -143,7 +143,12 @@ func FindUserByName(firstName string, lastName string) []models.User {
 	}
 
 	if err != nil {
-		log.Println(err)
+		emptyUser := models.User{
+			FirstName: "",
+			LastName:  "",
+			Bio:       "",
+		}
+		returnList = append(returnList, emptyUser)
 	}
 	defer rows.Close()
 
