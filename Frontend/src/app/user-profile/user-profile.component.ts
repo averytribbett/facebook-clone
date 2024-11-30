@@ -124,10 +124,11 @@ export class UserProfileComponent {
               this.loggedInUserId = 0;
             }
             this.selectedUser = result[1];
+            this.profileBeingViewedUsername = this.selectedUser.username;
             this.getUserPosts();
+            this.retrieveAndUpdateFriendLists();
           },
         );
-        this.retrieveAndUpdateFriendLists();
       }
     });
   }

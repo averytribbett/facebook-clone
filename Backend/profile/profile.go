@@ -147,16 +147,20 @@ func FindUserByName(firstName string, lastName string) []models.User {
 	}
 	defer rows.Close()
 
-	for rows.Next() {
-		var user models.User
+	if err == nil {
+		for rows.Next() {
+			var user models.User
 
-		err = rows.Scan(&user.Id, &user.FirstName, &user.LastName, &user.Username, &user.Bio)
-		if err != nil {
-			panic(err)
+			err = rows.Scan(&user.Id, &user.FirstName, &user.LastName, &user.Username, &user.Bio)
+			if err != nil {
+				panic(err)
+			}
+
+			returnList = append(returnList, user)
 		}
 
-		returnList = append(returnList, user)
 	}
+
 	return returnList
 }
 
