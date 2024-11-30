@@ -89,8 +89,10 @@
 .post-footer {
   display: flex;
   flex-direction: row;
-  justify-content: space-around;
+  justify-content: space-between;
   margin-top: 16px;
+  padding: 0 40px;
+  position: relative;
 }
 
 .interaction-row {
@@ -112,12 +114,16 @@
   color: gray;
 }
 
-.liked {
+.thumbs_up {
   color: blue !important;
 }
 
-.likedText {
-  color: blue !important;
+.heart {
+  color: red !important;
+}
+
+.thumbs_down {
+  color: black !important;
 }
 
 .interaction-row p {
@@ -132,5 +138,18 @@ li {
 .list-username {
   font-size: small;
   color: gray;
+}
+
+.reaction-buttons {
+  display: flex;
+  flex-direction: row;
+  padding: 8px;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  position: absolute;
+  left: 0;
+  bottom: 40px;
 }
 

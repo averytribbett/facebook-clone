@@ -4,28 +4,32 @@ import { ReplyModel } from 'src/models/post-model';
 import { PostService } from 'src/services/posts-service.service';
 import { UserServiceService } from 'src/services/user-service.service';
 
+export type ReactionType = 'thumbs_up' | 'thumbs_down' | 'heart';
+
 @Component({
   selector: 'user-post',
   templateUrl: './user-post.component.html',
   styleUrls: ['./user-post.component.css'],
 })
 export class UserPostComponent {
-  @Input() initialLikes!: number;
+  @Input() initialReactions!: number;
   @Input() comments!: number;
   @Input() postText!: string;
   @Input() userAvatar!: string;
   @Input() userFirstName!: string;
   @Input() userLastName!: string;
-  @Input() initialHasReacted!: boolean;
+  @Input() initialReactionByUser!: string;
   @Input() postId!: number;
   @Input() userId!: number;
+  @Input() loggedInUserId!: number;
   public shouldShowCommentText = false;
   public commentText = '';
   public shouldShowComments = false;
   public replyList: ReplyModel[] = [];
-  public hasReacted = false;
-  public likes = 0;
+  public reactionByUser = '';
+  public reactions = 0;
   public isLoading = false;
+  public showReactionTypes = false;
 
   constructor(
     private userService: UserServiceService,
@@ -37,8 +41,8 @@ export class UserPostComponent {
 
   ngOnInit(): void {
     this.getReplies();
-    this.hasReacted = this.initialHasReacted;
-    this.likes = this.initialLikes;
+    this.reactionByUser = this.initialReactionByUser;
+    this.reactions = this.initialReactions;
   }
 
   getReplies(): void {
@@ -48,34 +52,54 @@ export class UserPostComponent {
     });
   }
 
-  reactToPost(reactionType: string): void {
+  reactToPost(reactionType: ReactionType, isMainButton = false): void {
     // Early exit if loading (prevents double click)
     if (this.isLoading) return;
 
     this.isLoading = true;
 
-    // Delete the reaction (toggle effect)
-    if (this.hasReacted) {
-      this.postService.deleteReaction(this.postId, this.userId).subscribe({
-        next: (response) => {
-          if (response) {
-            this.hasReacted = false;
-            this.likes--;
-          }
-          this.isLoading = false;
-        },
-        error: () => {
-          this.isLoading = false;
-        },
-      });
-    } else {
+    // Delete the reaction (auto toggle when clicking the main button and the reaction already exists)
+    if (
+      this.reactionByUser === reactionType ||
+      (isMainButton && this.reactionByUser)
+    ) {
       this.postService
-        .addReaction(reactionType, this.postId, this.userId)
+        .deleteReaction(this.postId, this.loggedInUserId)
         .subscribe({
           next: (response) => {
             if (response) {
-              this.hasReacted = true;
-              this.likes++;
+              this.reactionByUser = '';
+              this.reactions--;
+            }
+            this.isLoading = false;
+          },
+          error: () => {
+            this.isLoading = false;
+          },
+        });
+    } else if (this.reactionByUser) {
+      // Update the reaction when reaction already exists
+      this.postService
+        .updateReaction(reactionType, this.postId, this.loggedInUserId)
+        .subscribe({
+          next: (response) => {
+            if (response) {
+              this.reactionByUser = reactionType;
+            }
+            this.isLoading = false;
+          },
+          error: () => {
+            this.isLoading = false;
+          },
+        });
+    } else {
+      this.postService
+        .addReaction(reactionType, this.postId, this.loggedInUserId)
+        .subscribe({
+          next: (response) => {
+            if (response) {
+              this.reactionByUser = reactionType;
+              this.reactions++;
             }
             this.isLoading = false;
           },
@@ -130,5 +154,11 @@ export class UserPostComponent {
 
   closeComments(): void {
     this.shouldShowComments = false;
+  }
+
+  setShowReactionTypes(value: boolean): void {
+    setTimeout(() => {
+      this.showReactionTypes = value;
+    }, 100);
   }
 }

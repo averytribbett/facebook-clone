@@ -90,7 +90,7 @@ func GetUserPosts(user_id int, loggedInUserId int) []models.Post {
 	}
 
 	// sql query
-	query := "SELECT posts.post_id, posts.post_text, users.id AS user_id, users.first_name, users.last_name, (SELECT COUNT(*) FROM replies WHERE replies.post_id = posts.post_id) AS reply_count, (SELECT COUNT(*) FROM reactions WHERE reactions.post_id = posts.post_id) AS reaction_count, EXISTS(SELECT 1 FROM reactions WHERE reactions.post_id = posts.post_id AND reactions.user_id = ?) AS has_reacted FROM posts JOIN users ON posts.user_id = users.id LEFT JOIN reactions ON posts.post_id = reactions.post_id WHERE posts.user_id=\"" + strconv.Itoa(user_id) + "\"ORDER BY posts.post_id DESC;"
+	query := "SELECT posts.post_id, posts.post_text, users.id AS user_id, users.first_name, users.last_name, (SELECT COUNT(*) FROM replies WHERE replies.post_id = posts.post_id) AS reply_count, (SELECT COUNT(*) FROM reactions WHERE reactions.post_id = posts.post_id) AS reaction_count, (SELECT reaction FROM reactions WHERE reactions.post_id = posts.post_id AND reactions.user_id = ?) AS reaction_by_user FROM posts JOIN users ON posts.user_id = users.id LEFT JOIN reactions ON posts.post_id = reactions.post_id WHERE posts.user_id=\"" + strconv.Itoa(user_id) + "\"ORDER BY posts.post_id DESC;"
 
 	// x rows of sql result
 	rows, err := db.Query(query, loggedInUserId)
@@ -102,14 +102,19 @@ func GetUserPosts(user_id int, loggedInUserId int) []models.Post {
 	// format each row of the result
 	for rows.Next() {
 		var post models.Post
-		var hasReacted int
+		var reactionByUser sql.NullString
+
 		// scan result and set the values to each variable
-		err = rows.Scan(&post.Id, &post.Text, &post.AuthorId, &post.AuthorFirstName, &post.AuthorLastName, &post.ReplyCount, &post.ReactionCount, &hasReacted)
+		err = rows.Scan(&post.Id, &post.Text, &post.AuthorId, &post.AuthorFirstName, &post.AuthorLastName, &post.ReplyCount, &post.ReactionCount, &reactionByUser)
 		if err != nil {
 			panic(err)
 		}
 
-		post.HasReacted = hasReacted == 1
+		// Handle NULL for `reaction_by_user`
+		post.ReactionByUser = ""
+		if reactionByUser.Valid {
+			post.ReactionByUser = reactionByUser.String
+		}
 
 		data = append(data, post)
 	}
@@ -140,7 +145,7 @@ func InitialFeedByTime(numOfPosts int, loggedInUserId int) []models.Post {
 	}
 
 	// sql query
-	query := "SELECT posts.post_id, posts.post_text, users.id AS user_id, users.first_name, users.last_name, (SELECT COUNT(*) FROM replies WHERE replies.post_id = posts.post_id) AS reply_count, (SELECT COUNT(*) FROM reactions WHERE reactions.post_id = posts.post_id) AS reaction_count, EXISTS(SELECT 1 FROM reactions WHERE reactions.post_id = posts.post_id AND reactions.user_id = ?) AS has_reacted FROM posts JOIN users ON posts.user_id = users.id LEFT JOIN reactions ON posts.post_id = reactions.post_id ORDER BY posts.post_id DESC LIMIT " + strconv.Itoa(numOfPosts) + ";"
+	query := "SELECT posts.post_id, posts.post_text, users.id AS user_id, users.first_name, users.last_name, (SELECT COUNT(*) FROM replies WHERE replies.post_id = posts.post_id) AS reply_count, (SELECT COUNT(*) FROM reactions WHERE reactions.post_id = posts.post_id) AS reaction_count, (SELECT reaction FROM reactions WHERE reactions.post_id = posts.post_id AND reactions.user_id = ?) AS reaction_by_user FROM posts JOIN users ON posts.user_id = users.id LEFT JOIN reactions ON posts.post_id = reactions.post_id ORDER BY posts.post_id DESC LIMIT " + strconv.Itoa(numOfPosts) + ";"
 
 	// x rows of sql result
 	rows, err := db.Query(query, loggedInUserId)
@@ -151,17 +156,20 @@ func InitialFeedByTime(numOfPosts int, loggedInUserId int) []models.Post {
 
 	// format each row of the result
 	for rows.Next() {
-		var hasReacted int
 		var post models.Post
+		var reactionByUser sql.NullString
+
 		// scan result and set the values to each variable
-		err = rows.Scan(&post.Id, &post.Text, &post.AuthorId, &post.AuthorFirstName, &post.AuthorLastName, &post.ReplyCount, &post.ReactionCount, &hasReacted)
+		err = rows.Scan(&post.Id, &post.Text, &post.AuthorId, &post.AuthorFirstName, &post.AuthorLastName, &post.ReplyCount, &post.ReactionCount, &reactionByUser)
 		if err != nil {
 			panic(err)
 		}
 
-		post.HasReacted = hasReacted == 1
-		println("has reacted post : ", post.Id)
-		println(post.HasReacted)
+		// Handle NULL for `reaction_by_user`
+		post.ReactionByUser = ""
+		if reactionByUser.Valid {
+			post.ReactionByUser = reactionByUser.String
+		}
 
 		data = append(data, post)
 	}
@@ -193,7 +201,7 @@ func FeedByTime(numOfPosts int, loggedInUserId int) []models.Post {
 	}
 
 	// sql query
-	query := "SELECT posts.post_id, posts.post_text, users.id AS user_id, users.first_name, users.last_name, (SELECT COUNT(*) FROM replies WHERE replies.post_id = posts.post_id) AS reply_count, (SELECT COUNT(*) FROM reactions WHERE reactions.post_id = posts.post_id) AS reaction_count, EXISTS(SELECT 1 FROM reactions WHERE reactions.post_id = posts.post_id AND reactions.user_id = ?) AS has_reacted FROM posts JOIN users ON posts.user_id = users.id LEFT JOIN reactions ON posts.post_id = reactions.post_id ORDER BY posts.post_id DESC;"
+	query := "SELECT posts.post_id, posts.post_text, users.id AS user_id, users.first_name, users.last_name, (SELECT COUNT(*) FROM replies WHERE replies.post_id = posts.post_id) AS reply_count, (SELECT COUNT(*) FROM reactions WHERE reactions.post_id = posts.post_id) AS reaction_count, (SELECT reaction FROM reactions WHERE reactions.post_id = posts.post_id AND reactions.user_id = ?) AS reaction_by_user FROM posts JOIN users ON posts.user_id = users.id LEFT JOIN reactions ON posts.post_id = reactions.post_id ORDER BY posts.post_id DESC;"
 
 	// x rows of sql result
 	rows, err := db.Query(query, loggedInUserId)
@@ -217,14 +225,19 @@ func FeedByTime(numOfPosts int, loggedInUserId int) []models.Post {
 			break
 		}
 		var post models.Post
-		var hasReacted int
+		var reactionByUser sql.NullString
+
 		// scan result and set the values to each variable
-		err = rows.Scan(&post.Id, &post.Text, &post.AuthorId, &post.AuthorFirstName, &post.AuthorLastName, &post.ReplyCount, &post.ReactionCount, &hasReacted)
+		err = rows.Scan(&post.Id, &post.Text, &post.AuthorId, &post.AuthorFirstName, &post.AuthorLastName, &post.ReplyCount, &post.ReactionCount, &reactionByUser)
 		if err != nil {
 			panic(err)
 		}
 
-		post.HasReacted = hasReacted == 1
+		// Handle NULL for `reaction_by_user`
+		post.ReactionByUser = ""
+		if reactionByUser.Valid {
+			post.ReactionByUser = reactionByUser.String
+		}
 
 		data = append(data, post)
 	}
