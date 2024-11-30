@@ -166,6 +166,11 @@
     Add as friend to see profile content, no promises they will want to add you though...
   </mat-card-subtitle>
 </mat-card>
+<mat-card *ngIf="!shouldShowAddFriendButton && !shouldShowDeleteFriendButton">
+  <mat-card-subtitle>
+    Friend request is pending! Check back later to learn if they don't hate you...
+  </mat-card-subtitle>
+</mat-card>
 <mat-card *ngIf="shouldShowFriendList && (shouldHaveWriteAccess || shouldShowDeleteFriendButton)" appearance="raised">
   <mat-card-title>Friend list</mat-card-title>
   <mat-card-subtitle *ngIf="!this.userFriends || this.userFriends.length === 0">
