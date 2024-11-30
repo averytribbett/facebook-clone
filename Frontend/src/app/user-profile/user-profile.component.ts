@@ -1,3 +1,5 @@
+/* eslint-disable prettier/prettier */
+/* eslint-disable @typescript-eslint/no-inferrable-types */
 import { DOCUMENT } from '@angular/common';
 import {
   Component,
@@ -67,7 +69,7 @@ export class UserProfileComponent {
   public file: File | null = null;
   public previewUrl: string | null = null;
   public username: string | null = null;
-  public profileImageUrl: string = 'http://localhost:3000/uploads/default.png';
+  public profileImageUrl: string = 'http://71.89.73.28:3000/uploads/default.png';
   public selectedFile: File | null = null;
 
   constructor(
@@ -360,7 +362,7 @@ export class UserProfileComponent {
       formData.append('username', this.userService.loggedInUsername);
 
       this.http
-        .post<{ profileImageUrl: string }>('http://localhost:3000/upload', formData)
+        .post<{ profileImageUrl: string }>('http://71.89.73.28:3000/upload', formData)
         .subscribe({
           next: (response) => {
             this.profileImageUrl = response.profileImageUrl;
@@ -376,10 +378,10 @@ export class UserProfileComponent {
   }
 
   loadProfilePicture(username: string): void {
-    this.http.get<{ imageName: string }>(`http://localhost:3000/getProfilePicture?username=${username}`)
+    this.http.get<{ imageName: string }>(`http://71.89.73.28:3000/getProfilePicture?username=${username}`)
         .subscribe(
             (response) => {
-                this.profileImageUrl = `http://localhost:3000/uploads/${response.imageName}`;
+                this.profileImageUrl = `http://71.89.73.28:3000/uploads/${response.imageName}`;
             },
             (error) => {
                 console.error("Error loading profile picture", error);

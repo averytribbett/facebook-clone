@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
@@ -14,8 +15,9 @@ export class PostService {
     userID: number,
     loggedInUserId: number,
   ): Observable<PostModel[]> {
+    const baseUrl = 'http://71.89.73.28:3000';
     return this.httpClient.get<PostModel[]>(
-      'api/posts/user/' + String(userID) + '/' + String(loggedInUserId),
+      `${baseUrl}/api/posts/${String(userID)}/${String(loggedInUserId)}`,
     );
   }
 
@@ -23,35 +25,38 @@ export class PostService {
     numOfPosts: number,
     loggedInUserId: number,
   ): Observable<PostModel[]> {
+    const baseUrl = 'http://71.89.73.28:3000';
     return this.httpClient.get<PostModel[]>(
-      'api/posts/initial/' + String(numOfPosts) + '/' + String(loggedInUserId),
+      `${baseUrl}/api/posts/initial/${String(numOfPosts)}/${String(loggedInUserId)}`,
     );
   }
 
-  getFeedByTime(
-    numOfPosts: number,
-    loggedInUserId: number,
-  ): Observable<PostModel[]> {
+  getFeedByTime(numOfPosts: number, loggedInUserId: number): Observable<PostModel[]> {
+    const baseUrl = 'http://71.89.73.28:3000'; // Replace with your global IP or domain
     return this.httpClient.get<PostModel[]>(
-      'api/posts/' + String(numOfPosts) + '/' + String(loggedInUserId),
+      `${baseUrl}/api/posts/${String(numOfPosts)}/${String(loggedInUserId)}`,
     );
   }
+  
 
   addPost(userID: number, postText: string): Observable<boolean> {
+    const baseUrl = 'http://71.89.73.28:3000';
     return this.httpClient.post<boolean>(
-      `api/posts/${userID}/${postText}`,
+      `${baseUrl}/api/posts/${userID}/${postText}`,
       null,
     );
   }
 
   addComment(reply: ReplyModel): Observable<boolean> {
+    const baseUrl = 'http://71.89.73.28:3000';
     console.log('reply: ', reply);
-    return this.httpClient.post<boolean>(`api/posts/reply`, reply);
+    return this.httpClient.post<boolean>(`${baseUrl}/api/posts/reply`, reply);
   }
 
   getReplies(postId: number): Observable<ReplyModel[]> {
+    const baseUrl = 'http://71.89.73.28:3000';
     return this.httpClient.get<ReplyModel[]>(
-      'api/posts/getAllReplies/' + postId,
+      `${baseUrl}/api/posts/getAllReplies/`+ postId,
     );
   }
 
@@ -60,8 +65,9 @@ export class PostService {
     post_id: number,
     user_id: number,
   ): Observable<boolean> {
+    const baseUrl = 'http://71.89.73.28:3000';
     return this.httpClient.post<boolean>(
-      `api/reactions/addReaction/${emoji}/${post_id}/${user_id}`,
+      `${baseUrl}/api/reactions/addReaction/${emoji}/${post_id}/${user_id}`,
       null,
     );
   }
@@ -71,15 +77,17 @@ export class PostService {
     post_id: number,
     user_id: number,
   ): Observable<boolean> {
+    const baseUrl = 'http://71.89.73.28:3000';
     return this.httpClient.put<boolean>(
-      `api/reactions/updateReaction/${emoji}/${post_id}/${user_id}`,
+      `${baseUrl}/api/reactions/updateReaction/${emoji}/${post_id}/${user_id}`,
       null,
     );
   }
 
   deleteReaction(post_id: number, user_id: number): Observable<boolean> {
+    const baseUrl = 'http://71.89.73.28:3000';
     return this.httpClient.delete<boolean>(
-      `api/reactions/deleteReaction/${post_id}/${user_id}`,
+      `${baseUrl}/api/reactions/deleteReaction/${post_id}/${user_id}`,
     );
   }
 }
