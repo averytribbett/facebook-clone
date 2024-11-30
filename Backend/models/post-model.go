@@ -7,6 +7,6 @@ type Post struct {
 	AuthorFirstName string `json:"authorFirstName"`
 	AuthorLastName  string `json:"authorLastName"`
 	ReplyCount      int    `json:"replyCount"`
-	ReactionCount   int    `json:"reactCount"`
-	HasReacted      bool   `json:"hasReacted"`
+	ReactionCount   int    `json:"reactionCount"`
+	ReactionByUser  string `json:"reactionByUser"`
 }

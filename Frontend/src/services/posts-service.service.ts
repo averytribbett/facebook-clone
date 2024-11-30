@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { PostModel, ReplyModel } from 'src/models/post-model';
+import { ReactionType } from 'src/app/components/user-post/user-post.component';
 
 @Injectable({
   providedIn: 'root',
@@ -55,12 +56,23 @@ export class PostService {
   }
 
   addReaction(
-    emoji: string,
+    emoji: ReactionType,
     post_id: number,
     user_id: number,
   ): Observable<boolean> {
     return this.httpClient.post<boolean>(
       `api/reactions/addReaction/${emoji}/${post_id}/${user_id}`,
+      null,
+    );
+  }
+
+  updateReaction(
+    emoji: ReactionType,
+    post_id: number,
+    user_id: number,
+  ): Observable<boolean> {
+    return this.httpClient.put<boolean>(
+      `api/reactions/updateReaction/${emoji}/${post_id}/${user_id}`,
       null,
     );
   }

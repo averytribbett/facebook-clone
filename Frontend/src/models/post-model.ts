@@ -4,9 +4,9 @@ export interface PostModel {
   authorId: number;
   authorFirstName: string;
   authorLastName: string;
-  reactCount: number;
+  reactionCount: number;
   replyCount: number;
-  hasReacted: boolean;
+  reactionByUser: string;
   // author profile picture
 }
 

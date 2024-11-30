@@ -1,4 +1,4 @@
-<mat-card class="user-post">
+<mat-card class="user-post" (mouseleave)="setShowReactionTypes(false)">
   <div class="post-header">
     <img class="user-avatar" alt="User Avatar" [src]="userAvatar" />
     <p class="user-name">{{ userFirstName }} {{ userLastName }}</p>
@@ -8,7 +8,10 @@
     <div class="divider"></div>
     <div class="post-details">
       <div class="post-details-row">
-        <span>{{ likes }} Likes</span>
+        <span
+          >{{ reactions }} {{ reactions === 1 ? 'Reaction' : 'Reactions'
+          }}</span
+        >
       </div>
       <div class="post-details-row">
         <a role="button" tabindex="0" (click)="openComments()">
@@ -52,37 +55,76 @@
     <div class="divider"></div>
   </div>
   <div class="post-footer">
-    
-    <div class="post-reactions" *ngIf="showReactionTypes">
-      <button>
-        <mat-icon class="icon">thumb_up_alt</mat-icon>
-        <p>Like</p>
+    <div
+      *ngIf="showReactionTypes"
+      class="reaction-buttons"
+      (mouseleave)="setShowReactionTypes(false)"
+    >
+      <button
+        class="interaction-row"
+        [disabled]="isLoading"
+        (click)="reactToPost('thumbs_up')"
+      >
+        <ng-container *ngIf="reactionByUser === 'thumbs_up'">
+          <mat-icon class="thumbs_up">thumb_up_alt</mat-icon>
+          <p class="thumbs_up">Liked</p>
+        </ng-container>
+        <ng-container *ngIf="reactionByUser !== 'thumbs_up'">
+          <mat-icon class="icon">thumb_up_off_alt</mat-icon>
+          <p>Like</p>
+        </ng-container>
       </button>
-      <button>
-        <mat-icon class="icon">thumb_down_alt</mat-icon>
-        <p>Dislike</p>
+      <button
+        class="interaction-row"
+        [disabled]="isLoading"
+        (click)="reactToPost('thumbs_down')"
+      >
+        <ng-container *ngIf="reactionByUser === 'thumbs_down'">
+          <mat-icon class="thumbs_down">thumb_down_alt</mat-icon>
+          <p class="thumbs_down">Disliked</p>
+        </ng-container>
+        <ng-container *ngIf="reactionByUser !== 'thumbs_down'">
+          <mat-icon class="icon">thumb_down_off_alt</mat-icon>
+          <p>Dislike</p>
+        </ng-container>
       </button>
-      <button>
-        <mat-icon class="icon">favorite_border</mat-icon>
-        <p>Heart</p>
+      <button
+        class="interaction-row"
+        [disabled]="isLoading"
+        (click)="reactToPost('heart')"
+      >
+        <ng-container *ngIf="reactionByUser === 'heart'">
+          <mat-icon class="heart">favorite</mat-icon>
+          <p class="heart">Loved</p>
+        </ng-container>
+        <ng-container *ngIf="reactionByUser !== 'heart'">
+          <mat-icon class="icon">favorite_border</mat-icon>
+          <p>Love</p>
+        </ng-container>
       </button>
     </div>
-    <button
-      (click)="reactToPost('thumbs_up')"
-      class="interaction-row"
-      [disabled]="isLoading"
-      (onmouseenter)="setShowReactionTypes(true)"
-      (onmouseleave)="setShowReactionTypes(false)"
-    >
-      <ng-container *ngIf="hasReacted">
-        <mat-icon class="liked">thumb_up_alt</mat-icon>
-        <p class="likedText">Liked</p>
-      </ng-container>
-      <ng-container *ngIf="!hasReacted">
-        <mat-icon class="icon">thumb_up_off_alt</mat-icon>
-        <p>Like</p>
-      </ng-container>
-    </button>
+    <div class="post-reactions" (mouseenter)="setShowReactionTypes(true)">
+      <button
+        (click)="reactToPost('thumbs_up', true)"
+        class="interaction-row"
+        [disabled]="isLoading"
+      >
+        <ng-container *ngIf="reactionByUser">
+          <mat-icon class="{{ reactionByUser }}">
+            {{ reactionByUser === 'thumbs_up' ? 'thumb_up_alt' : reactionByUser
+            === 'thumbs_down' ? 'thumb_down_alt' : 'favorite' }}
+          </mat-icon>
+          <p class="{{ reactionByUser }}">
+            {{ reactionByUser === 'thumbs_up' ? 'Liked' : reactionByUser ===
+            'thumbs_down' ? 'Disliked' : 'Loved' }}
+          </p>
+        </ng-container>
+        <ng-container *ngIf="!reactionByUser">
+          <mat-icon class="icon">thumb_up_off_alt</mat-icon>
+          <p>Like</p>
+        </ng-container>
+      </button>
+    </div>
     <button (click)="openCommentInput()" class="interaction-row">
       <mat-icon class="icon">chat_bubble_outline</mat-icon>
       <p>Comment</p>
