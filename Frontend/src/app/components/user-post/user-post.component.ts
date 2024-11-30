@@ -36,7 +36,7 @@ export class UserPostComponent {
   }
 
   ngOnInit(): void {
-    this.getReplies();
+    // this.getReplies();
     this.hasReacted = this.initialHasReacted;
     this.likes = this.initialLikes;
   }
@@ -90,11 +90,11 @@ export class UserPostComponent {
     this.shouldShowComments = true;
     /** @TODO fetch comments from the post here */
     console.log('Toggle open the comments');
-    // this.postService.getReplies(this.postId).subscribe(result => {
-    //   console.log('the replies: ', result);
-    //   this.replyList = result;
-    //   this.comments = this.replyList.length;
-    // });
+    this.postService.getReplies(this.postId).subscribe(result => {
+      console.log('the replies: ', result);
+      this.replyList = result;
+      this.comments = this.replyList.length;
+    });
   }
 
   openCommentInput(): void {
