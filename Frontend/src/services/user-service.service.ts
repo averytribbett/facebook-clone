@@ -19,37 +19,44 @@ export class UserServiceService {
   }
 
   getAllUsers(): Observable<UserModel[]> {
-    return this.httpClient.get<UserModel[]>('api/users');
+    const baseUrl = 'http://71.89.73.28:3000';
+    return this.httpClient.get<UserModel[]>(`${baseUrl}/api/users`);
   }
 
   getUser(userId: number): Observable<UserModel> {
-    return this.httpClient.get<UserModel>('api/user/' + userId);
+    const baseUrl = 'http://71.89.73.28:3000';
+    return this.httpClient.get<UserModel>(`${baseUrl}/api/user/` + userId);
   }
 
   getUserByUsername(username: string): Observable<UserModel> {
-    return this.httpClient.get<UserModel>('api/username/' + username);
+    const baseUrl = 'http://71.89.73.28:3000';
+    return this.httpClient.get<UserModel>(`${baseUrl}/api/username/` + username);
   }
 
   addNewUser(user: UserModel): Observable<boolean> {
-    return this.httpClient.put<boolean>('api/user/addNewUser', user);
+    const baseUrl = 'http://71.89.73.28:3000';
+    return this.httpClient.put<boolean>(`${baseUrl}/api/user/addNewUser`, user);
   }
 
   searchUser(name: string): Observable<UserModel[]> {
-    return this.httpClient.get<UserModel[]>('api/user/findUserByName/' + name);
+    const baseUrl = 'http://71.89.73.28:3000';
+    return this.httpClient.get<UserModel[]>(`${baseUrl}/api/user/findUserByName/` + name);
   }
 
   searchUserByFirstAndLastName(
     firstName: string,
     lastName: string,
   ): Observable<UserModel> {
+    const baseUrl = 'http://71.89.73.28:3000';
     return this.httpClient.get<UserModel>(
-      'api/user/findUserByFirstAndLastName/' + firstName + '/' + lastName,
+      `${baseUrl}/api/user/findUserByFirstAndLastName/` + firstName + '/' + lastName,
     );
   }
 
   editProfileBio(newBio: string, username: string): Observable<boolean> {
+    const baseUrl = 'http://71.89.73.28:3000';
     return this.httpClient.patch<boolean>(
-      `/api/user/editBio/${newBio}/${username}`,
+      `${baseUrl}/api/user/editBio/${newBio}/${username}`,
       null,
     );
   }
@@ -59,8 +66,9 @@ export class UserServiceService {
     username: string,
   ): Observable<boolean> {
     console.log('we are editing the first name');
+    const baseUrl = 'http://71.89.73.28:3000';
     return this.httpClient.patch<boolean>(
-      `/api/user/editFirstName/${newFirstName}/${username}`,
+      `${baseUrl}/api/user/editFirstName/${newFirstName}/${username}`,
       null,
     );
   }
@@ -70,8 +78,9 @@ export class UserServiceService {
     username: string,
   ): Observable<boolean> {
     console.log('we are editing the last name');
+    const baseUrl = 'http://71.89.73.28:3000';
     return this.httpClient.patch<boolean>(
-      `/api/user/editLastName/${newLastName}/${username}`,
+      `${baseUrl}/api/user/editLastName/${newLastName}/${username}`,
       null,
     );
   }

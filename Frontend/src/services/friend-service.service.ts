@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
@@ -10,14 +11,16 @@ export class FriendServiceService {
   constructor(private httpClient: HttpClient) {}
 
   public getFriendList(username: string): Observable<UserModel[]> {
+    const baseUrl = 'http://71.89.73.28:3000';
     return this.httpClient.get<UserModel[]>(
-      'api/friends/findFriendList/' + username,
+      `${baseUrl}/api/friends/findFriendList/` + username,
     );
   }
 
   public getFriendRequestList(username: string): Observable<UserModel[]> {
+    const baseUrl = 'http://71.89.73.28:3000';
     return this.httpClient.get<UserModel[]>(
-      'api/friends/findFriendRequestList/' + username,
+      `${baseUrl}/api/friends/findFriendRequestList/` + username,
     );
   }
 
@@ -25,8 +28,9 @@ export class FriendServiceService {
     requestor: string,
     requestee: string,
   ): Observable<boolean> {
+    const baseUrl = 'http://71.89.73.28:3000';
     return this.httpClient.put<boolean>(
-      '/api/friends/addPendingFriendship/' + requestor + '/' + requestee,
+      `${baseUrl}/api/friends/addPendingFriendship/` + requestor + '/' + requestee,
       null,
     );
   }
@@ -35,8 +39,9 @@ export class FriendServiceService {
     originalRequestor: string,
     friendWhoAccepted: string,
   ): Observable<boolean> {
+    const baseUrl = 'http://71.89.73.28:3000';
     return this.httpClient.get<boolean>(
-      '/api/friends/acceptFriendship/' +
+      `${baseUrl}/api/friends/acceptFriendship/` +
         originalRequestor +
         '/' +
         friendWhoAccepted,
@@ -47,8 +52,9 @@ export class FriendServiceService {
     originalRequestor: string,
     friendWhoDeleted: string,
   ): Observable<boolean> {
+    const baseUrl = 'http://71.89.73.28:3000';
     return this.httpClient.delete<boolean>(
-      '/api/friends/deleteFriendshipRequest/' +
+      `${baseUrl}/api/friends/deleteFriendshipRequest/` +
         originalRequestor +
         '/' +
         friendWhoDeleted,
@@ -59,8 +65,9 @@ export class FriendServiceService {
     friendToDelete: string,
     deleter: string,
   ): Observable<boolean> {
+    const baseUrl = 'http://71.89.73.28:3000';
     return this.httpClient.delete<boolean>(
-      '/api/friends/deleteFriendship/' + friendToDelete + '/' + deleter,
+      `${baseUrl}/api/friends/deleteFriendship/` + friendToDelete + '/' + deleter,
     );
   }
 }
