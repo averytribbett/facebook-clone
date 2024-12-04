@@ -83,4 +83,23 @@ export class UserServiceService {
   getValue() {
     return this.loggedInUsername;
   }
+
+  uploadProfilePicture(
+    formData: FormData,
+  ): Observable<{ profileImageUrl: string }> {
+    return this.httpClient.post<{ profileImageUrl: string }>(
+      '/upload',
+      formData,
+    );
+  }
+
+  getProfilePicture(username: string): Observable<{ imageName: string }> {
+    return this.httpClient.get<{ imageName: string }>(
+      `/getProfilePicture?username=${username}`,
+    );
+  }
+
+  getProfilePictureUrl(imageName: string): string {
+    return `/uploads/${imageName}`;
+  }
 }

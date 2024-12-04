@@ -46,6 +46,7 @@
           alt="Profile Picture"
           width="150"
           height="150"
+          tabindex="0"
           (click)="triggerFileInput()"
         />
         <input
@@ -53,10 +54,10 @@
           type="file"
           accept="image/*"
           (change)="handleFileSelection($event)"
-          style="display: none;"
+          style="display: none"
         />
       </div>
-    
+
       <div id="profileDetailsContainer">
         <mat-card-title>
           {{ selectedUser.firstName }} {{ selectedUser.lastName }}
@@ -64,8 +65,7 @@
         </mat-card-title>
         <mat-card-content>{{ selectedUser.bio }}</mat-card-content>
       </div>
-      <div *ngIf="isEditing" id="profile-edit-info">
-      </div>
+      <div *ngIf="isEditing" id="profile-edit-info"></div>
     </div>
     <div id="profileActionsContainer">
       <button
@@ -91,48 +91,48 @@
         Friend Requests
       </button>
     </div>
-      <div  *ngIf="isEditing" id="profile-edit-info">
-        <mat-label>Please select an item to edit:</mat-label>
-        <mat-chip-listbox
-          #chipList
-          class="mat-mdc-chip-set-stacked"
-          aria-label="Profile edit options"
+    <div *ngIf="isEditing" id="profile-edit-info">
+      <mat-label>Please select an item to edit:</mat-label>
+      <mat-chip-listbox
+        #chipList
+        class="mat-mdc-chip-set-stacked"
+        aria-label="Profile edit options"
+      >
+        <mat-chip-option
+          *ngFor="let option of editOptions"
+          #chipOption
+          (selectionChange)="setProfileEditingParameters(option, $event.selected)"
+          color="secondary"
+          >{{option}}</mat-chip-option
         >
-          <mat-chip-option
-            *ngFor="let option of editOptions"
-            #chipOption
-            (selectionChange)="setProfileEditingParameters(option, $event.selected)"
-            color="secondary"
-            >{{option}}</mat-chip-option
-          >
-        </mat-chip-listbox>
-        <mat-form-field *ngIf="isEditingOptionSelected" id="edit-form-field">
-          <textarea
-            [(ngModel)]="newProfileInfo"
-            matInput
-            placeholder="Change your info... "
-          ></textarea>
-        </mat-form-field>
-        <button
-          *ngIf="isEditingOptionSelected"
-          mat-raised-button
-          class="edit-profile-submit"
-          (click)="editProfileAttribute()"
-          [disabled]="isSubmitEditButtonDisabled"
-        >
-          Update {{currentAttributeBeingEdited}}
-        </button>
-      </div>
+      </mat-chip-listbox>
+      <mat-form-field *ngIf="isEditingOptionSelected" id="edit-form-field">
+        <textarea
+          [(ngModel)]="newProfileInfo"
+          matInput
+          placeholder="Change your info... "
+        ></textarea>
+      </mat-form-field>
+      <button
+        *ngIf="isEditingOptionSelected"
+        mat-raised-button
+        class="edit-profile-submit"
+        (click)="editProfileAttribute()"
+        [disabled]="isSubmitEditButtonDisabled"
+      >
+        Update {{currentAttributeBeingEdited}}
+      </button>
     </div>
+  </div>
 </mat-card>
 <button
   mat-flat-button
- *ngIf="shouldShowAddFriendButton"
- (click)="addFriend()"
- class="manage-friend-button"
- >
- <mat-icon [ngStyle]="{ color: 'orangered' }">person_add</mat-icon>
- <span>Add Friend</span>
+  *ngIf="shouldShowAddFriendButton"
+  (click)="addFriend()"
+  class="manage-friend-button"
+>
+  <mat-icon [ngStyle]="{ color: 'orangered' }">person_add</mat-icon>
+  <span>Add Friend</span>
 </button>
 <button
   mat-flat-button
@@ -140,21 +140,22 @@
   (click)="deleteFriend(profileBeingViewedUsername)"
   class="manage-friend-button"
 >
-<mat-icon [ngStyle]="{ color: 'orangered' }">person_remove</mat-icon>
-<span>Delete Friend</span>
+  <mat-icon [ngStyle]="{ color: 'orangered' }">person_remove</mat-icon>
+  <span>Delete Friend</span>
 </button>
 
-<div *ngIf="shouldShowProfileFeed && (shouldHaveWriteAccess || shouldShowDeleteFriendButton)" id="posts">
+<div
+  *ngIf="shouldShowProfileFeed && (shouldHaveWriteAccess || shouldShowDeleteFriendButton)"
+  id="posts"
+>
   <div *ngFor="let post of userPosts">
     <user-post
       [initialReactions]="post.reactionCount"
       [comments]="post.replyCount"
       [postText]="post.text"
-      [userAvatar]="
-        'https://i.redd.it/i-got-bored-so-i-decided-to-draw-a-random-image-on-the-v0-4ig97vv85vjb1.png?width=1280&format=png&auto=webp&s=7177756d1f393b6e093596d06e1ba539f723264b'
-      "
       [userFirstName]="post.authorFirstName"
       [userLastName]="post.authorLastName"
+      [authorUsername]="post.authorUsername"
       [postId]="post.id"
       [userId]="post.authorId"
       [loggedInUserId]="loggedInUserId"
@@ -164,15 +165,20 @@
 </div>
 <mat-card *ngIf="shouldShowAddFriendButton">
   <mat-card-subtitle>
-    Add as friend to see profile content, no promises they will want to add you though...
+    Add as friend to see profile content, no promises they will want to add you
+    though...
   </mat-card-subtitle>
 </mat-card>
 <mat-card *ngIf="!shouldShowAddFriendButton && !shouldShowDeleteFriendButton">
   <mat-card-subtitle>
-    Friend request is pending! Check back later to learn if they don't hate you...
+    Friend request is pending! Check back later to learn if they don't hate
+    you...
   </mat-card-subtitle>
 </mat-card>
-<mat-card *ngIf="shouldShowFriendList && (shouldHaveWriteAccess || shouldShowDeleteFriendButton)" appearance="raised">
+<mat-card
+  *ngIf="shouldShowFriendList && (shouldHaveWriteAccess || shouldShowDeleteFriendButton)"
+  appearance="raised"
+>
   <mat-card-title>Friend list</mat-card-title>
   <mat-card-subtitle *ngIf="!this.userFriends || this.userFriends.length === 0">
     Not even your mom is your friend...?

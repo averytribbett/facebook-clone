@@ -4,10 +4,10 @@ export interface PostModel {
   authorId: number;
   authorFirstName: string;
   authorLastName: string;
+  authorUsername: string;
   reactionCount: number;
   replyCount: number;
   reactionByUser: string;
-  // author profile picture
 }
 
 export interface ReplyModel {
