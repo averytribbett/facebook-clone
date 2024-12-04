@@ -84,25 +84,25 @@ export class HomeComponent {
     });
 
     this.myControl.valueChanges.subscribe((searchValue) => {
-            const newVal = searchValue as string;
+      const newVal = searchValue as string;
       if (newVal && newVal.length >= 5 && this.continueSearch) {
         this.continueSearch = false;
-          this.userService.searchUser(newVal).subscribe((result) => {
-            const userList: DisplayNameUserModel[] = [];
-            if (result) {
-              for (const user of result) {
-                userList.push({
-                  firstName: user.firstName,
-                  lastName: user.lastName,
-                  username: user.username
-                });
-              }
-              this.friendList = userList;
+        this.userService.searchUser(newVal).subscribe((result) => {
+          const userList: DisplayNameUserModel[] = [];
+          if (result) {
+            for (const user of result) {
+              userList.push({
+                firstName: user.firstName,
+                lastName: user.lastName,
+                username: user.username,
+              });
             }
-            this.continueSearch = true;
-          });
-        }
-      });
+            this.friendList = userList;
+          }
+          this.continueSearch = true;
+        });
+      }
+    });
     this.initPostForm();
   }
 

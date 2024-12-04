@@ -15,9 +15,9 @@ export class UserPostComponent {
   @Input() initialReactions!: number;
   @Input() comments!: number;
   @Input() postText!: string;
-  @Input() userAvatar!: string;
   @Input() userFirstName!: string;
   @Input() userLastName!: string;
+  @Input() authorUsername!: string;
   @Input() initialReactionByUser!: string;
   @Input() postId!: number;
   @Input() userId!: number;
@@ -30,6 +30,7 @@ export class UserPostComponent {
   public reactions = 0;
   public isLoading = false;
   public showReactionTypes = false;
+  public profileImageUrl = 'http://localhost:3000/uploads/default.png';
 
   constructor(
     private userService: UserServiceService,
@@ -43,6 +44,13 @@ export class UserPostComponent {
     this.getReplies();
     this.reactionByUser = this.initialReactionByUser;
     this.reactions = this.initialReactions;
+    this.userService
+      .getProfilePicture(this.authorUsername)
+      .subscribe((result) => {
+        this.profileImageUrl = this.userService.getProfilePictureUrl(
+          result.imageName,
+        );
+      });
   }
 
   getReplies(): void {
@@ -114,7 +122,7 @@ export class UserPostComponent {
     this.shouldShowComments = true;
     /** @TODO fetch comments from the post here */
     console.log('Toggle open the comments');
-    this.postService.getReplies(this.postId).subscribe(result => {
+    this.postService.getReplies(this.postId).subscribe((result) => {
       console.log('the replies: ', result);
       this.replyList = result;
       this.comments = this.replyList.length;

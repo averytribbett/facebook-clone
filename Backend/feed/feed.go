@@ -90,7 +90,7 @@ func GetUserPosts(user_id int, loggedInUserId int) []models.Post {
 	}
 
 	// sql query
-	query := "SELECT posts.post_id, posts.post_text, users.id AS user_id, users.first_name, users.last_name, (SELECT COUNT(*) FROM replies WHERE replies.post_id = posts.post_id) AS reply_count, (SELECT COUNT(*) FROM reactions WHERE reactions.post_id = posts.post_id) AS reaction_count, (SELECT reaction FROM reactions WHERE reactions.post_id = posts.post_id AND reactions.user_id = ?) AS reaction_by_user FROM posts JOIN users ON posts.user_id = users.id LEFT JOIN reactions ON posts.post_id = reactions.post_id WHERE posts.user_id=\"" + strconv.Itoa(user_id) + "\"ORDER BY posts.post_id DESC;"
+	query := "SELECT posts.post_id, posts.post_text, users.id AS user_id, users.first_name, users.last_name, users.username AS author_username, (SELECT COUNT(*) FROM replies WHERE replies.post_id = posts.post_id) AS reply_count, (SELECT COUNT(*) FROM reactions WHERE reactions.post_id = posts.post_id) AS reaction_count, (SELECT reaction FROM reactions WHERE reactions.post_id = posts.post_id AND reactions.user_id = ?) AS reaction_by_user FROM posts JOIN users ON posts.user_id = users.id LEFT JOIN reactions ON posts.post_id = reactions.post_id WHERE posts.user_id=\"" + strconv.Itoa(user_id) + "\"ORDER BY posts.post_id DESC;"
 
 	// x rows of sql result
 	rows, err := db.Query(query, loggedInUserId)
@@ -105,7 +105,7 @@ func GetUserPosts(user_id int, loggedInUserId int) []models.Post {
 		var reactionByUser sql.NullString
 
 		// scan result and set the values to each variable
-		err = rows.Scan(&post.Id, &post.Text, &post.AuthorId, &post.AuthorFirstName, &post.AuthorLastName, &post.ReplyCount, &post.ReactionCount, &reactionByUser)
+		err = rows.Scan(&post.Id, &post.Text, &post.AuthorId, &post.AuthorFirstName, &post.AuthorLastName, &post.AuthorUsername, &post.ReplyCount, &post.ReactionCount, &reactionByUser)
 		if err != nil {
 			panic(err)
 		}
@@ -153,7 +153,7 @@ func InitialFeedByTime(numOfPosts int, loggedInUserId int) []models.Post {
 				  	OR friend_id = (SELECT username FROM capstone.users WHERE id = ?))
 				  AND friend_status = 'friends')
 			  SELECT posts.post_id, posts.post_text, users.id
-			  AS user_id, users.first_name, users.last_name,
+			  AS user_id, users.first_name, users.last_name, users.username,
 			  (SELECT COUNT(*) FROM replies
 			  	WHERE replies.post_id = posts.post_id)
 			  AS reply_count,
@@ -181,7 +181,7 @@ func InitialFeedByTime(numOfPosts int, loggedInUserId int) []models.Post {
 		var reactionByUser sql.NullString
 
 		// scan result and set the values to each variable
-		err = rows.Scan(&post.Id, &post.Text, &post.AuthorId, &post.AuthorFirstName, &post.AuthorLastName, &post.ReplyCount, &post.ReactionCount, &reactionByUser)
+		err = rows.Scan(&post.Id, &post.Text, &post.AuthorId, &post.AuthorFirstName, &post.AuthorLastName, &post.AuthorUsername, &post.ReplyCount, &post.ReactionCount, &reactionByUser)
 		if err != nil {
 			panic(err)
 		}
@@ -198,7 +198,6 @@ func InitialFeedByTime(numOfPosts int, loggedInUserId int) []models.Post {
 	return data
 }
 
-// @TODO add user id to filter only friends posts
 // func to sort feed by post time
 func FeedByTime(numOfPosts int, loggedInUserId int) []models.Post {
 	dbName := os.Getenv("DB_NAME")
@@ -230,7 +229,7 @@ func FeedByTime(numOfPosts int, loggedInUserId int) []models.Post {
 				  	OR friend_id = (SELECT username FROM capstone.users WHERE id = ?))
 				  AND friend_status = 'friends')
 			  SELECT posts.post_id, posts.post_text, users.id
-			  AS user_id, users.first_name, users.last_name,
+			  AS user_id, users.first_name, users.last_name, users.username,
 			  (SELECT COUNT(*) FROM replies
 			  	WHERE replies.post_id = posts.post_id)
 			  AS reply_count,
@@ -270,7 +269,7 @@ func FeedByTime(numOfPosts int, loggedInUserId int) []models.Post {
 		var reactionByUser sql.NullString
 
 		// scan result and set the values to each variable
-		err = rows.Scan(&post.Id, &post.Text, &post.AuthorId, &post.AuthorFirstName, &post.AuthorLastName, &post.ReplyCount, &post.ReactionCount, &reactionByUser)
+		err = rows.Scan(&post.Id, &post.Text, &post.AuthorId, &post.AuthorFirstName, &post.AuthorLastName, &post.AuthorUsername, &post.ReplyCount, &post.ReactionCount, &reactionByUser)
 		if err != nil {
 			panic(err)
 		}

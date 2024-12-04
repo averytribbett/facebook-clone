@@ -57,9 +57,6 @@ export class UserFeedComponent {
 
   constructor(private userService: UserServiceService) {}
 
-  ngOnInit(): void {
-  }
-
   public changeSelectedUser(user: any): void {
     // const allPosts = this.allPosts.filter(x => x.author === user.target.value) as PostModel[];
     // console.log(allPosts);
