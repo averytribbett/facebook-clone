@@ -79,14 +79,7 @@ export class UserProfileComponent {
     private postService: PostService,
     private http: HttpClient,
     public auth: AuthService,
-  ) {
-    this.auth.user$.subscribe(user => {
-      this.username = user?.email || null;
-      if (this.username) {
-          this.loadProfilePicture(this.username);
-      }
-  });
-  }
+  ) { }
 
   ngOnInit(): void {
     this.userService.userAuth.isAuthenticated$.subscribe((result) => {
@@ -122,6 +115,7 @@ export class UserProfileComponent {
             }
             this.selectedUser = result[1];
             this.profileBeingViewedUsername = this.selectedUser.username;
+            this.loadProfilePicture(this.profileBeingViewedUsername);
             this.getUserPosts();
             this.retrieveAndUpdateFriendLists();
           },
@@ -388,8 +382,10 @@ export class UserProfileComponent {
   }
 
   triggerFileInput() {
-    const fileInput = document.querySelector('input[type="file"]') as HTMLElement;
-    fileInput.click();
+    if (this.shouldHaveWriteAccess) {
+      const fileInput = document.querySelector('input[type="file"]') as HTMLElement;
+      fileInput.click();
+    }
   }
 
   handleFileSelection(event: Event) {
