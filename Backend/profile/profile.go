@@ -325,8 +325,4 @@ Tdo:
 1. emails/usernames need to be uinque
 2. more descriptive errors
 
-
-1. getUserPhotos
-
-
 */
