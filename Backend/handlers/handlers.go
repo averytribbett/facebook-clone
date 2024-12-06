@@ -201,6 +201,50 @@ func checkAdminHandler(c *gin.Context){
 	
 	c.JSON(http.StatusOK, profile.CheckAdmin(adminId))
 }
+func MakeUserAdminHandler(c *gin.Context){
+
+	adminId,err := strconv.Atoi(c.Param("adminId"))
+	userId,err := strconv.Atoi(c.Param("userId"))
+
+	if err != nil {
+		fmt.Println(err)
+	}
+	
+	c.JSON(http.StatusOK, profile.MakeUserAdmin(userId,adminId))
+}
+func UnmakeUserAdminHandler(c *gin.Context){
+
+	adminId,err := strconv.Atoi(c.Param("adminId"))
+	userId,err := strconv.Atoi(c.Param("userId"))
+
+	if err != nil {
+		fmt.Println(err)
+	}
+	
+	c.JSON(http.StatusOK, profile.UnmakeUserAdmin(userId, adminId))
+}
+func DeletePostAdminHandler(c *gin.Context){
+
+	postId,err := strconv.Atoi(c.Param("postId"))
+	adminId,err := strconv.Atoi(c.Param("adminId"))
+
+	if err != nil {
+		fmt.Println(err)
+	}
+	
+	c.JSON(http.StatusOK, profile.DeletePostAdmin(postId, adminId))
+}
+func DeleteUserProfileAdminHandler(c *gin.Context){
+
+	adminId,err := strconv.Atoi(c.Param("adminId"))
+	username := c.Param("username")
+
+	if err != nil {
+		fmt.Println(err)
+	}
+	
+	c.JSON(http.StatusOK, profile.DeleteUserProfileAdmin(username, adminId))
+}
 
 func AddPostHandler(c *gin.Context) {
 	var userId, err = strconv.Atoi(c.Param("userId"))

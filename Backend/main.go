@@ -20,7 +20,6 @@ import (
 	"fakebook.com/project/feed"
 	"fakebook.com/project/handlers"
 	"fakebook.com/project/models"
-	"fakebook.com/project/profile"
 	"github.com/auth0-community/go-auth0"
 	"github.com/gin-gonic/gin"
 	jose "gopkg.in/square/go-jose.v2"

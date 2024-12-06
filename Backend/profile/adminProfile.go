@@ -33,7 +33,7 @@ func CheckAdmin(adminId int) bool{
 	return admin
 }
 
-func MakeUserAdmin(userId int, adminId int){
+func MakeUserAdmin(userId int, adminId int) error {
 
 	var username string
 
@@ -42,7 +42,7 @@ func MakeUserAdmin(userId int, adminId int){
 		err1 := db.QueryRow("SELECT username FROM users WHERE id = ?", userId).Scan(&username)
 
 		if err1 != nil {
-			log.Println(err1)
+			return err1
 		}
 
 		query :=  ("INSERT INTO admins (username, user_id) VALUES (?, ?)")
@@ -50,14 +50,15 @@ func MakeUserAdmin(userId int, adminId int){
 		_, err2 := db.Exec(query,username,userId)
 
 		if err2 != nil {
-			log.Println(err2)
+			return err2
 		}
 
 	}
+	return nil
 
 }
 
-func UnmakeUserAdmin(userId int, adminId int){
+func UnmakeUserAdmin(userId int, adminId int) error{
 
 
 	if CheckAdmin(adminId){
@@ -67,10 +68,12 @@ func UnmakeUserAdmin(userId int, adminId int){
 		_, err := db.Exec(query,userId)
 
 		if err != nil {
-			log.Println(err)
+			return err
 		}
 
 	}
+
+	return nil
 
 }
 
@@ -183,7 +186,7 @@ func DeleteUserProfileAdmin(username string, adminId int) error {
 	return nil
 }
 
-
+// Do we let admins edit user credentials too?
 
 
 
