@@ -96,7 +96,7 @@ func main() {
 	authorized.GET("/api/users", handlers.GetUsersHandler)
 	authorized.GET("/api/user/:id", handlers.GetOneUserHandler)
 	authorized.GET("/api/username/:username", handlers.GetOneUserbyUsernameHandler)
-	authorized.POST("/api/user/addNewUser", handlers.AddNewUserHandler)
+	authorized.PUT("/api/user/addNewUser", handlers.AddNewUserHandler)
 	authorized.PATCH("/api/user/editFullName/:newName/:username", handlers.EditNameHandler)
 	authorized.PATCH("/api/user/editFirstName/:newFirstName/:username", handlers.EditFirstNameHandler)
 	authorized.PATCH("/api/user/editLastName/:newLastName/:username", handlers.EditLastNameHandler)
