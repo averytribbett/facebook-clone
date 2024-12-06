@@ -192,7 +192,7 @@ func DeleteUserHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, profile.DeleteUser(username))
 }
 
-func checkAdminHandler(c *gin.Context){
+func CheckAdminHandler(c *gin.Context){
 
 	adminId,err := strconv.Atoi(c.Param("adminId"))
 	if err != nil {
