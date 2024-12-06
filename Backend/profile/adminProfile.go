@@ -1,12 +1,12 @@
 package profile
 
 import (
-	"fmt"
 	"log"
+
+
 
 	_ "github.com/go-sql-driver/mysql"
 
-	"fakebook.com/project/models"
 )
 
 
@@ -16,7 +16,9 @@ func CheckAdmin(adminId int) bool{
 	var admin bool
 	var adminUsername string
 
-	err:= db.QueryRow("SELECT username FROM admins WHERE user_id = ?",adminId).Scan(adminUsername)
+
+	err:= db.QueryRow("SELECT username FROM admins WHERE user_id = ?",adminId).Scan(&adminUsername)
+
 
 	if err != nil{
 
@@ -27,7 +29,7 @@ func CheckAdmin(adminId int) bool{
 		admin = true
 	}
 
-
+	log.Println("THIS IS ADMIN CHECK", admin)
 	return admin
 }
 
@@ -37,7 +39,7 @@ func MakeUserAdmin(userId int, adminId int){
 
 	if CheckAdmin(adminId){
 
-		err1 := db.QueryRow("SELECT username, bio FROM users WHERE id = ?", userId).Scan(username)
+		err1 := db.QueryRow("SELECT username FROM users WHERE id = ?", userId).Scan(&username)
 
 		if err1 != nil {
 			log.Println(err1)
@@ -55,7 +57,70 @@ func MakeUserAdmin(userId int, adminId int){
 
 }
 
-func DeleteUserAdmin(username string, adminId int) error {
+func UnmakeUserAdmin(userId int, adminId int){
+
+
+	if CheckAdmin(adminId){
+
+		query :=  ("DELETE FROM admins WHERE user_id= ?")
+
+		_, err := db.Exec(query,userId)
+
+		if err != nil {
+			log.Println(err)
+		}
+
+	}
+
+}
+
+func DeletePostAdmin(postId int, adminId int) error {
+
+	if CheckAdmin(adminId){
+
+		txn, err := db.Begin()
+
+		if err != nil {
+			return err
+		}
+
+		// deferring the function to either commit the transactions, or roll them back depending on if an error is thrown.
+		defer func() {
+			if err != nil {
+				txn.Rollback()
+			} else {
+				err = txn.Commit()
+			}
+		}()
+
+
+		// removing from reactions table
+		_, err = txn.Exec("DELETE FROM reactions WHERE post_id = ?", postId)
+		if err != nil {
+			return err
+		}
+
+		// removing from replies table
+		_, err = txn.Exec("DELETE FROM replies WHERE post_id = ?", postId)
+
+		if err != nil {
+			return err
+}
+
+		// removing from posts table
+		_, err = txn.Exec("DELETE FROM posts WHERE post_id = ?", postId)
+
+		if err != nil {
+			return err
+		}
+
+		return nil
+	}
+	return nil
+
+}
+
+func DeleteUserProfileAdmin(username string, adminId int) error {
 
 	if CheckAdmin(adminId){
 		//Beginning transactions for the database, so they can be rolled back if an error occurs midway.
@@ -99,7 +164,7 @@ func DeleteUserAdmin(username string, adminId int) error {
 		}
 
 		// removing from friends table
-		_, err = txn.Exec("DELETE FROM friends WHERE user_id = ? or friend_id =?", username)
+		_, err = txn.Exec("DELETE FROM friends WHERE user_id = ? or friend_id =?", username, username)
 
 		if err != nil {
 			return err
@@ -120,28 +185,6 @@ func DeleteUserAdmin(username string, adminId int) error {
 
 
 
-func AddNewUserAdmin(newUser models.User, adminId int) error {
-
-	if CheckAdmin(adminId){
-
-		var oldUser = GetOneUserByUsername(newUser.Username)
-
-			if oldUser.Id == 0 {
-				query := "INSERT INTO users (first_name, last_name, bio, username) VALUES (?, ?, ?, ?)"
-
-				_, err := db.Exec(query, newUser.FirstName, newUser.LastName, newUser.Bio, newUser.Username)
-
-				fmt.Println(err)
-
-				return err
-			} else {
-				// not sure if good but, for now it gets the function to run
-				return nil
-			}
-	}else{
-		return nil
-	}
-}
 
 
 

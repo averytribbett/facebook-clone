@@ -20,6 +20,7 @@ import (
 	"fakebook.com/project/feed"
 	"fakebook.com/project/handlers"
 	"fakebook.com/project/models"
+	"fakebook.com/project/profile"
 	"github.com/auth0-community/go-auth0"
 	"github.com/gin-gonic/gin"
 	jose "gopkg.in/square/go-jose.v2"
@@ -59,6 +60,8 @@ func main() {
 	dbHost := os.Getenv("DB_HOST")
 
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:3306)/capstone", dbName, dbPass, dbHost)
+
+
 
 	// Open a connection to the database
 	db, err := sql.Open("mysql", dsn)
@@ -123,7 +126,7 @@ func main() {
 	authorized.PUT("/api/reactions/updateReaction/:emoji/:post_id/:user_id", handlers.UpdateReactionHandler)
 	authorized.DELETE("/api/reactions/deleteReaction/:post_id/:user_id", handlers.DeleteReactionHandler)
 
-	authorized.GET("/uploads/*filepath", handlers.FileServerHandler)
+	// authorized.GET("/uploads/*filepath", handlers.FileServerHandler)
 	authorized.POST("/upload", handlers.UploadImageHandler)
 	authorized.GET("/getProfilePicture", handlers.GetProfilePictureHandler(db))
 

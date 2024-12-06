@@ -16,6 +16,7 @@ import (
 	"fakebook.com/project/friends"
 	"fakebook.com/project/models"
 	"fakebook.com/project/profile"
+	// "fakebook.com/project/adminProfile"
 	"fakebook.com/project/reactions"
 	"github.com/gin-gonic/gin"
 )
@@ -153,6 +154,7 @@ func EditNameHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, profile.EditName(username, newNameSections[0], newNameSections[1]))
 }
 
+
 func EditFirstNameHandler(c *gin.Context) {
 	username := c.Param("username")
 	newFirstName := c.Param("newFirstName")
@@ -188,6 +190,16 @@ func DeleteUserHandler(c *gin.Context) {
 	username := c.Param("username")
 
 	c.JSON(http.StatusOK, profile.DeleteUser(username))
+}
+
+func checkAdminHandler(c *gin.Context){
+
+	adminId,err := strconv.Atoi(c.Param("adminId"))
+	if err != nil {
+		fmt.Println(err)
+	}
+	
+	c.JSON(http.StatusOK, profile.CheckAdmin(adminId))
 }
 
 func AddPostHandler(c *gin.Context) {
@@ -378,6 +390,3 @@ func GetProfilePictureHandler(db *sql.DB) gin.HandlerFunc {
 	}
 }
 
-func FileServerHandler(c *gin.Context) {
-	http.StripPrefix("/uploads/", http.FileServer(http.Dir("uploads"))).ServeHTTP(c.Writer, c.Request)
-}
