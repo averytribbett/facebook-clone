@@ -301,7 +301,7 @@ func DeleteUser(username string) error {
 	}
 
 	// removing from friends table
-	_, err = txn.Exec("DELETE FROM friends WHERE user_id = ? or friend_id =?", username)
+	_, err = txn.Exec("DELETE FROM friends WHERE user_id = ? or friend_id =?", username, username)
 
 	if err != nil {
 		return err
@@ -324,9 +324,5 @@ endpoint ideas for a user profile:
 Tdo:
 1. emails/usernames need to be uinque
 2. more descriptive errors
-
-
-1. getUserPhotos
-
 
 */

@@ -60,6 +60,8 @@ func main() {
 
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:3306)/capstone", dbName, dbPass, dbHost)
 
+
+
 	// Open a connection to the database
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {
@@ -104,6 +106,12 @@ func main() {
 	authorized.PATCH("/api/user/editUsername/:newUsername/:username", handlers.EditUsernameHandler)
 	authorized.DELETE("/api/user/deleteUser/:username", handlers.DeleteUserHandler)
 
+	authorized.GET("/api/checkAdmin/:adminId", handlers.CheckAdminHandler)
+	authorized.PUT("/api/makeAdmin/:userId/:adminId", handlers.MakeUserAdminHandler)
+	authorized.DELETE("/api/unmakeAdmin/:userId/:adminId", handlers.UnmakeUserAdminHandler)
+	authorized.DELETE("/api/deletePostAdmin/:postId/:adminId", handlers.UnmakeUserAdminHandler)
+	authorized.DELETE("/api/deleteUserAdmin/:username/:adminId", handlers.UnmakeUserAdminHandler)
+
 	authorized.GET("/api/posts/user/:userID/:loggedInUserId", handlers.GetUserPostsHandler)
 	authorized.GET("/api/posts/initial/:numOfPosts/:loggedInUserId", handlers.GetInitialFeedByTimeHandler)
 	authorized.GET("/api/posts/:numOfPosts/:loggedInUserId", handlers.GetFeedByTimeHandler)
@@ -123,7 +131,7 @@ func main() {
 	authorized.PUT("/api/reactions/updateReaction/:emoji/:post_id/:user_id", handlers.UpdateReactionHandler)
 	authorized.DELETE("/api/reactions/deleteReaction/:post_id/:user_id", handlers.DeleteReactionHandler)
 
-	authorized.GET("/uploads/*filepath", handlers.FileServerHandler)
+	// authorized.GET("/uploads/*filepath", handlers.FileServerHandler)
 	authorized.POST("/upload", handlers.UploadImageHandler)
 	authorized.GET("/getProfilePicture", handlers.GetProfilePictureHandler(db))
 
