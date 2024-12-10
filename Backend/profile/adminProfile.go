@@ -3,29 +3,23 @@ package profile
 import (
 	"log"
 
-
-
+	"fakebook.com/project/feed"
 	_ "github.com/go-sql-driver/mysql"
-
 )
 
-
-
-func CheckAdmin(adminId int) bool{
+func CheckAdmin(adminId int) bool {
 
 	var admin bool
 	var adminUsername string
 
+	err := db.QueryRow("SELECT username FROM admins WHERE user_id = ?", adminId).Scan(&adminUsername)
 
-	err:= db.QueryRow("SELECT username FROM admins WHERE user_id = ?",adminId).Scan(&adminUsername)
-
-
-	if err != nil{
+	if err != nil {
 
 		log.Println(err)
 		admin = false
 	}
-	if len(adminUsername)>0 {
+	if len(adminUsername) > 0 {
 		admin = true
 	}
 
@@ -37,7 +31,7 @@ func MakeUserAdmin(userId int, adminId int) error {
 
 	var username string
 
-	if CheckAdmin(adminId){
+	if CheckAdmin(adminId) {
 
 		err1 := db.QueryRow("SELECT username FROM users WHERE id = ?", userId).Scan(&username)
 
@@ -45,9 +39,9 @@ func MakeUserAdmin(userId int, adminId int) error {
 			return err1
 		}
 
-		query :=  ("INSERT INTO admins (username, user_id) VALUES (?, ?)")
+		query := ("INSERT INTO admins (username, user_id) VALUES (?, ?)")
 
-		_, err2 := db.Exec(query,username,userId)
+		_, err2 := db.Exec(query, username, userId)
 
 		if err2 != nil {
 			return err2
@@ -58,14 +52,13 @@ func MakeUserAdmin(userId int, adminId int) error {
 
 }
 
-func UnmakeUserAdmin(userId int, adminId int) error{
+func UnmakeUserAdmin(userId int, adminId int) error {
 
+	if CheckAdmin(adminId) {
 
-	if CheckAdmin(adminId){
+		query := ("DELETE FROM admins WHERE user_id= ?")
 
-		query :=  ("DELETE FROM admins WHERE user_id= ?")
-
-		_, err := db.Exec(query,userId)
+		_, err := db.Exec(query, userId)
 
 		if err != nil {
 			return err
@@ -79,7 +72,7 @@ func UnmakeUserAdmin(userId int, adminId int) error{
 
 func DeletePostAdmin(postId int, adminId int) error {
 
-	if CheckAdmin(adminId){
+	if CheckAdmin(adminId) {
 
 		txn, err := db.Begin()
 
@@ -96,7 +89,6 @@ func DeletePostAdmin(postId int, adminId int) error {
 			}
 		}()
 
-
 		// removing from reactions table
 		_, err = txn.Exec("DELETE FROM reactions WHERE post_id = ?", postId)
 		if err != nil {
@@ -108,7 +100,7 @@ func DeletePostAdmin(postId int, adminId int) error {
 
 		if err != nil {
 			return err
-}
+		}
 
 		// removing from posts table
 		_, err = txn.Exec("DELETE FROM posts WHERE post_id = ?", postId)
@@ -125,7 +117,7 @@ func DeletePostAdmin(postId int, adminId int) error {
 
 func DeleteUserProfileAdmin(username string, adminId int) error {
 
-	if CheckAdmin(adminId){
+	if CheckAdmin(adminId) {
 		//Beginning transactions for the database, so they can be rolled back if an error occurs midway.
 		txn, err := db.Begin()
 
@@ -152,22 +144,42 @@ func DeleteUserProfileAdmin(username string, adminId int) error {
 			return err
 		}
 
+		postsToDeleteFromReactionTable := feed.GetUserPosts(userID, adminId)
+
+		for _, value := range postsToDeleteFromReactionTable {
+			_, err = txn.Exec("DELETE FROM reactions WHERE post_id = ?", value.Id)
+			if err != nil {
+				return err
+			}
+		}
+
 		// removing from replies table
 		_, err = txn.Exec("DELETE FROM replies WHERE username = ?", username)
 
-		if err != nil {
-			return err
+		for _, value := range postsToDeleteFromReactionTable {
+			_, err = txn.Exec("DELETE FROM replies WHERE post_id = ?", value.Id)
+			if err != nil {
+				return err
+			}
 		}
-
-		// removing from posts table
-		_, err = txn.Exec("DELETE FROM posts WHERE user_id = ?", userID)
 
 		if err != nil {
 			return err
 		}
 
 		// removing from friends table
-		_, err = txn.Exec("DELETE FROM friends WHERE user_id = ? or friend_id =?", username, username)
+		_, err = txn.Exec("DELETE FROM friends WHERE user_id = ? OR friend_id =?", username, username)
+
+		if err != nil {
+			return err
+		}
+
+		if CheckAdmin(userID) {
+			_, err = txn.Exec("DELETE FROM admins WHERE username = ?", username)
+		}
+
+		// removing from posts table
+		_, err = txn.Exec("DELETE FROM posts WHERE user_id = ?", userID)
 
 		if err != nil {
 			return err
@@ -180,14 +192,12 @@ func DeleteUserProfileAdmin(username string, adminId int) error {
 			return err
 		}
 
+		if err != nil {
+			return err
+		}
+
 		return nil
 	}
 
 	return nil
 }
-
-// Do we let admins edit user credentials too?
-
-
-
-

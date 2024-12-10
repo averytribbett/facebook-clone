@@ -20,7 +20,7 @@
         </button>
         <button
           mat-menu-item
-          *ngIf="shouldHaveWriteAccess && !isEditing"
+          *ngIf="(shouldHaveWriteAccess || loggedInUserIsAdmin) && !isEditing"
           (click)="editProfile()"
         >
           <mat-icon [ngStyle]="{ color: 'orangered' }">edit</mat-icon>
@@ -28,7 +28,7 @@
         </button>
         <button
           mat-menu-item
-          *ngIf="shouldHaveWriteAccess && isEditing"
+          *ngIf="(shouldHaveWriteAccess || loggedInUserIsAdmin) && isEditing"
           (click)="cancelEditing()"
         >
           <mat-icon [ngStyle]="{ color: 'orangered' }">block</mat-icon>
@@ -90,6 +90,30 @@
       >
         Friend Requests
       </button>
+      <button
+      *ngIf="loggedInUserIsAdmin && !profileBeingViewedIsAdmin"
+      mat-stroked-button
+      class="manage-friend-button"
+      (click)="makeUserAdmin()"
+    >
+      Make Admin
+    </button>
+    <button
+    *ngIf="loggedInUserIsAdmin && profileBeingViewedIsAdmin"
+    mat-stroked-button
+    class="manage-friend-button"
+    (click)="revokeUserAdmin()"
+    >
+      Revoke Admin Privileges
+    </button>
+    <button
+    *ngIf="loggedInUserIsAdmin"
+    mat-stroked-button
+    class="manage-friend-button"
+    (click)="deleteUser()"
+    >
+      Delete User
+    </button>
     </div>
     <div *ngIf="isEditing" id="profile-edit-info">
       <mat-label>Please select an item to edit:</mat-label>
@@ -145,7 +169,7 @@
 </button>
 
 <div
-  *ngIf="shouldShowProfileFeed && (shouldHaveWriteAccess || shouldShowDeleteFriendButton)"
+  *ngIf="shouldShowProfileFeed && (shouldHaveWriteAccess || shouldShowDeleteFriendButton || loggedInUserIsAdmin)"
   id="posts"
 >
   <div *ngFor="let post of userPosts">
@@ -160,6 +184,8 @@
       [userId]="post.authorId"
       [loggedInUserId]="loggedInUserId"
       [initialReactionByUser]="post.reactionByUser"
+      [loggedInUserIsAdmin]="loggedInUserIsAdmin"
+      (shouldRefreshPosts)="getUserPosts()"
     ></user-post>
   </div>
 </div>
@@ -176,7 +202,7 @@
   </mat-card-subtitle>
 </mat-card>
 <mat-card
-  *ngIf="shouldShowFriendList && (shouldHaveWriteAccess || shouldShowDeleteFriendButton)"
+  *ngIf="shouldShowFriendList && (shouldHaveWriteAccess || shouldShowDeleteFriendButton || loggedInUserIsAdmin)"
   appearance="raised"
 >
   <mat-card-title>Friend list</mat-card-title>
