@@ -19,9 +19,7 @@ export class DeveloperPageComponent {
       this.isDeveloper = params['isDevelopmentEnvironment'];
       this.userService.getAllUsers().subscribe(result => {
         this.userList = result;
-        console.log("USER LIST IN SUB", this.userList);  
       });
-      console.log("USER LIST AFTER SUB", this.userList);
     });
   }
 }

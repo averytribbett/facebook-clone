@@ -18,7 +18,7 @@ import {
 } from 'src/models/user-model';
 import { PostModel } from 'src/models/post-model';
 import { UserServiceService } from 'src/services/user-service.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FriendServiceService } from 'src/services/friend-service.service';
 import { PostService } from 'src/services/posts-service.service';
 import { forkJoin } from 'rxjs';
@@ -73,6 +73,8 @@ export class UserProfileComponent {
   public username: string | null = null;
   public profileImageUrl = 'http://localhost:3000/uploads/default.png';
   public selectedFile: File | null = null;
+  public loggedInUserIsAdmin = true;
+  public profileBeingViewedIsAdmin = false;
 
   constructor(
     private userService: UserServiceService,
@@ -82,6 +84,7 @@ export class UserProfileComponent {
     private toaster: ToastrService,
     private postService: PostService,
     public auth: AuthService,
+    private router: Router,
   ) { }
 
   ngOnInit(): void {
@@ -97,6 +100,7 @@ export class UserProfileComponent {
           },
         });
       } else {
+        this.loggedInUserIsAdmin = this.userService.getBoolean();
         this.route.params.subscribe((params) => {
           this.profileBeingViewedUsername = params['profileUser'];
           this.isDeveloper = params['isDeveloperMode'];
@@ -123,6 +127,9 @@ export class UserProfileComponent {
             this.loggedInUserId = 0;
           }
           this.selectedUser = result[1];
+          this.userService.userIsAdmin(this.selectedUser.id as number).subscribe(result => {
+            this.profileBeingViewedIsAdmin = result;
+          });
           this.profileBeingViewedUsername = this.selectedUser.username;
           this.loadProfilePicture(this.profileBeingViewedUsername);
           this.getUserPosts();
@@ -240,7 +247,6 @@ export class UserProfileComponent {
     attribute: string,
     isSelected: boolean,
   ): void {
-    console.log('attribute: ', attribute);
     this.isEditingOptionSelected = isSelected;
     this.currentAttributeBeingEdited = attribute ?? '';
     if (!this.isEditingOptionSelected) {
@@ -250,10 +256,9 @@ export class UserProfileComponent {
 
   public editProfileAttribute(): void {
     this.isSubmitEditButtonDisabled = true;
-    console.log('what are we editing: ', this.currentAttributeBeingEdited);
     if (this.currentAttributeBeingEdited === EditOptions.Bio) {
       this.userService
-        .editProfileBio(this.newProfileInfo, this.userService.loggedInUsername)
+        .editProfileBio(this.newProfileInfo, this.profileBeingViewedUsername)
         .subscribe(() => {
           this.selectedUser.bio = this.newProfileInfo;
           this.clearEditing();
@@ -269,7 +274,6 @@ export class UserProfileComponent {
           this.clearEditing();
         });
     } else if (this.currentAttributeBeingEdited === EditOptions.LastName) {
-      console.log('new profile info: ', this.newProfileInfo);
       this.userService
         .editProfileLastName(
           this.newProfileInfo,
@@ -365,7 +369,6 @@ export class UserProfileComponent {
         next: (response) => {
           this.profileImageUrl = response.profileImageUrl;
           this.selectedFile = null;
-          console.log('Profile picture updated successfully', response);
         },
         error: (error) => {
           console.error('Error uploading profile picture:', error);
@@ -408,5 +411,27 @@ export class UserProfileComponent {
       reader.readAsDataURL(this.selectedFile);
       this.uploadFile();
     }
+  }
+
+  public makeUserAdmin(): void {
+    this.userService.makeUserAdmin(this.selectedUser.id as number, this.loggedInUserId).subscribe(result => {
+      this.toaster.show('User successfully made an admin!');
+      this.profileBeingViewedIsAdmin = true;
+    });
+  }
+
+  public revokeUserAdmin(): void {
+    this.userService.revokeUserAdmin(this.selectedUser.id as number, this.loggedInUserId as number).subscribe(result => {
+      this.toaster.show('User admin privileges successfully revoked!');
+      this.profileBeingViewedIsAdmin = false;
+    });
+  }
+
+  public deleteUser(): void {
+    this.toaster.show('User deletion in progress, please be patient, this may take several moments')
+    this.userService.deleteUser(this.selectedUser.username, this.loggedInUserId as number).subscribe(() => {
+      this.toaster.show('User deleted');
+      this.router.navigate(['/home']);
+    });
   }
 }

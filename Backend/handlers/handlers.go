@@ -16,12 +16,11 @@ import (
 	"fakebook.com/project/friends"
 	"fakebook.com/project/models"
 	"fakebook.com/project/profile"
-	// "fakebook.com/project/adminProfile"
+
 	"fakebook.com/project/reactions"
 	"github.com/gin-gonic/gin"
 )
 
-// main calls handlers, handlers calls... the other things?
 // GetUsersHandler returns all users
 func GetUsersHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, profile.Get())
@@ -154,7 +153,6 @@ func EditNameHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, profile.EditName(username, newNameSections[0], newNameSections[1]))
 }
 
-
 func EditFirstNameHandler(c *gin.Context) {
 	username := c.Param("username")
 	newFirstName := c.Param("newFirstName")
@@ -192,57 +190,57 @@ func DeleteUserHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, profile.DeleteUser(username))
 }
 
-func CheckAdminHandler(c *gin.Context){
+func CheckAdminHandler(c *gin.Context) {
 
-	adminId,err := strconv.Atoi(c.Param("adminId"))
+	adminId, err := strconv.Atoi(c.Param("adminId"))
 	if err != nil {
 		fmt.Println(err)
 	}
-	
+
 	c.JSON(http.StatusOK, profile.CheckAdmin(adminId))
 }
-func MakeUserAdminHandler(c *gin.Context){
+func MakeUserAdminHandler(c *gin.Context) {
 
-	adminId,err := strconv.Atoi(c.Param("adminId"))
-	userId,err := strconv.Atoi(c.Param("userId"))
+	adminId, err := strconv.Atoi(c.Param("adminId"))
+	userId, err := strconv.Atoi(c.Param("userId"))
 
 	if err != nil {
 		fmt.Println(err)
 	}
-	
-	c.JSON(http.StatusOK, profile.MakeUserAdmin(userId,adminId))
+
+	c.JSON(http.StatusOK, profile.MakeUserAdmin(userId, adminId))
 }
-func UnmakeUserAdminHandler(c *gin.Context){
+func UnmakeUserAdminHandler(c *gin.Context) {
 
-	adminId,err := strconv.Atoi(c.Param("adminId"))
-	userId,err := strconv.Atoi(c.Param("userId"))
+	adminId, err := strconv.Atoi(c.Param("adminId"))
+	userId, err := strconv.Atoi(c.Param("userId"))
 
 	if err != nil {
 		fmt.Println(err)
 	}
-	
+
 	c.JSON(http.StatusOK, profile.UnmakeUserAdmin(userId, adminId))
 }
-func DeletePostAdminHandler(c *gin.Context){
+func DeletePostAdminHandler(c *gin.Context) {
 
-	postId,err := strconv.Atoi(c.Param("postId"))
-	adminId,err := strconv.Atoi(c.Param("adminId"))
+	postId, err := strconv.Atoi(c.Param("postId"))
+	adminId, err := strconv.Atoi(c.Param("adminId"))
 
 	if err != nil {
 		fmt.Println(err)
 	}
-	
+
 	c.JSON(http.StatusOK, profile.DeletePostAdmin(postId, adminId))
 }
-func DeleteUserProfileAdminHandler(c *gin.Context){
+func DeleteUserProfileAdminHandler(c *gin.Context) {
 
-	adminId,err := strconv.Atoi(c.Param("adminId"))
+	adminId, err := strconv.Atoi(c.Param("adminId"))
 	username := c.Param("username")
 
 	if err != nil {
 		fmt.Println(err)
 	}
-	
+
 	c.JSON(http.StatusOK, profile.DeleteUserProfileAdmin(username, adminId))
 }
 
@@ -433,4 +431,3 @@ func GetProfilePictureHandler(db *sql.DB) gin.HandlerFunc {
 		})
 	}
 }
-

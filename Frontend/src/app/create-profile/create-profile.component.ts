@@ -83,7 +83,7 @@ export class CreateProfileComponent {
   }
 
   public disableUserNameField(): void {
-    if (this.currentUser !== null && this.currentUser !== '') {
+    if (this.currentUser !== null && this.currentUser !== '' && !this.isDeveloperMode) {
       this.createProfileForm.get('username')?.disable();
     }
   }

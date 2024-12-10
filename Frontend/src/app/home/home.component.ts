@@ -51,7 +51,7 @@ export class HomeComponent {
     this.document.addEventListener('scroll', this.onScroll.bind(this));
   }
 
-  // a double subscribe like this is probably not best practice, but  for now it works
+  
   ngOnInit(): void {
     this.userService.userAuth.user$.subscribe((result) => {
       // check if someone is signing up / logging in via auth0
@@ -70,14 +70,10 @@ export class HomeComponent {
             } else {
               this.router.navigate(['/home']);
               this.currentUser = result;
-              this.postService
-                .getInitialFeedByTime(20, this.currentUser.id || -1)
-                .subscribe((result) => {
-                  if (result.length) {
-                    console.log(result);
-                    this.feed = result;
-                  }
-                });
+              this.userService.userIsAdmin(this.currentUser.id as number).subscribe(result => {
+                this.userService.setBoolean(result);
+              });
+              this.getInitialPosts();
             }
           });
       }
@@ -104,6 +100,16 @@ export class HomeComponent {
       }
     });
     this.initPostForm();
+  }
+
+  public getInitialPosts() {
+    this.postService
+    .getInitialFeedByTime(20, this.currentUser.id || -1)
+    .subscribe((result) => {
+      if (result.length) {
+        this.feed = result;
+      }
+    });
   }
 
   public initPostForm(): void {

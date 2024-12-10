@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { ReplyModel } from 'src/models/post-model';
 import { PostService } from 'src/services/posts-service.service';
@@ -22,6 +22,8 @@ export class UserPostComponent {
   @Input() postId!: number;
   @Input() userId!: number;
   @Input() loggedInUserId!: number;
+  @Input() loggedInUserIsAdmin: boolean = false;
+  @Output() shouldRefreshPosts: EventEmitter<boolean> = new EventEmitter<boolean>();
   public shouldShowCommentText = false;
   public commentText = '';
   public shouldShowComments = false;
@@ -121,9 +123,7 @@ export class UserPostComponent {
   openComments(): void {
     this.shouldShowComments = true;
     /** @TODO fetch comments from the post here */
-    console.log('Toggle open the comments');
     this.postService.getReplies(this.postId).subscribe((result) => {
-      console.log('the replies: ', result);
       this.replyList = result;
       this.comments = this.replyList.length;
     });
@@ -132,7 +132,6 @@ export class UserPostComponent {
   openCommentInput(): void {
     this.shouldShowCommentText = true;
     /** @TODO Should open input to leave comment on post */
-    console.log('Write a comment here');
   }
 
   comment(): void {
@@ -168,5 +167,12 @@ export class UserPostComponent {
     setTimeout(() => {
       this.showReactionTypes = value;
     }, 100);
+  }
+
+  deletePost(): void {
+    this.postService.deletePost(this.postId, this.loggedInUserId).subscribe(result => {
+      this.toasterService.show('Post deleted successfully!');
+      this.shouldRefreshPosts.emit(true);
+    });
   }
 }

@@ -125,6 +125,10 @@
         </ng-container>
       </button>
     </div>
+    <button *ngIf="loggedInUserIsAdmin" (click)="deletePost()" class="interaction-row">
+      <mat-icon class="icon">delete</mat-icon>
+      <p>Delete Post</p>
+    </button>
     <button (click)="openCommentInput()" class="interaction-row">
       <mat-icon class="icon">chat_bubble_outline</mat-icon>
       <p>Comment</p>

@@ -23,6 +23,7 @@ export interface PostModel {
 }
 
 export const profileEditOptions = ['First Name', 'Last Name', 'Bio'];
+export const isAdmin = 'isAdmin';
 
 export enum EditOptions {
   FirstName = 'First Name',

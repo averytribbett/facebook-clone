@@ -60,8 +60,6 @@ func main() {
 
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:3306)/capstone", dbName, dbPass, dbHost)
 
-
-
 	// Open a connection to the database
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {
@@ -109,8 +107,8 @@ func main() {
 	authorized.GET("/api/checkAdmin/:adminId", handlers.CheckAdminHandler)
 	authorized.PUT("/api/makeAdmin/:userId/:adminId", handlers.MakeUserAdminHandler)
 	authorized.DELETE("/api/unmakeAdmin/:userId/:adminId", handlers.UnmakeUserAdminHandler)
-	authorized.DELETE("/api/deletePostAdmin/:postId/:adminId", handlers.UnmakeUserAdminHandler)
-	authorized.DELETE("/api/deleteUserAdmin/:username/:adminId", handlers.UnmakeUserAdminHandler)
+	authorized.DELETE("/api/deletePostAdmin/:postId/:adminId", handlers.DeletePostAdminHandler)
+	authorized.DELETE("/api/deleteUserAdmin/:username/:adminId", handlers.DeleteUserProfileAdminHandler)
 
 	authorized.GET("/api/posts/user/:userID/:loggedInUserId", handlers.GetUserPostsHandler)
 	authorized.GET("/api/posts/initial/:numOfPosts/:loggedInUserId", handlers.GetInitialFeedByTimeHandler)

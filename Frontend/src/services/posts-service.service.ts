@@ -45,7 +45,6 @@ export class PostService {
   }
 
   addComment(reply: ReplyModel): Observable<boolean> {
-    console.log('reply: ', reply);
     return this.httpClient.post<boolean>(`api/posts/reply`, reply);
   }
 
@@ -81,5 +80,9 @@ export class PostService {
     return this.httpClient.delete<boolean>(
       `api/reactions/deleteReaction/${post_id}/${user_id}`,
     );
+  }
+
+  deletePost(postId: number, adminId: number): Observable<boolean> {
+    return this.httpClient.delete<boolean>(`/api/deletePostAdmin/${postId}/${adminId}`);
   }
 }
