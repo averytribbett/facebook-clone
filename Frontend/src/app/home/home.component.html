@@ -117,14 +117,12 @@
           [userId]="post.authorId"
           [loggedInUserId]="currentUser.id || -1"
           [initialReactionByUser]="post.reactionByUser"
+          [loggedInUserIsAdmin]="userService.getBoolean()"
+          (shouldRefreshPosts)="getInitialPosts()"
         ></user-post>
       </div>
     </div>
     <ng-template #showLogo>
-      <!-- <div id="homeDescription" class="homeOptions">
-          Short description of our app and how your life will be immeasurably better once you start to use it.
-          Facebook, shmacebook. 
-      </div> -->
       <div class="homeOptions">
         <img src="../images/paper_plane.jpg" alt="Logo" />
       </div>
@@ -133,5 +131,4 @@
   <mat-spinner *ngIf="isLoading" class="spinner"></mat-spinner>
 </div>
 
-<!--getting rid of footer for now because it was in the way and we can add it back later if necessary-->
-<!-- <footer id="footer">Not affiliated with any other corporation involving books of faces (TM) not sure if we need a footer but here is one we could modify</footer> -->
+

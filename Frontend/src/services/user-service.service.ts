@@ -2,13 +2,14 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AuthService } from '@auth0/auth0-angular';
 import { Observable } from 'rxjs';
-import { UserModel } from 'src/models/user-model';
+import { isAdmin, UserModel } from 'src/models/user-model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserServiceService {
   public loggedInUsername = '';
+  public loggedInUserIsAdmin = false;
 
   constructor(
     private httpClient: HttpClient,
@@ -57,7 +58,6 @@ export class UserServiceService {
     newFirstName: string,
     username: string,
   ): Observable<boolean> {
-    console.log('we are editing the first name');
     return this.httpClient.patch<boolean>(
       `/api/user/editFirstName/${newFirstName}/${username}`,
       null,
@@ -68,16 +68,28 @@ export class UserServiceService {
     newLastName: string,
     username: string,
   ): Observable<boolean> {
-    console.log('we are editing the last name');
     return this.httpClient.patch<boolean>(
       `/api/user/editLastName/${newLastName}/${username}`,
       null,
     );
   }
 
+  userIsAdmin(userId: number): Observable<boolean> {
+    return this.httpClient.get<boolean>(`/api/checkAdmin/${userId}`);
+  }
+
   setValue(value: string) {
     this.loggedInUsername = value;
     localStorage.setItem('myValue', value);
+  }
+
+  setBoolean(value: boolean): void {
+    localStorage.setItem(isAdmin, value.toString());
+  }
+
+  getBoolean(): boolean {
+    const storedValue = localStorage.getItem(isAdmin);
+    return storedValue === 'true';
   }
 
   getValue() {
@@ -101,5 +113,17 @@ export class UserServiceService {
 
   getProfilePictureUrl(imageName: string): string {
     return `/uploads/${imageName}`;
+  }
+
+  makeUserAdmin(pendingAdminUserId: number, adminUserId: number): Observable<boolean> {
+    return this.httpClient.put<boolean>(`/api/makeAdmin/${pendingAdminUserId}/${adminUserId}`, null);
+  }
+
+  revokeUserAdmin(pendingRevokeAdminUserId: number, adminUserId: number): Observable<boolean> {
+    return this.httpClient.delete<boolean>(`/api/unmakeAdmin/${pendingRevokeAdminUserId}/${adminUserId}`);
+  }
+
+  deleteUser(usernameToDelete: string, adminUserId: number): Observable<boolean> {
+    return this.httpClient.delete<boolean>(`/api/deleteUserAdmin/${usernameToDelete}/${adminUserId}`);
   }
 }
