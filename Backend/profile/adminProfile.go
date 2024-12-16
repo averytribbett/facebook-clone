@@ -1,8 +1,6 @@
 package profile
 
 import (
-	"log"
-
 	"fakebook.com/project/feed"
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -16,14 +14,12 @@ func CheckAdmin(adminId int) bool {
 
 	if err != nil {
 
-		log.Println(err)
 		admin = false
 	}
 	if len(adminUsername) > 0 {
 		admin = true
 	}
 
-	log.Println("THIS IS ADMIN CHECK", admin)
 	return admin
 }
 
@@ -156,15 +152,15 @@ func DeleteUserProfileAdmin(username string, adminId int) error {
 		// removing from replies table
 		_, err = txn.Exec("DELETE FROM replies WHERE username = ?", username)
 
+		if err != nil {
+			return err
+		}
+
 		for _, value := range postsToDeleteFromReactionTable {
 			_, err = txn.Exec("DELETE FROM replies WHERE post_id = ?", value.Id)
 			if err != nil {
 				return err
 			}
-		}
-
-		if err != nil {
-			return err
 		}
 
 		// removing from friends table
@@ -185,12 +181,14 @@ func DeleteUserProfileAdmin(username string, adminId int) error {
 			return err
 		}
 
-		// Deleting the user
-		_, err = txn.Exec("DELETE FROM users WHERE username = ?", username)
+		_, err = txn.Exec("DELETE FROM pfp WHERE username = ?", username)
 
 		if err != nil {
 			return err
 		}
+
+		// Deleting the user
+		_, err = txn.Exec("DELETE FROM users WHERE username = ?", username)
 
 		if err != nil {
 			return err
