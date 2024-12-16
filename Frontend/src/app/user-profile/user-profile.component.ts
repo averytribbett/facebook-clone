@@ -71,7 +71,7 @@ export class UserProfileComponent {
   public file: File | null = null;
   public previewUrl: string | null = null;
   public username: string | null = null;
-  public profileImageUrl = 'http://localhost:3000/uploads/default.png';
+  public profileImageUrl = 'https://dashing-crawdad-rested.ngrok-free.app/uploads/default.png';
   public selectedFile: File | null = null;
   public loggedInUserIsAdmin = true;
   public profileBeingViewedIsAdmin = false;
@@ -364,18 +364,19 @@ export class UserProfileComponent {
       const formData = new FormData();
       formData.append('file', this.selectedFile);
       formData.append('username', this.userService.loggedInUsername);
+      this.toaster.show("Profile picture uploading, this may take a moment");
 
       this.userService.uploadProfilePicture(formData).subscribe({
         next: (response) => {
           this.profileImageUrl = response.profileImageUrl;
           this.selectedFile = null;
+          location.reload();
         },
         error: (error) => {
           console.error('Error uploading profile picture:', error);
         },
       });
     }
-    location.reload();
   }
 
   loadProfilePicture(username: string): void {

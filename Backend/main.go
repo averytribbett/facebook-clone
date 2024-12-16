@@ -129,9 +129,12 @@ func main() {
 	authorized.PUT("/api/reactions/updateReaction/:emoji/:post_id/:user_id", handlers.UpdateReactionHandler)
 	authorized.DELETE("/api/reactions/deleteReaction/:post_id/:user_id", handlers.DeleteReactionHandler)
 
-	// authorized.GET("/uploads/*filepath", handlers.FileServerHandler)
+	authorized.GET("/uploads/*filepath", handlers.FileServerHandler)
 	authorized.POST("/upload", handlers.UploadImageHandler)
 	authorized.GET("/getProfilePicture", handlers.GetProfilePictureHandler(db))
+
+	//certFile := "C:/Users/Cadea/Desktop/cert.pem"
+	//keyFile := "C:/Users/Cadea/Desktop/key.pem"
 
 	err = r.Run(":3000")
 	if err != nil {

@@ -1,8 +1,11 @@
+/* eslint-disable prettier/prettier */
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AuthService } from '@auth0/auth0-angular';
 import { Observable } from 'rxjs';
 import { isAdmin, UserModel } from 'src/models/user-model';
+
+const baseUrl = '/'; // baseUrl + 
 
 @Injectable({
   providedIn: 'root',
@@ -19,23 +22,23 @@ export class UserServiceService {
   }
 
   getAllUsers(): Observable<UserModel[]> {
-    return this.httpClient.get<UserModel[]>('api/users');
+    return this.httpClient.get<UserModel[]>(baseUrl + 'api/users');
   }
 
   getUser(userId: number): Observable<UserModel> {
-    return this.httpClient.get<UserModel>('api/user/' + userId);
+    return this.httpClient.get<UserModel>(baseUrl + 'api/user/' + userId);
   }
 
   getUserByUsername(username: string): Observable<UserModel> {
-    return this.httpClient.get<UserModel>('api/username/' + username);
+    return this.httpClient.get<UserModel>(baseUrl + 'api/username/' + username);
   }
 
   addNewUser(user: UserModel): Observable<boolean> {
-    return this.httpClient.put<boolean>('api/user/addNewUser', user);
+    return this.httpClient.put<boolean>(baseUrl + 'api/user/addNewUser', user);
   }
 
   searchUser(name: string): Observable<UserModel[]> {
-    return this.httpClient.get<UserModel[]>('api/user/findUserByName/' + name);
+    return this.httpClient.get<UserModel[]>(baseUrl + 'api/user/findUserByName/' + name);
   }
 
   searchUserByFirstAndLastName(
@@ -43,13 +46,13 @@ export class UserServiceService {
     lastName: string,
   ): Observable<UserModel> {
     return this.httpClient.get<UserModel>(
-      'api/user/findUserByFirstAndLastName/' + firstName + '/' + lastName,
+      baseUrl + 'api/user/findUserByFirstAndLastName/' + firstName + '/' + lastName,
     );
   }
 
   editProfileBio(newBio: string, username: string): Observable<boolean> {
     return this.httpClient.patch<boolean>(
-      `/api/user/editBio/${newBio}/${username}`,
+      baseUrl + `api/user/editBio/${newBio}/${username}`,
       null,
     );
   }
@@ -59,7 +62,7 @@ export class UserServiceService {
     username: string,
   ): Observable<boolean> {
     return this.httpClient.patch<boolean>(
-      `/api/user/editFirstName/${newFirstName}/${username}`,
+      baseUrl + `api/user/editFirstName/${newFirstName}/${username}`,
       null,
     );
   }
@@ -69,13 +72,13 @@ export class UserServiceService {
     username: string,
   ): Observable<boolean> {
     return this.httpClient.patch<boolean>(
-      `/api/user/editLastName/${newLastName}/${username}`,
+      baseUrl + `api/user/editLastName/${newLastName}/${username}`,
       null,
     );
   }
 
   userIsAdmin(userId: number): Observable<boolean> {
-    return this.httpClient.get<boolean>(`/api/checkAdmin/${userId}`);
+    return this.httpClient.get<boolean>(baseUrl + `api/checkAdmin/${userId}`);
   }
 
   setValue(value: string) {
@@ -100,30 +103,30 @@ export class UserServiceService {
     formData: FormData,
   ): Observable<{ profileImageUrl: string }> {
     return this.httpClient.post<{ profileImageUrl: string }>(
-      '/upload',
+      baseUrl + 'upload',
       formData,
     );
   }
 
   getProfilePicture(username: string): Observable<{ imageName: string }> {
     return this.httpClient.get<{ imageName: string }>(
-      `/getProfilePicture?username=${username}`,
+      baseUrl + `getProfilePicture?username=${username}`,
     );
   }
 
   getProfilePictureUrl(imageName: string): string {
-    return `/uploads/${imageName}`;
+    return baseUrl + `uploads/${imageName}`;
   }
 
   makeUserAdmin(pendingAdminUserId: number, adminUserId: number): Observable<boolean> {
-    return this.httpClient.put<boolean>(`/api/makeAdmin/${pendingAdminUserId}/${adminUserId}`, null);
+    return this.httpClient.put<boolean>(baseUrl + `api/makeAdmin/${pendingAdminUserId}/${adminUserId}`, null);
   }
 
   revokeUserAdmin(pendingRevokeAdminUserId: number, adminUserId: number): Observable<boolean> {
-    return this.httpClient.delete<boolean>(`/api/unmakeAdmin/${pendingRevokeAdminUserId}/${adminUserId}`);
+    return this.httpClient.delete<boolean>(baseUrl + `api/unmakeAdmin/${pendingRevokeAdminUserId}/${adminUserId}`);
   }
 
   deleteUser(usernameToDelete: string, adminUserId: number): Observable<boolean> {
-    return this.httpClient.delete<boolean>(`/api/deleteUserAdmin/${usernameToDelete}/${adminUserId}`);
+    return this.httpClient.delete<boolean>(baseUrl + `api/deleteUserAdmin/${usernameToDelete}/${adminUserId}`);
   }
 }

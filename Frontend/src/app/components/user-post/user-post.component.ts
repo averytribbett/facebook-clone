@@ -32,7 +32,7 @@ export class UserPostComponent {
   public reactions = 0;
   public isLoading = false;
   public showReactionTypes = false;
-  public profileImageUrl = 'http://localhost:3000/uploads/default.png';
+  public profileImageUrl = 'https://dashing-crawdad-rested.ngrok-free.app/uploads/default.png';
 
   constructor(
     private userService: UserServiceService,

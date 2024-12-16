@@ -1,7 +1,10 @@
+/* eslint-disable prettier/prettier */
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { UserModel } from 'src/models/user-model';
+
+const baseUrl = '/'; // baseUrl + 
 
 @Injectable({
   providedIn: 'root',
@@ -11,13 +14,13 @@ export class FriendServiceService {
 
   public getFriendList(username: string): Observable<UserModel[]> {
     return this.httpClient.get<UserModel[]>(
-      'api/friends/findFriendList/' + username,
+      baseUrl + 'api/friends/findFriendList/' + username,
     );
   }
 
   public getFriendRequestList(username: string): Observable<UserModel[]> {
     return this.httpClient.get<UserModel[]>(
-      'api/friends/findFriendRequestList/' + username,
+      baseUrl + 'api/friends/findFriendRequestList/' + username,
     );
   }
 
@@ -26,7 +29,7 @@ export class FriendServiceService {
     requestee: string,
   ): Observable<boolean> {
     return this.httpClient.put<boolean>(
-      '/api/friends/addPendingFriendship/' + requestor + '/' + requestee,
+      baseUrl + 'api/friends/addPendingFriendship/' + requestor + '/' + requestee,
       null,
     );
   }
@@ -36,7 +39,7 @@ export class FriendServiceService {
     friendWhoAccepted: string,
   ): Observable<boolean> {
     return this.httpClient.get<boolean>(
-      '/api/friends/acceptFriendship/' +
+      baseUrl + 'api/friends/acceptFriendship/' +
         originalRequestor +
         '/' +
         friendWhoAccepted,
@@ -48,7 +51,7 @@ export class FriendServiceService {
     friendWhoDeleted: string,
   ): Observable<boolean> {
     return this.httpClient.delete<boolean>(
-      '/api/friends/deleteFriendshipRequest/' +
+      baseUrl + 'api/friends/deleteFriendshipRequest/' +
         originalRequestor +
         '/' +
         friendWhoDeleted,
@@ -60,7 +63,7 @@ export class FriendServiceService {
     deleter: string,
   ): Observable<boolean> {
     return this.httpClient.delete<boolean>(
-      '/api/friends/deleteFriendship/' + friendToDelete + '/' + deleter,
+      baseUrl + 'api/friends/deleteFriendship/' + friendToDelete + '/' + deleter,
     );
   }
 }

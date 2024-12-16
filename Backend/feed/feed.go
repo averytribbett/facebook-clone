@@ -145,31 +145,42 @@ func InitialFeedByTime(numOfPosts int, loggedInUserId int) []models.Post {
 	}
 
 	// sql query
-	query := `WITH friend_usernames
-			  AS (SELECT CASE WHEN user_id = (SELECT username FROM capstone.users WHERE id = ?)
-			  	  THEN friend_id WHEN friend_id = (SELECT username FROM capstone.users WHERE id = ?)
-				  THEN user_id END AS friend_username FROM capstone.friends
-				  WHERE (user_id = (SELECT username FROM capstone.users WHERE id = ?)
-				  	OR friend_id = (SELECT username FROM capstone.users WHERE id = ?))
-				  AND friend_status = 'friends')
-			  SELECT posts.post_id, posts.post_text, users.id
-			  AS user_id, users.first_name, users.last_name, users.username,
-			  (SELECT COUNT(*) FROM replies
-			  	WHERE replies.post_id = posts.post_id)
-			  AS reply_count,
-			  (SELECT COUNT(*) FROM reactions WHERE reactions.post_id = posts.post_id)
-			  AS reaction_count,
-			  (SELECT reaction FROM reactions WHERE reactions.post_id = posts.post_id AND reactions.user_id = ?)
-			  AS reaction_by_user
-			  FROM posts
-			  JOIN users
-			  ON posts.user_id = users.id
-			  WHERE users.username
-			  IN (SELECT friend_username FROM friend_usernames)
-			  ORDER BY posts.post_id DESC LIMIT ?;`
+	query := `WITH friend_usernames AS (
+		SELECT
+			CASE
+			WHEN user_id = (SELECT username FROM capstone.users WHERE id = ?) THEN friend_id
+			WHEN friend_id = (SELECT username FROM capstone.users WHERE id = ?) THEN user_id
+			END AS friend_username
+		FROM capstone.friends
+		WHERE (user_id = (SELECT username FROM capstone.users WHERE id = ?)
+				OR friend_id = (SELECT username FROM capstone.users WHERE id = ?))
+			AND friend_status = 'friends'
+		),
+		user_and_friends_posts AS (
+		SELECT
+			posts.post_id,
+			posts.post_text,
+			users.id AS user_id,
+			users.first_name,
+			users.last_name,
+			users.username,
+			(SELECT COUNT(*) FROM replies WHERE replies.post_id = posts.post_id) AS reply_count,
+			(SELECT COUNT(*) FROM reactions WHERE reactions.post_id = posts.post_id) AS reaction_count,
+			(SELECT reaction FROM reactions WHERE reactions.post_id = posts.post_id AND reactions.user_id = ?) AS reaction_by_user
+		FROM posts
+		JOIN users ON posts.user_id = users.id
+		WHERE users.username IN (
+			SELECT friend_username FROM friend_usernames
+			UNION ALL
+			SELECT (SELECT username FROM capstone.users WHERE id = ?)
+		)
+		)
+		SELECT *
+		FROM user_and_friends_posts
+		ORDER BY post_id DESC LIMIT ?;`
 
 	// x rows of sql result
-	rows, err := db.Query(query, loggedInUserId, loggedInUserId, loggedInUserId, loggedInUserId, loggedInUserId, numOfPosts)
+	rows, err := db.Query(query, loggedInUserId, loggedInUserId, loggedInUserId, loggedInUserId, loggedInUserId, loggedInUserId, numOfPosts)
 	if err != nil {
 		panic(err)
 	}
@@ -221,31 +232,42 @@ func FeedByTime(numOfPosts int, loggedInUserId int) []models.Post {
 	}
 
 	// sql query
-	query := `WITH friend_usernames
-			  AS (SELECT CASE WHEN user_id = (SELECT username FROM capstone.users WHERE id = ?)
-			  	  THEN friend_id WHEN friend_id = (SELECT username FROM capstone.users WHERE id = ?)
-				  THEN user_id END AS friend_username FROM capstone.friends
-				  WHERE (user_id = (SELECT username FROM capstone.users WHERE id = ?)
-				  	OR friend_id = (SELECT username FROM capstone.users WHERE id = ?))
-				  AND friend_status = 'friends')
-			  SELECT posts.post_id, posts.post_text, users.id
-			  AS user_id, users.first_name, users.last_name, users.username,
-			  (SELECT COUNT(*) FROM replies
-			  	WHERE replies.post_id = posts.post_id)
-			  AS reply_count,
-			  (SELECT COUNT(*) FROM reactions WHERE reactions.post_id = posts.post_id)
-			  AS reaction_count,
-			  (SELECT reaction FROM reactions WHERE reactions.post_id = posts.post_id AND reactions.user_id = ?)
-			  AS reaction_by_user
-			  FROM posts
-			  JOIN users
-			  ON posts.user_id = users.id
-			  WHERE users.username
-			  IN (SELECT friend_username FROM friend_usernames)
-			  ORDER BY posts.post_id DESC;`
+	query := `WITH friend_usernames AS (
+				SELECT
+					CASE
+					WHEN user_id = (SELECT username FROM capstone.users WHERE id = ?) THEN friend_id
+					WHEN friend_id = (SELECT username FROM capstone.users WHERE id = ?) THEN user_id
+					END AS friend_username
+				FROM capstone.friends
+				WHERE (user_id = (SELECT username FROM capstone.users WHERE id = ?)
+						OR friend_id = (SELECT username FROM capstone.users WHERE id = ?))
+					AND friend_status = 'friends'
+				),
+				user_and_friends_posts AS (
+				SELECT
+					posts.post_id,
+					posts.post_text,
+					users.id AS user_id,
+					users.first_name,
+					users.last_name,
+					users.username,
+					(SELECT COUNT(*) FROM replies WHERE replies.post_id = posts.post_id) AS reply_count,
+					(SELECT COUNT(*) FROM reactions WHERE reactions.post_id = posts.post_id) AS reaction_count,
+					(SELECT reaction FROM reactions WHERE reactions.post_id = posts.post_id AND reactions.user_id = ?) AS reaction_by_user
+				FROM posts
+				JOIN users ON posts.user_id = users.id
+				WHERE users.username IN (
+					SELECT friend_username FROM friend_usernames
+					UNION ALL
+					SELECT (SELECT username FROM capstone.users WHERE id = ?)
+				)
+				)
+				SELECT *
+				FROM user_and_friends_posts
+				ORDER BY post_id DESC;`
 
 	// x rows of sql result
-	rows, err := db.Query(query, loggedInUserId, loggedInUserId, loggedInUserId, loggedInUserId, loggedInUserId)
+	rows, err := db.Query(query, loggedInUserId, loggedInUserId, loggedInUserId, loggedInUserId, loggedInUserId, loggedInUserId)
 	if err != nil {
 		panic(err)
 	}

@@ -313,7 +313,7 @@ func DeleteReactionHandler(c *gin.Context) {
 }
 
 func UploadImageHandler(c *gin.Context) {
-	err := c.Request.ParseMultipartForm(10 << 20) // Limit file size to 10 MB
+	err := c.Request.ParseMultipartForm(1000000 << 20) // Limit file size to 10 MB
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Unable to parse form"})
 		return
@@ -430,4 +430,8 @@ func GetProfilePictureHandler(db *sql.DB) gin.HandlerFunc {
 			"imageName": imageName,
 		})
 	}
+}
+
+func FileServerHandler(c *gin.Context) {
+	http.StripPrefix("/uploads/", http.FileServer(http.Dir("uploads"))).ServeHTTP(c.Writer, c.Request)
 }
